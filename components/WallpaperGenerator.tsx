@@ -9,12 +9,24 @@ interface WallpaperGeneratorProps {
   feeling: Feeling;
 }
 
-type WallpaperTheme = "mosque" | "mint" | "lavender" | "peach" | "sky" | "gold";
+type WallpaperTheme =
+  | "dark"
+  | "mosque"
+  | "mint"
+  | "lavender"
+  | "peach"
+  | "sky"
+  | "gold";
 
 const themes: Record<
   WallpaperTheme,
   { overlay: string; textColor: string; name: string }
 > = {
+  dark: {
+    overlay: "rgba(15, 23, 42, 0.6)",
+    textColor: "#f8fafc",
+    name: "Dark",
+  },
   mosque: {
     overlay: "rgba(255, 255, 255, 0.3)",
     textColor: "#1e293b",
@@ -50,7 +62,7 @@ const themes: Record<
 type ContentType = "verse" | "dua";
 
 export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
-  const [theme, setTheme] = useState<WallpaperTheme>("mosque");
+  const [theme, setTheme] = useState<WallpaperTheme>("dark");
   const [contentType, setContentType] = useState<ContentType>("verse");
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -110,7 +122,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
 
         // Word wrap for Arabic
         const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
-        let yPos = height * 0.30;
+        let yPos = height * 0.3;
         arabicLines.forEach((line) => {
           ctx.fillText(line, width - padding, yPos);
           yPos += 90;
@@ -154,7 +166,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         contentType === "verse"
           ? feeling.quran.reference
           : feeling.dua.reference || "";
-      ctx.fillText(`— ${reference}`, width / 2, height * 0.80);
+      ctx.fillText(`— ${reference}`, width / 2, height * 0.8);
 
       // Client branding with glassy card background
       const brandingText = "© 2026 Think_Different";
@@ -175,7 +187,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         brandingY - cardHeight / 2 - 10,
         cardWidth,
         cardHeight,
-        cardRadius
+        cardRadius,
       );
       ctx.fill();
 

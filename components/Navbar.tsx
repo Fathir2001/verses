@@ -47,6 +47,88 @@ export function Navbar() {
             </div>
           </Link>
 
+          {/* Think_Different Branding */}
+          <motion.div
+            className="hidden md:flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <motion.div
+              className="relative px-6 py-2 rounded-2xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
+                         dark:from-purple-500/25 dark:via-pink-500/25 dark:to-orange-500/25
+                         border-2 border-purple-400/40 dark:border-purple-500/40 
+                         shadow-lg shadow-purple-500/10 dark:shadow-purple-500/20 overflow-hidden"
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 20px 40px -12px rgba(168, 85, 247, 0.35)",
+              }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              {/* Animated shimmer effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+              />
+              {/* Glow effect behind text */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 via-pink-400/20 to-orange-400/20 blur-sm" />
+              <span className="relative flex text-lg sm:text-xl font-extrabold tracking-wide">
+                {"Think_Different".split("").map((letter, index) => {
+                  // Alternate directions for each letter
+                  const directions = [
+                    { x: -80, y: -50 }, // top-left
+                    { x: 80, y: -50 }, // top-right
+                    { x: -80, y: 50 }, // bottom-left
+                    { x: 80, y: 50 }, // bottom-right
+                    { x: 0, y: -80 }, // top
+                    { x: 0, y: 80 }, // bottom
+                    { x: -100, y: 0 }, // left
+                    { x: 100, y: 0 }, // right
+                  ];
+                  const dir = directions[index % directions.length];
+                  // Deterministic rotation based on index to avoid hydration mismatch
+                  const rotations = [
+                    -120, 90, -60, 150, -30, 180, -150, 45, -90, 120, -45, 135,
+                    -75, 100, -135,
+                  ];
+                  const initialRotate = rotations[index % rotations.length];
+                  return (
+                    <motion.span
+                      key={index}
+                      className="bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 
+                                 dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 
+                                 bg-clip-text text-transparent drop-shadow-sm"
+                      initial={{
+                        opacity: 0,
+                        x: dir.x,
+                        y: dir.y,
+                        scale: 0,
+                        rotate: initialRotate,
+                      }}
+                      animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
+                      transition={{
+                        delay: 1.0 + index * 0.15,
+                        duration: 0.8,
+                        type: "spring",
+                        stiffness: 150,
+                        damping: 12,
+                      }}
+                      whileHover={{
+                        scale: 1.3,
+                        y: -4,
+                        transition: { duration: 0.2 },
+                      }}
+                      style={{ display: "inline-block" }}
+                    >
+                      {letter}
+                    </motion.span>
+                  );
+                })}
+              </span>
+            </motion.div>
+          </motion.div>
+
           <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Home Link */}
             <Link
