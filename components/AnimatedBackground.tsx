@@ -25,7 +25,7 @@ export function AnimatedBackground() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/background.jpeg')" }}
         />
-        <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/60" />
+        <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/60" />
       </div>
     );
   }
@@ -38,7 +38,7 @@ export function AnimatedBackground() {
         style={{ backgroundImage: "url('/background.jpeg')" }}
       />
       {/* Semi-transparent overlay */}
-      <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/60" />
+      <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/60" />
 
       {/* Animated blobs */}
       <motion.div

@@ -45,7 +45,7 @@ export default function FeelingsPage() {
           >
             How are you feeling?
           </h1>
-          <p className="text-slate-600 dark:text-slate-300 max-w-lg mx-auto">
+          <p className="text-slate-700 dark:text-slate-300 max-w-lg mx-auto">
             Select what resonates with you, and find comfort through Islamic
             teachings.
           </p>
