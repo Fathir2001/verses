@@ -86,16 +86,16 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ctx.textAlign = "center";
 
       // Draw emoji
-      ctx.font = "120px sans-serif";
-      ctx.fillText(feeling.emoji, width / 2, height * 0.18);
+      ctx.font = "160px sans-serif";
+      ctx.fillText(feeling.emoji, width / 2, height * 0.12);
 
       // Draw "I Am Feeling" title
-      ctx.font = "bold 52px sans-serif";
-      ctx.fillText(`I Am Feeling ${feeling.title}`, width / 2, height * 0.26);
+      ctx.font = "bold 72px sans-serif";
+      ctx.fillText(`I Am Feeling ${feeling.title}`, width / 2, height * 0.19);
 
       // Draw content based on type
       const content = contentType === "verse" ? feeling.quran : feeling.dua;
-      const padding = 80;
+      const padding = 60;
       const maxWidth = width - padding * 2;
 
       // Arabic text
@@ -105,15 +105,15 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ) {
         const arabicText =
           contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
-        ctx.font = "56px sans-serif";
+        ctx.font = "bold 64px sans-serif";
         ctx.textAlign = "right";
 
         // Word wrap for Arabic
         const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
-        let yPos = height * 0.38;
+        let yPos = height * 0.30;
         arabicLines.forEach((line) => {
           ctx.fillText(line, width - padding, yPos);
-          yPos += 80;
+          yPos += 90;
         });
         ctx.textAlign = "center";
       }
@@ -124,54 +124,76 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           ? feeling.quran.text
           : feeling.dua.transliteration;
 
-      ctx.font = "italic 36px sans-serif";
+      ctx.font = "italic bold 48px sans-serif";
       const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
-      let englishY = height * 0.55;
+      let englishY = height * 0.58;
       englishLines.forEach((line) => {
         ctx.fillText(line, width / 2, englishY);
-        englishY += 50;
+        englishY += 65;
       });
 
       // Meaning (for dua only)
       if (contentType === "dua") {
-        ctx.font = "32px sans-serif";
+        ctx.font = "bold 42px sans-serif";
         const meaningLines = wrapText(
           ctx,
           `"${feeling.dua.meaning}"`,
           maxWidth,
         );
-        let meaningY = englishY + 40;
+        let meaningY = englishY + 50;
         meaningLines.forEach((line) => {
           ctx.fillText(line, width / 2, meaningY);
-          meaningY += 45;
+          meaningY += 55;
         });
       }
 
       // Reference
-      ctx.font = "bold 28px sans-serif";
+      ctx.font = "bold 44px sans-serif";
       ctx.fillStyle = textColor;
       const reference =
         contentType === "verse"
           ? feeling.quran.reference
           : feeling.dua.reference || "";
-      ctx.fillText(`— ${reference}`, width / 2, height * 0.82);
+      ctx.fillText(`— ${reference}`, width / 2, height * 0.80);
 
-      // App name watermark
-      ctx.font = "bold 28px sans-serif";
-      ctx.fillStyle = "rgba(16, 185, 129, 0.9)";
-      ctx.fillText("I Am Feeling • Islamic Comfort", width / 2, height * 0.92);
+      // Client branding with glassy card background
+      const brandingText = "© 2026 Think_Different";
+      ctx.font = "bold 38px sans-serif";
+      const brandingMetrics = ctx.measureText(brandingText);
+      const brandingX = width / 2;
+      const brandingY = height * 0.93;
+      const cardPadding = 30;
+      const cardWidth = brandingMetrics.width + cardPadding * 2;
+      const cardHeight = 70;
+      const cardRadius = 20;
 
-      // Client branding
-      ctx.font = "bold 28px sans-serif";
-      ctx.fillStyle = textColor;
-      ctx.fillText("© 2026 Think_Different", width / 2, height * 0.96);
+      // Draw glassy card background
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.beginPath();
+      ctx.roundRect(
+        brandingX - cardWidth / 2,
+        brandingY - cardHeight / 2 - 10,
+        cardWidth,
+        cardHeight,
+        cardRadius
+      );
+      ctx.fill();
+
+      // Draw border for glass effect
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw the text on top
+      ctx.fillStyle = "#1e293b";
+      ctx.fillText(brandingText, brandingX, brandingY);
 
       setIsGenerating(false);
 
       // Download the image
       const dataUrl = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.download = `iamfeeling-${feeling.slug}-${contentType}-${theme}.png`;
+      link.download = `Think-Different-${feeling.title}-${contentType}.png`;
       link.href = dataUrl;
       link.click();
     };
@@ -251,7 +273,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
                       ? "border-emerald-500 shadow-lg scale-110"
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
-                style={{ 
+                style={{
                   backgroundImage: "url('/background.jpeg')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -260,8 +282,8 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
                 whileTap={{ scale: 0.95 }}
                 title={themes[themeKey].name}
               >
-                <div 
-                  className="absolute inset-0" 
+                <div
+                  className="absolute inset-0"
                   style={{ backgroundColor: themes[themeKey].overlay }}
                 />
               </motion.button>
@@ -302,9 +324,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
                 ? feeling.quran.reference
                 : feeling.dua.reference}
             </p>
-            <p className="text-[6px] mt-2 font-bold">
-              © 2026 Think_Different
-            </p>
+            <p className="text-[6px] mt-2 font-bold">© 2026 Think_Different</p>
           </div>
         </div>
 
