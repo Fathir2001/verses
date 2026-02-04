@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -14,44 +14,66 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/20 dark:bg-white/10 animate-pulse" />
+      <div className="w-14 h-8 sm:w-16 sm:h-9 rounded-full bg-white/20 dark:bg-white/10 animate-pulse" />
     );
   }
 
   const isDark = resolvedTheme === "dark";
 
-  const cycleTheme = () => {
-    if (theme === "system") {
-      setTheme("light");
-    } else if (theme === "light") {
-      setTheme("dark");
-    } else {
-      setTheme("system");
-    }
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
     <motion.button
-      onClick={cycleTheme}
-      className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/30 dark:bg-white/10 backdrop-blur-md
-                 border border-white/20 dark:border-white/10 shadow-glass dark:shadow-glass-dark
-                 flex items-center justify-center transition-colors duration-300
-                 hover:bg-white/40 dark:hover:bg-white/20 focus:outline-none focus:ring-2 
-                 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
-      whileHover={{ scale: 1.05 }}
+      onClick={toggleTheme}
+      className={`relative w-14 h-8 sm:w-16 sm:h-9 rounded-full p-1
+                 transition-colors duration-500 ease-in-out
+                 focus:outline-none focus:ring-2 focus:ring-emerald-500/50
+                 ${isDark 
+                   ? "bg-slate-700/80 border border-slate-600/50" 
+                   : "bg-amber-100/80 border border-amber-200/50"
+                 }`}
       whileTap={{ scale: 0.95 }}
-      aria-label={`Current theme: ${theme}. Click to change.`}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
     >
-      <motion.span
-        key={isDark ? "moon" : "sun"}
-        initial={{ rotate: -90, opacity: 0 }}
-        animate={{ rotate: 0, opacity: 1 }}
-        exit={{ rotate: 90, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="text-base sm:text-xl"
+      {/* Track background icons */}
+      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm opacity-60">
+        ☀️
+      </span>
+      <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm opacity-60">
+        🌙
+      </span>
+      
+      {/* Sliding knob */}
+      <motion.div
+        className={`relative w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-md flex items-center justify-center
+                   ${isDark 
+                     ? "bg-slate-800 border border-slate-600" 
+                     : "bg-white border border-amber-200"
+                   }`}
+        layout
+        initial={false}
+        animate={{
+          x: isDark ? "calc(100% + 4px)" : 0,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 30,
+        }}
       >
-        {theme === "system" ? "💻" : isDark ? "🌙" : "☀️"}
-      </motion.span>
+        <motion.span
+          key={isDark ? "moon" : "sun"}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          exit={{ scale: 0, rotate: 180 }}
+          transition={{ duration: 0.3 }}
+          className="text-xs sm:text-sm"
+        >
+          {isDark ? "🌙" : "☀️"}
+        </motion.span>
+      </motion.div>
     </motion.button>
   );
 }
