@@ -13,36 +13,35 @@ type WallpaperTheme = "mosque" | "mint" | "lavender" | "peach" | "sky" | "gold";
 
 const themes: Record<
   WallpaperTheme,
-  { gradient: string; textColor: string; name: string; useImage?: boolean }
+  { overlay: string; textColor: string; name: string }
 > = {
   mosque: {
-    gradient: "linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef3c7 100%)",
+    overlay: "rgba(255, 255, 255, 0.3)",
     textColor: "#1e293b",
-    name: "Mosque",
-    useImage: true,
+    name: "Original",
   },
   mint: {
-    gradient: "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%)",
+    overlay: "rgba(167, 243, 208, 0.5)",
     textColor: "#064e3b",
     name: "Mint",
   },
   lavender: {
-    gradient: "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%)",
+    overlay: "rgba(221, 214, 254, 0.5)",
     textColor: "#4c1d95",
     name: "Lavender",
   },
   peach: {
-    gradient: "linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fda4af 100%)",
+    overlay: "rgba(254, 202, 202, 0.5)",
     textColor: "#9f1239",
     name: "Peach",
   },
   sky: {
-    gradient: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)",
+    overlay: "rgba(186, 230, 253, 0.5)",
     textColor: "#0c4a6e",
     name: "Sky",
   },
   gold: {
-    gradient: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)",
+    overlay: "rgba(253, 230, 138, 0.5)",
     textColor: "#78350f",
     name: "Gold",
   },
@@ -78,23 +77,11 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
 
     // Function to draw content after background is ready
     const drawContent = () => {
-      // Semi-transparent overlay for readability
-      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      // Apply colored overlay based on theme
+      ctx.fillStyle = currentThemeData.overlay;
       ctx.fillRect(0, 0, width, height);
 
-      // Add decorative circles
-      const colors = ["rgba(16, 185, 129, 0.1)", "rgba(6, 182, 212, 0.1)", "rgba(251, 191, 36, 0.1)", "rgba(244, 114, 182, 0.1)"];
-      for (let i = 0; i < 30; i++) {
-        const x = Math.random() * width;
-        const y = Math.random() * height;
-        const size = Math.random() * 150 + 50;
-        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Set up text styling
+      // Set up text styling - use dark text for readability
       ctx.fillStyle = textColor;
       ctx.textAlign = "center";
 
@@ -148,7 +135,11 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       // Meaning (for dua only)
       if (contentType === "dua") {
         ctx.font = "32px sans-serif";
-        const meaningLines = wrapText(ctx, `"${feeling.dua.meaning}"`, maxWidth);
+        const meaningLines = wrapText(
+          ctx,
+          `"${feeling.dua.meaning}"`,
+          maxWidth,
+        );
         let meaningY = englishY + 40;
         meaningLines.forEach((line) => {
           ctx.fillText(line, width / 2, meaningY);
@@ -171,7 +162,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ctx.fillText("I Am Feeling • Islamic Comfort", width / 2, height * 0.92);
 
       // Client branding
-      ctx.font = "24px sans-serif";
+      ctx.font = "bold 28px sans-serif";
       ctx.fillStyle = textColor;
       ctx.fillText("© 2026 Think_Different", width / 2, height * 0.96);
 
@@ -185,55 +176,25 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       link.click();
     };
 
-    // Check if we need to load the mosque image
-    if (currentThemeData.useImage) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        // Draw the mosque background image
-        ctx.drawImage(img, 0, 0, width, height);
-        drawContent();
-      };
-      img.onerror = () => {
-        // Fallback to gradient if image fails
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, "#e0f2fe");
-        gradient.addColorStop(0.5, "#f0fdf4");
-        gradient.addColorStop(1, "#fef3c7");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-        drawContent();
-      };
-      img.src = "/background.jpeg";
-    } else {
-      // Create gradient background for other themes
+    // Always load the mosque image for all themes
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Draw the mosque background image
+      ctx.drawImage(img, 0, 0, width, height);
+      drawContent();
+    };
+    img.onerror = () => {
+      // Fallback to light gradient if image fails
       const gradient = ctx.createLinearGradient(0, 0, width, height);
-      if (theme === "mint") {
-        gradient.addColorStop(0, "#d1fae5");
-        gradient.addColorStop(0.5, "#a7f3d0");
-        gradient.addColorStop(1, "#6ee7b7");
-      } else if (theme === "lavender") {
-        gradient.addColorStop(0, "#ede9fe");
-        gradient.addColorStop(0.5, "#ddd6fe");
-        gradient.addColorStop(1, "#c4b5fd");
-      } else if (theme === "peach") {
-        gradient.addColorStop(0, "#fee2e2");
-        gradient.addColorStop(0.5, "#fecaca");
-        gradient.addColorStop(1, "#fda4af");
-      } else if (theme === "sky") {
-        gradient.addColorStop(0, "#e0f2fe");
-        gradient.addColorStop(0.5, "#bae6fd");
-        gradient.addColorStop(1, "#7dd3fc");
-      } else if (theme === "gold") {
-        gradient.addColorStop(0, "#fef3c7");
-        gradient.addColorStop(0.5, "#fde68a");
-        gradient.addColorStop(1, "#fcd34d");
-      }
-
+      gradient.addColorStop(0, "#e0f2fe");
+      gradient.addColorStop(0.5, "#f0fdf4");
+      gradient.addColorStop(1, "#fef3c7");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
       drawContent();
-    }
+    };
+    img.src = "/background.jpeg";
   }, [theme, contentType, feeling]);
 
   return (
@@ -284,17 +245,26 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
               <motion.button
                 key={themeKey}
                 onClick={() => setTheme(themeKey)}
-                className={`w-10 h-10 rounded-xl border-2 transition-all
+                className={`w-10 h-10 rounded-xl border-2 transition-all overflow-hidden relative
                   ${
                     theme === themeKey
-                      ? "border-white shadow-lg scale-110"
+                      ? "border-emerald-500 shadow-lg scale-110"
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
-                style={{ background: themes[themeKey].gradient }}
+                style={{ 
+                  backgroundImage: "url('/background.jpeg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
                 whileHover={{ scale: theme === themeKey ? 1.1 : 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 title={themes[themeKey].name}
-              />
+              >
+                <div 
+                  className="absolute inset-0" 
+                  style={{ backgroundColor: themes[themeKey].overlay }}
+                />
+              </motion.button>
             ))}
           </div>
         </div>
@@ -302,16 +272,18 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         {/* Preview */}
         <div
           className="aspect-[9/16] max-h-64 rounded-xl overflow-hidden relative"
-          style={{ 
-            background: currentTheme.useImage ? undefined : currentTheme.gradient,
-            backgroundImage: currentTheme.useImage ? "url('/background.jpeg')" : undefined,
+          style={{
+            backgroundImage: "url('/background.jpeg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          {/* Overlay for readability */}
-          <div className="absolute inset-0 bg-white/40" />
-          <div 
+          {/* Colored overlay */}
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: currentTheme.overlay }}
+          />
+          <div
             className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
             style={{ color: currentTheme.textColor }}
           >
@@ -319,18 +291,18 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
             <p className="text-xs font-bold mb-2">
               I Am Feeling {feeling.title}
             </p>
-            <p className="text-[8px] italic line-clamp-3 opacity-90">
+            <p className="text-[8px] italic line-clamp-3">
               {contentType === "verse"
                 ? `"${feeling.quran.text}"`
                 : `"${feeling.dua.transliteration}"`}
             </p>
-            <p className="text-[6px] mt-1 opacity-70">
+            <p className="text-[6px] mt-1 font-semibold">
               —{" "}
               {contentType === "verse"
                 ? feeling.quran.reference
                 : feeling.dua.reference}
             </p>
-            <p className="text-[5px] mt-2 font-medium opacity-60">
+            <p className="text-[6px] mt-2 font-bold">
               © 2026 Think_Different
             </p>
           </div>

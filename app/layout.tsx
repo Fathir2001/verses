@@ -80,7 +80,7 @@ export default function RootLayout({
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-300 text-glow">
                   Made with 💚 for the Ummah
                 </p>
-                <p className="text-xs font-medium text-slate-700 dark:text-slate-400 text-glow">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-400 text-glow">
                   © 2026 Think_Different
                 </p>
               </footer>
