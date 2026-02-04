@@ -4,7 +4,7 @@ import { CopyButton, GlassCard, PageTransition, SearchBox } from "@/components";
 import { getAllCategories, getDailyQuote, searchQuotes } from "@/lib/quotes";
 import type { Quote } from "@/types/quote";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useMemo, useState } from "react";
+import { forwardRef, useCallback, useMemo, useState } from "react";
 
 // Pre-compute static data outside component to avoid re-computation
 const categories = getAllCategories();
@@ -197,15 +197,17 @@ interface QuoteCardProps {
   formatQuoteText: (quote: Quote) => string;
 }
 
-function QuoteCard({ quote, index, formatQuoteText }: QuoteCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      layout
-    >
+const QuoteCard = forwardRef<HTMLDivElement, QuoteCardProps>(
+  function QuoteCard({ quote, index, formatQuoteText }, ref) {
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+        layout
+      >
       <GlassCard hover className="p-5 h-full">
         <div className="flex flex-col h-full">
           {/* Arabic Text */}
@@ -244,4 +246,4 @@ function QuoteCard({ quote, index, formatQuoteText }: QuoteCardProps) {
       </GlassCard>
     </motion.div>
   );
-}
+});

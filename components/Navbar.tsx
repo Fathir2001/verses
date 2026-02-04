@@ -48,6 +48,24 @@ export function Navbar() {
           </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
+            {/* Home Link */}
+            <Link
+              href="/feelings"
+              className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl
+                         bg-white/50 dark:bg-slate-800/50 
+                         hover:bg-emerald-50 dark:hover:bg-emerald-900/20
+                         transition-colors duration-200
+                         focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              aria-label="Go home"
+            >
+              <motion.span
+                className="text-base sm:text-lg"
+                whileHover={{ scale: 1.1 }}
+              >
+                🏠
+              </motion.span>
+            </Link>
+
             {/* Quotes Link */}
             <Link
               href="/quotes"
