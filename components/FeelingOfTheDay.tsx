@@ -3,7 +3,6 @@
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { FavoriteButton } from "./FavoriteButton";
 import { GlassCard } from "./GlassCard";
 
 interface FeelingOfTheDayProps {
@@ -106,7 +105,7 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
         </Link>
 
         {/* Actions */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+        <div className="flex items-center mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
           <Link
             href={`/feelings/${dailyFeeling.slug}`}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
@@ -130,8 +129,6 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
               />
             </svg>
           </Link>
-
-          <FavoriteButton slug={dailyFeeling.slug} size="md" />
         </div>
       </GlassCard>
     </motion.div>

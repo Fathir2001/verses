@@ -30,8 +30,17 @@ export function FeelingCard({ feeling, index }: FeelingCardProps) {
         href={`/feelings/${feeling.slug}`}
         className="block focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-3xl"
       >
-        <GlassCard hover glow className="p-6 h-full group">
-          <div className="flex flex-col h-full">
+        <GlassCard
+          hover
+          glow
+          className="p-6 h-full group relative overflow-hidden"
+        >
+          {/* Large emoji background decoration */}
+          <div className="absolute -bottom-4 -right-4 opacity-[0.07] dark:opacity-[0.1] pointer-events-none select-none">
+            <span className="text-[7rem] leading-none">{feeling.emoji}</span>
+          </div>
+
+          <div className="flex flex-col h-full relative z-[1]">
             <motion.span
               className="text-4xl mb-3"
               whileHover={{ scale: 1.2, rotate: 10 }}
