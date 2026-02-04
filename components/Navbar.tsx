@@ -16,46 +16,19 @@ export function Navbar() {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="sticky top-0 z-50 w-full"
     >
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 py-3 sm:py-4">
+      <div className="mx-auto max-w-5xl px-3 sm:px-4 py-2 sm:py-3">
         <div
           className="flex items-center justify-between rounded-2xl bg-white/60 dark:bg-slate-900/60 
                         backdrop-blur-xl border border-white/20 dark:border-white/10 
-                        shadow-glass dark:shadow-glass-dark px-3 py-2.5 sm:px-6 sm:py-3"
+                        shadow-glass dark:shadow-glass-dark px-3 py-2 sm:px-5 sm:py-2.5"
         >
           <Link
             href="/feelings"
-            className="flex items-center gap-1.5 sm:gap-3 group focus:outline-none focus:ring-2 
-                       focus:ring-emerald-500/50 rounded-lg px-1 py-1 -mx-1 -my-1"
-          >
-            <motion.span
-              className="text-xl sm:text-3xl"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              🤲
-            </motion.span>
-            <div className="flex flex-col">
-              <span
-                className="text-sm sm:text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 
-                               dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent"
-              >
-                I Am Feeling
-              </span>
-              <span className="hidden sm:block text-xs font-semibold text-slate-700 dark:text-slate-400 -mt-0.5">
-                Islamic Comfort & Guidance
-              </span>
-            </div>
-          </Link>
-
-          {/* Think_Different Branding */}
-          <motion.div
-            className="hidden md:flex items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            className="flex items-center group focus:outline-none focus:ring-2 
+                       focus:ring-purple-500/50 rounded-xl px-1 py-1 -mx-1 -my-1"
           >
             <motion.div
-              className="relative px-6 py-2 rounded-2xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
+              className="relative px-2 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
                          dark:from-purple-500/25 dark:via-pink-500/25 dark:to-orange-500/25
                          border-2 border-purple-400/40 dark:border-purple-500/40 
                          shadow-lg shadow-purple-500/10 dark:shadow-purple-500/20 overflow-hidden"
@@ -73,7 +46,7 @@ export function Navbar() {
               />
               {/* Glow effect behind text */}
               <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 via-pink-400/20 to-orange-400/20 blur-sm" />
-              <span className="relative flex text-lg sm:text-xl font-extrabold tracking-wide">
+              <span className="relative flex text-xs sm:text-lg md:text-xl font-extrabold tracking-wide">
                 {"Think_Different".split("").map((letter, index) => {
                   // Alternate directions for each letter
                   const directions = [
@@ -126,8 +99,11 @@ export function Navbar() {
                   );
                 })}
               </span>
+              <span className="relative mt-0.5 hidden sm:block text-[10px] sm:text-xs font-semibold text-slate-700/90 dark:text-slate-300/90 text-center">
+                🤲 I Am Feeling • Islamic Comfort & Guidance
+              </span>
             </motion.div>
-          </motion.div>
+          </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Home Link */}
