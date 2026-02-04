@@ -57,7 +57,7 @@ export function FeelingCard({ feeling, index }: FeelingCardProps) {
               {feeling.title}
             </h2>
 
-            <p className="text-sm text-slate-700 dark:text-slate-200 line-clamp-2 flex-grow font-medium">
+            <p className="text-sm text-slate-800 dark:text-slate-100 line-clamp-2 flex-grow font-bold">
               {feeling.preview}
             </p>
 

@@ -87,7 +87,7 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
               >
                 Feeling {dailyFeeling.title}?
               </h3>
-              <p className="text-slate-600 dark:text-slate-300 line-clamp-2 sm:line-clamp-3 mb-4">
+              <p className="text-slate-800 dark:text-slate-200 line-clamp-2 sm:line-clamp-3 mb-4 font-bold">
                 {dailyFeeling.preview}
               </p>
 

@@ -45,7 +45,7 @@ export default function FeelingDetailClient({
           <Link
             href="/feelings"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
-                       text-slate-600 dark:text-slate-300
+                       text-slate-800 dark:text-slate-200 font-bold
                        hover:bg-white/50 dark:hover:bg-slate-800/50
                        transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
@@ -84,7 +84,7 @@ export default function FeelingDetailClient({
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">
             Feeling {feeling.title}
           </h1>
-          <p className="text-slate-600 dark:text-slate-300 mb-4">
+          <p className="text-slate-800 dark:text-slate-200 mb-4 font-bold">
             {feeling.preview}
           </p>
           <FavoriteButton slug={feeling.slug} size="md" showLabel />
