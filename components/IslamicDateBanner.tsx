@@ -93,7 +93,7 @@ export function IslamicDateBanner() {
                 {islamicDate}
               </motion.p>
               <motion.p
-                className="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 truncate"
+                className="text-[10px] sm:text-sm font-medium text-slate-600 dark:text-slate-400 mt-0.5 truncate"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}

@@ -83,6 +83,15 @@
 
 @layer utilities {
 
+    /* Text glow for visibility on background */
+    .text-glow {
+        text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    .dark .text-glow {
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
     /* Text balance for better typography */
     .text-balance {
         text-wrap: balance;

@@ -41,11 +41,12 @@ export default function FeelingsPage() {
         >
           <h1
             className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 
-                         dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-3"
+                         dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-3
+                         drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] dark:drop-shadow-none"
           >
             How are you feeling?
           </h1>
-          <p className="text-slate-700 dark:text-slate-300 max-w-lg mx-auto">
+          <p className="font-semibold text-slate-800 dark:text-slate-200 max-w-lg mx-auto text-glow">
             Select what resonates with you, and find comfort through Islamic
             teachings.
           </p>
@@ -84,9 +85,9 @@ export default function FeelingsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-6 flex items-center gap-2"
+            className="text-xl sm:text-2xl font-bold text-slate-700 dark:text-slate-200 mb-6 flex items-center gap-2"
           >
-            <span>🎭</span> All Feelings
+            <span className="text-2xl sm:text-3xl">🎭</span> All Feelings
           </motion.h2>
         )}
 
