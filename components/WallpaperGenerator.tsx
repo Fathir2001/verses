@@ -9,65 +9,36 @@ interface WallpaperGeneratorProps {
   feeling: Feeling;
 }
 
-type WallpaperTheme =
-  | "dark"
-  | "mosque"
-  | "mint"
-  | "lavender"
-  | "peach"
-  | "sky"
-  | "gold";
+type WallpaperImageKey =
+  | "mosque-1"
+  | "mosque-2"
+  | "mosque-3"
+  | "mosque-4"
+  | "mosque-5"
+  | "mosque-6"
+  | "mosque-7"
+  | "mosque-8";
 
-const themes: Record<
-  WallpaperTheme,
-  { overlay: string; textColor: string; name: string }
-> = {
-  dark: {
-    overlay: "rgba(15, 23, 42, 0.6)",
-    textColor: "#f8fafc",
-    name: "Dark",
-  },
-  mosque: {
-    overlay: "rgba(255, 255, 255, 0.3)",
-    textColor: "#1e293b",
-    name: "Original",
-  },
-  mint: {
-    overlay: "rgba(167, 243, 208, 0.5)",
-    textColor: "#064e3b",
-    name: "Mint",
-  },
-  lavender: {
-    overlay: "rgba(221, 214, 254, 0.5)",
-    textColor: "#4c1d95",
-    name: "Lavender",
-  },
-  peach: {
-    overlay: "rgba(254, 202, 202, 0.5)",
-    textColor: "#9f1239",
-    name: "Peach",
-  },
-  sky: {
-    overlay: "rgba(186, 230, 253, 0.5)",
-    textColor: "#0c4a6e",
-    name: "Sky",
-  },
-  gold: {
-    overlay: "rgba(253, 230, 138, 0.5)",
-    textColor: "#78350f",
-    name: "Gold",
-  },
+const imageOptions: Record<WallpaperImageKey, { src: string; name: string }> = {
+  "mosque-1": { src: "/image1.png", name: "Golden Dome" },
+  "mosque-2": { src: "/image2.jpeg", name: "White Majesty" },
+  "mosque-3": { src: "/image3.jpeg", name: "Dome of Rock" },
+  "mosque-4": { src: "/image4.jpeg", name: "Sunset Minaret" },
+  "mosque-5": { src: "/image5.jpeg", name: "Elegant Courtyard" },
+  "mosque-6": { src: "/image6.jpeg", name: "Grand White" },
+  "mosque-7": { src: "/image7.jpeg", name: "Blue Reflection" },
+  "mosque-8": { src: "/background.jpeg", name: "Classic" },
 };
 
 type ContentType = "verse" | "dua";
 
 export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
-  const [theme, setTheme] = useState<WallpaperTheme>("dark");
+  const [imageKey, setImageKey] = useState<WallpaperImageKey>("mosque-8");
   const [contentType, setContentType] = useState<ContentType>("verse");
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const currentTheme = themes[theme];
+  const currentImage = imageOptions[imageKey];
 
   const generateWallpaper = useCallback(async () => {
     const canvas = canvasRef.current;
@@ -84,14 +55,34 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
     canvas.width = width;
     canvas.height = height;
 
-    const currentThemeData = themes[theme];
-    const textColor = currentThemeData.textColor;
+    const textColor = "#f8fafc";
 
     // Function to draw content after background is ready
     const drawContent = () => {
-      // Apply colored overlay based on theme
-      ctx.fillStyle = currentThemeData.overlay;
+      // Dark glassy overlay for text visibility (lighter to keep image visible)
+      ctx.fillStyle = "rgba(2, 6, 23, 0.25)";
       ctx.fillRect(0, 0, width, height);
+
+      // Glass panel behind text - smaller to show more background
+      const panelWidth = width - 200;
+      const panelHeight = height * 0.48;
+      const panelX = (width - panelWidth) / 2;
+      const panelY = height * 0.24;
+      const panelRadius = 40;
+
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+      ctx.shadowBlur = 22;
+      ctx.fillStyle = "rgba(15, 23, 42, 0.42)";
+      ctx.beginPath();
+      ctx.roundRect(panelX, panelY, panelWidth, panelHeight, panelRadius);
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
 
       // Set up text styling - use dark text for readability
       ctx.fillStyle = textColor;
@@ -168,7 +159,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           : feeling.dua.reference || "";
       ctx.fillText(`— ${reference}`, width / 2, height * 0.8);
 
-      // Client branding with glassy card background
+      // Client branding with dark glassy card background
       const brandingText = "© 2026 Think_Different";
       ctx.font = "bold 38px sans-serif";
       const brandingMetrics = ctx.measureText(brandingText);
@@ -180,7 +171,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       const cardRadius = 20;
 
       // Draw glassy card background
-      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
       ctx.beginPath();
       ctx.roundRect(
         brandingX - cardWidth / 2,
@@ -192,12 +183,12 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ctx.fill();
 
       // Draw border for glass effect
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
       ctx.lineWidth = 2;
       ctx.stroke();
 
       // Draw the text on top
-      ctx.fillStyle = "#1e293b";
+      ctx.fillStyle = "#f8fafc";
       ctx.fillText(brandingText, brandingX, brandingY);
 
       setIsGenerating(false);
@@ -228,8 +219,8 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ctx.fillRect(0, 0, width, height);
       drawContent();
     };
-    img.src = "/background.jpeg";
-  }, [theme, contentType, feeling]);
+    img.src = currentImage.src;
+  }, [imageKey, contentType, feeling, currentImage.src]);
 
   return (
     <GlassCard className="p-6">
@@ -269,36 +260,31 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           </div>
         </div>
 
-        {/* Theme Selection */}
+        {/* Image Selection */}
         <div>
           <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-            Theme
+            Background Image
           </label>
           <div className="flex flex-wrap gap-2">
-            {(Object.keys(themes) as WallpaperTheme[]).map((themeKey) => (
+            {(Object.keys(imageOptions) as WallpaperImageKey[]).map((key) => (
               <motion.button
-                key={themeKey}
-                onClick={() => setTheme(themeKey)}
+                key={key}
+                onClick={() => setImageKey(key)}
                 className={`w-10 h-10 rounded-xl border-2 transition-all overflow-hidden relative
                   ${
-                    theme === themeKey
+                    imageKey === key
                       ? "border-emerald-500 shadow-lg scale-110"
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
                 style={{
-                  backgroundImage: "url('/background.jpeg')",
+                  backgroundImage: `url('${imageOptions[key].src}')`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
-                whileHover={{ scale: theme === themeKey ? 1.1 : 1.05 }}
+                whileHover={{ scale: imageKey === key ? 1.1 : 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                title={themes[themeKey].name}
-              >
-                <div
-                  className="absolute inset-0"
-                  style={{ backgroundColor: themes[themeKey].overlay }}
-                />
-              </motion.button>
+                title={imageOptions[key].name}
+              ></motion.button>
             ))}
           </div>
         </div>
@@ -307,36 +293,36 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         <div
           className="aspect-[9/16] max-h-64 rounded-xl overflow-hidden relative"
           style={{
-            backgroundImage: "url('/background.jpeg')",
+            backgroundImage: `url('${currentImage.src}')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          {/* Colored overlay */}
-          <div
-            className="absolute inset-0"
-            style={{ backgroundColor: currentTheme.overlay }}
-          />
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
-            style={{ color: currentTheme.textColor }}
-          >
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-slate-950/20" />
+
+          {/* Glassy text panel - smaller to show more background */}
+          <div className="absolute inset-x-6 top-[25%] bottom-[25%] rounded-2xl bg-slate-900/35 border border-white/20 shadow-xl backdrop-blur-md" />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-slate-50">
             <span className="text-3xl mb-1">{feeling.emoji}</span>
             <p className="text-xs font-bold mb-2">
               I Am Feeling {feeling.title}
             </p>
-            <p className="text-[8px] italic line-clamp-3">
+            <p className="text-[8px] italic line-clamp-3 text-slate-200">
               {contentType === "verse"
                 ? `"${feeling.quran.text}"`
                 : `"${feeling.dua.transliteration}"`}
             </p>
-            <p className="text-[6px] mt-1 font-semibold">
+            <p className="text-[6px] mt-1 font-semibold text-slate-200">
               —{" "}
               {contentType === "verse"
                 ? feeling.quran.reference
                 : feeling.dua.reference}
             </p>
-            <p className="text-[6px] mt-2 font-bold">© 2026 Think_Different</p>
+            <p className="text-[6px] mt-2 font-bold text-slate-100">
+              © 2026 Think_Different
+            </p>
           </div>
         </div>
 
