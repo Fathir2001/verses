@@ -9,43 +9,49 @@ interface WallpaperGeneratorProps {
   feeling: Feeling;
 }
 
-type WallpaperTheme = "emerald" | "ocean" | "sunset" | "night" | "rose";
+type WallpaperTheme = "mosque" | "mint" | "lavender" | "peach" | "sky" | "gold";
 
 const themes: Record<
   WallpaperTheme,
-  { gradient: string; textColor: string; name: string }
+  { gradient: string; textColor: string; name: string; useImage?: boolean }
 > = {
-  emerald: {
-    gradient: "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)",
-    textColor: "#ffffff",
-    name: "Emerald",
+  mosque: {
+    gradient: "linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef3c7 100%)",
+    textColor: "#1e293b",
+    name: "Mosque",
+    useImage: true,
   },
-  ocean: {
-    gradient: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)",
-    textColor: "#ffffff",
-    name: "Ocean",
+  mint: {
+    gradient: "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%)",
+    textColor: "#064e3b",
+    name: "Mint",
   },
-  sunset: {
-    gradient: "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)",
-    textColor: "#ffffff",
-    name: "Sunset",
+  lavender: {
+    gradient: "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%)",
+    textColor: "#4c1d95",
+    name: "Lavender",
   },
-  night: {
-    gradient: "linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%)",
-    textColor: "#ffffff",
-    name: "Night",
+  peach: {
+    gradient: "linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fda4af 100%)",
+    textColor: "#9f1239",
+    name: "Peach",
   },
-  rose: {
-    gradient: "linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%)",
-    textColor: "#ffffff",
-    name: "Rose",
+  sky: {
+    gradient: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)",
+    textColor: "#0c4a6e",
+    name: "Sky",
+  },
+  gold: {
+    gradient: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)",
+    textColor: "#78350f",
+    name: "Gold",
   },
 };
 
 type ContentType = "verse" | "dua";
 
 export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
-  const [theme, setTheme] = useState<WallpaperTheme>("emerald");
+  const [theme, setTheme] = useState<WallpaperTheme>("mosque");
   const [contentType, setContentType] = useState<ContentType>("verse");
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,128 +73,167 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
     canvas.width = width;
     canvas.height = height;
 
-    // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    if (theme === "emerald") {
-      gradient.addColorStop(0, "#10b981");
-      gradient.addColorStop(0.5, "#059669");
-      gradient.addColorStop(1, "#047857");
-    } else if (theme === "ocean") {
-      gradient.addColorStop(0, "#0ea5e9");
-      gradient.addColorStop(0.5, "#0284c7");
-      gradient.addColorStop(1, "#0369a1");
-    } else if (theme === "sunset") {
-      gradient.addColorStop(0, "#f97316");
-      gradient.addColorStop(0.5, "#ea580c");
-      gradient.addColorStop(1, "#c2410c");
-    } else if (theme === "night") {
-      gradient.addColorStop(0, "#1e293b");
-      gradient.addColorStop(0.5, "#0f172a");
-      gradient.addColorStop(1, "#020617");
-    } else if (theme === "rose") {
-      gradient.addColorStop(0, "#f43f5e");
-      gradient.addColorStop(0.5, "#e11d48");
-      gradient.addColorStop(1, "#be123c");
-    }
+    const currentThemeData = themes[theme];
+    const textColor = currentThemeData.textColor;
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    // Function to draw content after background is ready
+    const drawContent = () => {
+      // Semi-transparent overlay for readability
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.fillRect(0, 0, width, height);
 
-    // Add subtle pattern overlay
-    ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
-    for (let i = 0; i < 50; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      const size = Math.random() * 100 + 50;
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fill();
-    }
+      // Add decorative circles
+      const colors = ["rgba(16, 185, 129, 0.1)", "rgba(6, 182, 212, 0.1)", "rgba(251, 191, 36, 0.1)", "rgba(244, 114, 182, 0.1)"];
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const size = Math.random() * 150 + 50;
+        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
-    // Set up text styling
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-
-    // Draw emoji
-    ctx.font = "120px sans-serif";
-    ctx.fillText(feeling.emoji, width / 2, height * 0.2);
-
-    // Draw "I Am Feeling" title
-    ctx.font = "bold 48px sans-serif";
-    ctx.fillText(`I Am Feeling ${feeling.title}`, width / 2, height * 0.28);
-
-    // Draw content based on type
-    const content = contentType === "verse" ? feeling.quran : feeling.dua;
-    const padding = 80;
-    const maxWidth = width - padding * 2;
-
-    // Arabic text
-    if (
-      (contentType === "verse" && feeling.quran.arabic) ||
-      (contentType === "dua" && feeling.dua.arabic)
-    ) {
-      const arabicText =
-        contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
-      ctx.font = "56px sans-serif";
-      ctx.textAlign = "right";
-
-      // Word wrap for Arabic
-      const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
-      let yPos = height * 0.4;
-      arabicLines.forEach((line) => {
-        ctx.fillText(line, width - padding, yPos);
-        yPos += 80;
-      });
+      // Set up text styling
+      ctx.fillStyle = textColor;
       ctx.textAlign = "center";
-    }
 
-    // English translation or transliteration
-    const englishText =
-      contentType === "verse"
-        ? feeling.quran.text
-        : feeling.dua.transliteration;
+      // Draw emoji
+      ctx.font = "120px sans-serif";
+      ctx.fillText(feeling.emoji, width / 2, height * 0.18);
 
-    ctx.font = "italic 36px sans-serif";
-    const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
-    let englishY = height * 0.55;
-    englishLines.forEach((line) => {
-      ctx.fillText(line, width / 2, englishY);
-      englishY += 50;
-    });
+      // Draw "I Am Feeling" title
+      ctx.font = "bold 52px sans-serif";
+      ctx.fillText(`I Am Feeling ${feeling.title}`, width / 2, height * 0.26);
 
-    // Meaning (for dua only)
-    if (contentType === "dua") {
-      ctx.font = "32px sans-serif";
-      const meaningLines = wrapText(ctx, `"${feeling.dua.meaning}"`, maxWidth);
-      let meaningY = englishY + 40;
-      meaningLines.forEach((line) => {
-        ctx.fillText(line, width / 2, meaningY);
-        meaningY += 45;
+      // Draw content based on type
+      const content = contentType === "verse" ? feeling.quran : feeling.dua;
+      const padding = 80;
+      const maxWidth = width - padding * 2;
+
+      // Arabic text
+      if (
+        (contentType === "verse" && feeling.quran.arabic) ||
+        (contentType === "dua" && feeling.dua.arabic)
+      ) {
+        const arabicText =
+          contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
+        ctx.font = "56px sans-serif";
+        ctx.textAlign = "right";
+
+        // Word wrap for Arabic
+        const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
+        let yPos = height * 0.38;
+        arabicLines.forEach((line) => {
+          ctx.fillText(line, width - padding, yPos);
+          yPos += 80;
+        });
+        ctx.textAlign = "center";
+      }
+
+      // English translation or transliteration
+      const englishText =
+        contentType === "verse"
+          ? feeling.quran.text
+          : feeling.dua.transliteration;
+
+      ctx.font = "italic 36px sans-serif";
+      const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
+      let englishY = height * 0.55;
+      englishLines.forEach((line) => {
+        ctx.fillText(line, width / 2, englishY);
+        englishY += 50;
       });
+
+      // Meaning (for dua only)
+      if (contentType === "dua") {
+        ctx.font = "32px sans-serif";
+        const meaningLines = wrapText(ctx, `"${feeling.dua.meaning}"`, maxWidth);
+        let meaningY = englishY + 40;
+        meaningLines.forEach((line) => {
+          ctx.fillText(line, width / 2, meaningY);
+          meaningY += 45;
+        });
+      }
+
+      // Reference
+      ctx.font = "bold 28px sans-serif";
+      ctx.fillStyle = textColor;
+      const reference =
+        contentType === "verse"
+          ? feeling.quran.reference
+          : feeling.dua.reference || "";
+      ctx.fillText(`— ${reference}`, width / 2, height * 0.82);
+
+      // App name watermark
+      ctx.font = "bold 28px sans-serif";
+      ctx.fillStyle = "rgba(16, 185, 129, 0.9)";
+      ctx.fillText("I Am Feeling • Islamic Comfort", width / 2, height * 0.92);
+
+      // Client branding
+      ctx.font = "24px sans-serif";
+      ctx.fillStyle = textColor;
+      ctx.fillText("© 2026 Think_Different", width / 2, height * 0.96);
+
+      setIsGenerating(false);
+
+      // Download the image
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `iamfeeling-${feeling.slug}-${contentType}-${theme}.png`;
+      link.href = dataUrl;
+      link.click();
+    };
+
+    // Check if we need to load the mosque image
+    if (currentThemeData.useImage) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        // Draw the mosque background image
+        ctx.drawImage(img, 0, 0, width, height);
+        drawContent();
+      };
+      img.onerror = () => {
+        // Fallback to gradient if image fails
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "#e0f2fe");
+        gradient.addColorStop(0.5, "#f0fdf4");
+        gradient.addColorStop(1, "#fef3c7");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        drawContent();
+      };
+      img.src = "/background.jpeg";
+    } else {
+      // Create gradient background for other themes
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      if (theme === "mint") {
+        gradient.addColorStop(0, "#d1fae5");
+        gradient.addColorStop(0.5, "#a7f3d0");
+        gradient.addColorStop(1, "#6ee7b7");
+      } else if (theme === "lavender") {
+        gradient.addColorStop(0, "#ede9fe");
+        gradient.addColorStop(0.5, "#ddd6fe");
+        gradient.addColorStop(1, "#c4b5fd");
+      } else if (theme === "peach") {
+        gradient.addColorStop(0, "#fee2e2");
+        gradient.addColorStop(0.5, "#fecaca");
+        gradient.addColorStop(1, "#fda4af");
+      } else if (theme === "sky") {
+        gradient.addColorStop(0, "#e0f2fe");
+        gradient.addColorStop(0.5, "#bae6fd");
+        gradient.addColorStop(1, "#7dd3fc");
+      } else if (theme === "gold") {
+        gradient.addColorStop(0, "#fef3c7");
+        gradient.addColorStop(0.5, "#fde68a");
+        gradient.addColorStop(1, "#fcd34d");
+      }
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      drawContent();
     }
-
-    // Reference
-    ctx.font = "bold 28px sans-serif";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    const reference =
-      contentType === "verse"
-        ? feeling.quran.reference
-        : feeling.dua.reference || "";
-    ctx.fillText(`— ${reference}`, width / 2, height * 0.85);
-
-    // Watermark
-    ctx.font = "24px sans-serif";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-    ctx.fillText("I Am Feeling • Islamic Comfort", width / 2, height * 0.95);
-
-    setIsGenerating(false);
-
-    // Download the image
-    const dataUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.download = `iamfeeling-${feeling.slug}-${contentType}-${theme}.png`;
-    link.href = dataUrl;
-    link.click();
   }, [theme, contentType, feeling]);
 
   return (
@@ -257,11 +302,21 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         {/* Preview */}
         <div
           className="aspect-[9/16] max-h-64 rounded-xl overflow-hidden relative"
-          style={{ background: currentTheme.gradient }}
+          style={{ 
+            background: currentTheme.useImage ? undefined : currentTheme.gradient,
+            backgroundImage: currentTheme.useImage ? "url('/background.jpeg')" : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white text-center">
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-white/40" />
+          <div 
+            className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
+            style={{ color: currentTheme.textColor }}
+          >
             <span className="text-3xl mb-1">{feeling.emoji}</span>
-            <p className="text-xs font-medium mb-2">
+            <p className="text-xs font-bold mb-2">
               I Am Feeling {feeling.title}
             </p>
             <p className="text-[8px] italic line-clamp-3 opacity-90">
@@ -274,6 +329,9 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
               {contentType === "verse"
                 ? feeling.quran.reference
                 : feeling.dua.reference}
+            </p>
+            <p className="text-[5px] mt-2 font-medium opacity-60">
+              © 2026 Think_Different
             </p>
           </div>
         </div>
