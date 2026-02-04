@@ -21,10 +21,10 @@ export function GlassCard({
     <motion.div
       className={cn(
         "relative rounded-3xl overflow-hidden",
-        "bg-white/70 dark:bg-slate-800/70",
+        "bg-white dark:bg-slate-800/95",
         "backdrop-blur-xl",
-        "border border-white/30 dark:border-white/10",
-        "shadow-glass dark:shadow-glass-dark",
+        "border border-slate-200/80 dark:border-white/10",
+        "shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50",
         hover && "cursor-pointer",
         glow &&
           "before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-emerald-500/10 before:to-teal-500/10 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100",
