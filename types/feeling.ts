@@ -1,4 +1,5 @@
 export interface QuranVerse {
+  arabic: string;
   text: string;
   reference: string;
 }

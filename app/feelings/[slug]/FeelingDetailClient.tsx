@@ -23,7 +23,9 @@ export default function FeelingDetailClient({
       ? window.location.href
       : `/feelings/${feeling.slug}`;
 
-  const verseText = `${feeling.quran.text}\n\n— ${feeling.quran.reference}`;
+  const verseText = feeling.quran.arabic
+    ? `${feeling.quran.arabic}\n\n${feeling.quran.text}\n\n— ${feeling.quran.reference}`
+    : `${feeling.quran.text}\n\n— ${feeling.quran.reference}`;
   const duaText = feeling.dua.arabic
     ? `${feeling.dua.arabic}\n\n${feeling.dua.transliteration}\n\n"${feeling.dua.meaning}"\n\n— ${feeling.dua.reference || ""}`
     : `${feeling.dua.transliteration}\n\n"${feeling.dua.meaning}"\n\n— ${feeling.dua.reference || ""}`;
@@ -95,6 +97,14 @@ export default function FeelingDetailClient({
           {/* Qur'an Verse */}
           <SectionBlock title="Qur'anic Comfort" icon="📖" delay={0.2}>
             <blockquote className="border-l-4 border-emerald-500/50 pl-4 py-2 mb-4">
+              {feeling.quran.arabic && (
+                <p
+                  className="text-2xl sm:text-3xl text-right leading-loose font-arabic text-slate-800 dark:text-white mb-4"
+                  dir="rtl"
+                >
+                  {feeling.quran.arabic}
+                </p>
+              )}
               <p className="text-lg leading-relaxed italic mb-2">
                 &ldquo;{feeling.quran.text}&rdquo;
               </p>

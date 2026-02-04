@@ -6,6 +6,7 @@
     "preview": "Comfort and hope when your heart feels heavy.",
     "reminder": "Sadness is a natural part of the human experience. Even the Prophet ﷺ experienced deep sorrow. Allah is Al-Wadud (The Most Loving) and He is closer to you than your jugular vein. Your tears are not unseen, and your pain is not forgotten.",
     "quran": {
+      "arabic": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا",
       "text": "Verily, with hardship comes ease. Verily, with hardship comes ease.",
       "reference": "Qur'an 94:5-6"
     },
@@ -30,6 +31,7 @@
     "preview": "Finding peace when worry overwhelms your mind.",
     "reminder": "Anxiety often comes from trying to control what is beyond our control. Remember that Allah is Al-Wakeel (The Trustee). He has already written your story, and He is the best of planners. You can let go because He never does.",
     "quran": {
+      "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ ۚ إِنَّ اللَّهَ بَالِغُ أَمْرِهِ ۚ قَدْ جَعَلَ اللَّهُ لِكُلِّ شَيْءٍ قَدْرًا",
       "text": "And whoever puts their trust in Allah, He will be enough for them. Indeed, Allah achieves His purpose. Allah has already set a destiny for everything.",
       "reference": "Qur'an 65:3"
     },
@@ -54,6 +56,7 @@
     "preview": "Remembering you're never truly alone.",
     "reminder": "Loneliness can feel like an endless void, but remember: Allah is Al-Qarib (The Near One). He is with you in your solitude. The Prophet ﷺ found comfort in the cave of Hira, and some of the most beautiful revelations came in moments of solitude.",
     "quran": {
+      "arabic": "وَلَقَدْ خَلَقْنَا الْإِنسَانَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِ نَفْسُهُ ۖ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ",
       "text": "And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein.",
       "reference": "Qur'an 50:16"
     },
@@ -78,6 +81,7 @@
     "preview": "Channeling your anger with wisdom and patience.",
     "reminder": "Anger is a fire that can consume you or be transformed into righteous action. The Prophet ﷺ taught us that true strength is not in physical power but in controlling oneself when angry. Take a moment. Breathe. Allah loves those who restrain their anger.",
     "quran": {
+      "arabic": "الَّذِينَ يُنفِقُونَ فِي السَّرَّاءِ وَالضَّرَّاءِ وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ ۗ وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ",
       "text": "Those who spend in prosperity and adversity, and those who restrain their anger and pardon people—and Allah loves the doers of good.",
       "reference": "Qur'an 3:134"
     },
@@ -102,6 +106,7 @@
     "preview": "Rediscovering light in the darkest moments.",
     "reminder": "Hopelessness whispers that things will never get better, but this is a lie. Allah is Al-Fattah (The Opener) - He opens doors you cannot even see yet. Your story isn't over. Every prophet faced moments of despair before their greatest victories.",
     "quran": {
+      "arabic": "قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ",
       "text": "Do not lose hope in the mercy of Allah, for indeed Allah forgives all sins. Indeed, He is the Forgiving, the Merciful.",
       "reference": "Qur'an 39:53"
     },
@@ -126,6 +131,7 @@
     "preview": "Deepening your gratitude and joy.",
     "reminder": "Gratitude is the key that opens endless blessings. When you recognize Allah's gifts, He promises to increase them. This beautiful feeling you have right now is itself a gift. Let it overflow into your actions, your words, and your worship.",
     "quran": {
+      "arabic": "وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
       "text": "And when your Lord proclaimed: 'If you are grateful, I will surely increase you in favor.'",
       "reference": "Qur'an 14:7"
     },
@@ -150,6 +156,7 @@
     "preview": "Finding clarity when everything feels like too much.",
     "reminder": "When life's demands pile up, remember that Allah does not burden a soul beyond its capacity. You don't have to do everything at once. Take it one moment, one breath, one task at a time. Allah is with the patient.",
     "quran": {
+      "arabic": "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
       "text": "Allah does not burden a soul beyond that it can bear.",
       "reference": "Qur'an 2:286"
     },
@@ -174,6 +181,7 @@
     "preview": "Finding your way back when life feels directionless.",
     "reminder": "Feeling lost is often the beginning of finding your true path. Allah is Al-Hadi (The Guide). He guided Ibrahim through the stars, Musa through the desert, and Muhammad ﷺ through the night. He will guide you too. Just keep calling on Him.",
     "quran": {
+      "arabic": "وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ اللَّهَ لَمَعَ الْمُحْسِنِينَ",
       "text": "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allah is with the doers of good.",
       "reference": "Qur'an 29:69"
     },
@@ -198,6 +206,7 @@
     "preview": "Finding forgiveness and moving forward.",
     "reminder": "Guilt can be a gift - it shows your heart is alive and your conscience is awake. But don't let it drown you. Allah is Al-Ghaffar (The Repeatedly Forgiving). His mercy is greater than any sin. Turn back to Him. He's waiting with open arms.",
     "quran": {
+      "arabic": "قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ",
       "text": "Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.",
       "reference": "Qur'an 39:53"
     },
@@ -222,6 +231,7 @@
     "preview": "Finding courage and safety in Allah's protection.",
     "reminder": "Fear is natural, but remember who your Protector is. Allah is Al-Muhaymin (The Guardian). He protected the baby Musa in the river, Yunus in the whale, and the Prophet ﷺ in the cave. Whatever you fear, it is under His control.",
     "quran": {
+      "arabic": "إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ أَلَّا تَخَافُوا وَلَا تَحْزَنُوا",
       "text": "Indeed, those who say, 'Our Lord is Allah,' and then remain steadfast - the angels will descend upon them, saying, 'Do not fear and do not grieve.'",
       "reference": "Qur'an 41:30"
     },
@@ -246,6 +256,7 @@
     "preview": "Transforming envy into contentment and growth.",
     "reminder": "Jealousy is a signal, not a sin - unless we act on it wrongly. It shows you what you desire. But remember: Allah distributes His blessings with perfect wisdom. What's meant for you cannot miss you. Focus on your own journey.",
     "quran": {
+      "arabic": "وَلَا تَتَمَنَّوْا مَا فَضَّلَ اللَّهُ بِهِ بَعْضَكُمْ عَلَىٰ بَعْضٍ ۚ لِّلرِّجَالِ نَصِيبٌ مِّمَّا اكْتَسَبُوا ۖ وَلِلنِّسَاءِ نَصِيبٌ مِّمَّا اكْتَسَبْنَ ۚ وَاسْأَلُوا اللَّهَ مِن فَضْلِهِ",
       "text": "And do not wish for that by which Allah has made some of you exceed others. For men is a share of what they have earned, and for women is a share of what they have earned. And ask Allah of His bounty.",
       "reference": "Qur'an 4:32"
     },
@@ -270,6 +281,7 @@
     "preview": "Preserving and deepening your inner tranquility.",
     "reminder": "Peace of heart is one of Allah's greatest gifts. It comes not from perfect circumstances but from connection with As-Salam (The Source of Peace). Treasure this moment. Let it remind you that this peace is always available when you turn to Him.",
     "quran": {
+      "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
       "text": "Verily, in the remembrance of Allah do hearts find rest.",
       "reference": "Qur'an 13:28"
     },
