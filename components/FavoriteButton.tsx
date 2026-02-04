@@ -40,10 +40,11 @@ export function FavoriteButton({
                   inline-flex items-center justify-center gap-1.5 rounded-xl
                   transition-colors duration-200
                   focus:outline-none focus:ring-2 focus:ring-rose-500/50
+                  backdrop-blur-sm shadow-sm
                   ${
                     favorited
-                      ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400"
-                      : "bg-white/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                      ? "bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400"
+                      : "bg-white/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30"
                   }`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}

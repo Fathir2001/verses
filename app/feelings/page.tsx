@@ -85,7 +85,9 @@ export default function FeelingsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-xl sm:text-2xl font-bold text-slate-700 dark:text-slate-200 mb-6 flex items-center gap-2"
+            className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2
+                       drop-shadow-[0_2px_4px_rgba(255,255,255,0.9)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]
+                       bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-xl px-4 py-2 w-fit"
           >
             <span className="text-2xl sm:text-3xl">🎭</span> All Feelings
           </motion.h2>
