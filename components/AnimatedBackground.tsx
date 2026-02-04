@@ -20,21 +20,25 @@ export function AnimatedBackground() {
   if (!mounted || reducedMotion) {
     return (
       <div className="fixed inset-0 -z-10 overflow-hidden">
+        {/* Background Image */}
         <div
-          className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 
-                        dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/background.jpeg')" }}
         />
+        <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/60" />
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      {/* Base gradient */}
+      {/* Background Image */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 
-                      dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/background.jpeg')" }}
       />
+      {/* Semi-transparent overlay */}
+      <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/60" />
 
       {/* Animated blobs */}
       <motion.div
