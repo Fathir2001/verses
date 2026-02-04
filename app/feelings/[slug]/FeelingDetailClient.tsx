@@ -2,10 +2,12 @@
 
 import {
   CopyButton,
+  FavoriteButton,
   GlassCard,
   PageTransition,
   SectionBlock,
   ShareButton,
+  WallpaperGenerator,
 } from "@/components";
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
@@ -82,9 +84,10 @@ export default function FeelingDetailClient({
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">
             Feeling {feeling.title}
           </h1>
-          <p className="text-slate-600 dark:text-slate-300">
+          <p className="text-slate-600 dark:text-slate-300 mb-4">
             {feeling.preview}
           </p>
+          <FavoriteButton slug={feeling.slug} size="md" showLabel />
         </motion.div>
 
         {/* Sections */}
@@ -169,6 +172,15 @@ export default function FeelingDetailClient({
               ))}
             </ul>
           </SectionBlock>
+
+          {/* Wallpaper Generator */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+          >
+            <WallpaperGenerator feeling={feeling} />
+          </motion.div>
         </div>
 
         {/* Share Section */}

@@ -1,0 +1,284 @@
+{
+  "categories": [
+    {
+      "id": "patience",
+      "name": "Patience & Perseverance",
+      "emoji": "🌱",
+      "quotes": [
+        {
+          "id": 1,
+          "arabic": "مَا أُعْطِيَ أَحَدٌ عَطَاءً خَيْرًا وَأَوْسَعَ مِنَ الصَّبْرِ",
+          "text": "No one is granted a gift better and more comprehensive than patience.",
+          "source": "Sahih al-Bukhari 1469",
+          "type": "hadith"
+        },
+        {
+          "id": 2,
+          "arabic": "وَبَشِّرِ الصَّابِرِينَ",
+          "text": "And give good tidings to the patient.",
+          "source": "Quran 2:155",
+          "type": "quran"
+        },
+        {
+          "id": 3,
+          "arabic": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
+          "text": "Indeed, with hardship comes ease.",
+          "source": "Quran 94:6",
+          "type": "quran"
+        },
+        {
+          "id": 4,
+          "arabic": "عَجَبًا لِأَمْرِ الْمُؤْمِنِ إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ",
+          "text": "How wonderful is the affair of the believer, for all his affairs are good.",
+          "source": "Sahih Muslim 2999",
+          "type": "hadith"
+        }
+      ]
+    },
+    {
+      "id": "kindness",
+      "name": "Kindness & Compassion",
+      "emoji": "💚",
+      "quotes": [
+        {
+          "id": 5,
+          "arabic": "الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ",
+          "text": "The merciful will be shown mercy by the Most Merciful.",
+          "source": "Sunan al-Tirmidhi 1924",
+          "type": "hadith"
+        },
+        {
+          "id": 6,
+          "arabic": "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ",
+          "text": "The best of people are those who are most beneficial to people.",
+          "source": "Al-Mu'jam al-Awsat 5787",
+          "type": "hadith"
+        },
+        {
+          "id": 7,
+          "arabic": "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
+          "text": "Your smile for your brother is charity.",
+          "source": "Sunan al-Tirmidhi 1956",
+          "type": "hadith"
+        },
+        {
+          "id": 8,
+          "arabic": "وَقُولُوا لِلنَّاسِ حُسْنًا",
+          "text": "And speak to people good words.",
+          "source": "Quran 2:83",
+          "type": "quran"
+        }
+      ]
+    },
+    {
+      "id": "trust",
+      "name": "Trust in Allah",
+      "emoji": "🤲",
+      "quotes": [
+        {
+          "id": 9,
+          "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+          "text": "And whoever relies upon Allah - then He is sufficient for him.",
+          "source": "Quran 65:3",
+          "type": "quran"
+        },
+        {
+          "id": 10,
+          "arabic": "لَوْ أَنَّكُمْ تَوَكَّلْتُمْ عَلَى اللَّهِ حَقَّ تَوَكُّلِهِ لَرَزَقَكُمْ كَمَا يَرْزُقُ الطَّيْرَ",
+          "text": "If you were to rely upon Allah with reliance due to Him, He would provide for you as He provides for the birds.",
+          "source": "Sunan al-Tirmidhi 2344",
+          "type": "hadith"
+        },
+        {
+          "id": 11,
+          "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+          "text": "Verily, in the remembrance of Allah do hearts find rest.",
+          "source": "Quran 13:28",
+          "type": "quran"
+        },
+        {
+          "id": 12,
+          "arabic": "ادْعُ اللَّهَ وَأَنْتَ مُوقِنٌ بِالإِجَابَةِ",
+          "text": "Call upon Allah while being certain of being answered.",
+          "source": "Sunan al-Tirmidhi 3479",
+          "type": "hadith"
+        }
+      ]
+    },
+    {
+      "id": "gratitude",
+      "name": "Gratitude & Thankfulness",
+      "emoji": "✨",
+      "quotes": [
+        {
+          "id": 13,
+          "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
+          "text": "If you are grateful, I will surely increase you [in favor].",
+          "source": "Quran 14:7",
+          "type": "quran"
+        },
+        {
+          "id": 14,
+          "arabic": "مَنْ لَا يَشْكُرُ النَّاسَ لَا يَشْكُرُ اللَّهَ",
+          "text": "Whoever is not grateful to the people is not grateful to Allah.",
+          "source": "Sunan al-Tirmidhi 1954",
+          "type": "hadith"
+        },
+        {
+          "id": 15,
+          "arabic": "انْظُرُوا إِلَى مَنْ أَسْفَلَ مِنْكُمْ وَلاَ تَنْظُرُوا إِلَى مَنْ هُوَ فَوْقَكُمْ",
+          "text": "Look at those who are below you and do not look at those who are above you.",
+          "source": "Sahih Muslim 2963",
+          "type": "hadith"
+        },
+        {
+          "id": 16,
+          "arabic": "الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",
+          "text": "All praise is due to Allah, by whose blessings good deeds are completed.",
+          "source": "Ibn Majah 3803",
+          "type": "hadith"
+        }
+      ]
+    },
+    {
+      "id": "forgiveness",
+      "name": "Forgiveness & Repentance",
+      "emoji": "🌸",
+      "quotes": [
+        {
+          "id": 17,
+          "arabic": "إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا",
+          "text": "Indeed, Allah forgives all sins.",
+          "source": "Quran 39:53",
+          "type": "quran"
+        },
+        {
+          "id": 18,
+          "arabic": "كُلُّ ابْنِ آدَمَ خَطَّاءٌ وَخَيْرُ الْخَطَّائِينَ التَّوَّابُونَ",
+          "text": "Every son of Adam commits sin, and the best of those who commit sin are those who repent.",
+          "source": "Sunan al-Tirmidhi 2499",
+          "type": "hadith"
+        },
+        {
+          "id": 19,
+          "arabic": "التَّائِبُ مِنَ الذَّنْبِ كَمَنْ لاَ ذَنْبَ لَهُ",
+          "text": "The one who repents from sin is like one who has no sin.",
+          "source": "Ibn Majah 4250",
+          "type": "hadith"
+        },
+        {
+          "id": 20,
+          "arabic": "يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَى أَنْفُسِهِمْ لَا تَقْنَطُوا مِنْ رَحْمَةِ اللَّهِ",
+          "text": "O My servants who have transgressed against themselves, do not despair of the mercy of Allah.",
+          "source": "Quran 39:53",
+          "type": "quran"
+        }
+      ]
+    },
+    {
+      "id": "character",
+      "name": "Good Character",
+      "emoji": "🌟",
+      "quotes": [
+        {
+          "id": 21,
+          "arabic": "إِنَّمَا بُعِثْتُ لِأُتَمِّمَ صَالِحَ الأَخْلاَقِ",
+          "text": "I was only sent to perfect good character.",
+          "source": "Musnad Ahmad 8952",
+          "type": "hadith"
+        },
+        {
+          "id": 22,
+          "arabic": "أَثْقَلُ شَيْءٍ فِي الْمِيزَانِ الْخُلُقُ الْحَسَنُ",
+          "text": "The heaviest thing to be placed on the scale is good character.",
+          "source": "Sunan al-Tirmidhi 2002",
+          "type": "hadith"
+        },
+        {
+          "id": 23,
+          "arabic": "أَكْمَلُ الْمُؤْمِنِينَ إِيمَانًا أَحْسَنُهُمْ خُلُقًا",
+          "text": "The most complete of the believers in faith is the one with the best character.",
+          "source": "Sunan al-Tirmidhi 1162",
+          "type": "hadith"
+        },
+        {
+          "id": 24,
+          "arabic": "ادْفَعْ بِالَّتِي هِيَ أَحْسَنُ",
+          "text": "Repel [evil] by that [deed] which is better.",
+          "source": "Quran 41:34",
+          "type": "quran"
+        }
+      ]
+    },
+    {
+      "id": "hope",
+      "name": "Hope & Optimism",
+      "emoji": "🌅",
+      "quotes": [
+        {
+          "id": 25,
+          "arabic": "لَا يَيْئَسُ مِنْ رَوْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ",
+          "text": "Indeed, no one despairs of relief from Allah except the disbelieving people.",
+          "source": "Quran 12:87",
+          "type": "quran"
+        },
+        {
+          "id": 26,
+          "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+          "text": "I am as My servant thinks of Me.",
+          "source": "Sahih al-Bukhari 7405",
+          "type": "hadith"
+        },
+        {
+          "id": 27,
+          "arabic": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+          "text": "For indeed, with hardship [will be] ease.",
+          "source": "Quran 94:5",
+          "type": "quran"
+        },
+        {
+          "id": 28,
+          "arabic": "سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا",
+          "text": "Allah will bring about ease after hardship.",
+          "source": "Quran 65:7",
+          "type": "quran"
+        }
+      ]
+    },
+    {
+      "id": "prayer",
+      "name": "Prayer & Supplication",
+      "emoji": "🕌",
+      "quotes": [
+        {
+          "id": 29,
+          "arabic": "الدُّعَاءُ هُوَ الْعِبَادَةُ",
+          "text": "Supplication (dua) is worship.",
+          "source": "Sunan al-Tirmidhi 3372",
+          "type": "hadith"
+        },
+        {
+          "id": 30,
+          "arabic": "وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ",
+          "text": "And your Lord says, 'Call upon Me; I will respond to you.'",
+          "source": "Quran 40:60",
+          "type": "quran"
+        },
+        {
+          "id": 31,
+          "arabic": "أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ",
+          "text": "The closest that a servant comes to his Lord is when he is prostrating.",
+          "source": "Sahih Muslim 482",
+          "type": "hadith"
+        },
+        {
+          "id": 32,
+          "arabic": "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ",
+          "text": "And when My servants ask you concerning Me - indeed I am near.",
+          "source": "Quran 2:186",
+          "type": "quran"
+        }
+      ]
+    }
+  ]
+}

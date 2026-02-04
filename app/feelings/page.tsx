@@ -1,23 +1,37 @@
 "use client";
 
-import { FeelingCard, PageTransition, SearchBox } from "@/components";
+import {
+  FeelingCard,
+  FeelingOfTheDay,
+  IslamicDateBanner,
+  PageTransition,
+  SearchBox,
+} from "@/components";
 import { getAllFeelings, searchFeelings } from "@/lib/feelings";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
+// Pre-compute static data outside component
+const allFeelings = getAllFeelings();
+
 export default function FeelingsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const allFeelings = getAllFeelings();
 
   const filteredFeelings = useMemo(() => {
     return searchFeelings(searchQuery);
   }, [searchQuery]);
 
   const noResults = searchQuery && filteredFeelings.length === 0;
+  const showFeelingOfDay = !searchQuery;
 
   return (
     <PageTransition>
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
+        {/* Islamic Date Banner */}
+        <div className="mb-6">
+          <IslamicDateBanner />
+        </div>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -37,6 +51,13 @@ export default function FeelingsPage() {
           </p>
         </motion.div>
 
+        {/* Feeling of the Day */}
+        {showFeelingOfDay && (
+          <div className="mb-10">
+            <FeelingOfTheDay feelings={allFeelings} />
+          </div>
+        )}
+
         {/* Search */}
         <div className="max-w-md mx-auto mb-8">
           <SearchBox
@@ -55,6 +76,18 @@ export default function FeelingsPage() {
           >
             {filteredFeelings.length} of {allFeelings.length} feelings
           </motion.p>
+        )}
+
+        {/* Section title */}
+        {!searchQuery && (
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-6 flex items-center gap-2"
+          >
+            <span>🎭</span> All Feelings
+          </motion.h2>
         )}
 
         {/* Feelings Grid */}

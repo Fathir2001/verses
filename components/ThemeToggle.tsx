@@ -14,7 +14,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-10 h-10 rounded-xl bg-white/20 dark:bg-white/10 animate-pulse" />
+      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/20 dark:bg-white/10 animate-pulse" />
     );
   }
 
@@ -33,7 +33,7 @@ export function ThemeToggle() {
   return (
     <motion.button
       onClick={cycleTheme}
-      className="relative w-10 h-10 rounded-xl bg-white/30 dark:bg-white/10 backdrop-blur-md
+      className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/30 dark:bg-white/10 backdrop-blur-md
                  border border-white/20 dark:border-white/10 shadow-glass dark:shadow-glass-dark
                  flex items-center justify-center transition-colors duration-300
                  hover:bg-white/40 dark:hover:bg-white/20 focus:outline-none focus:ring-2 
@@ -48,7 +48,7 @@ export function ThemeToggle() {
         animate={{ rotate: 0, opacity: 1 }}
         exit={{ rotate: 90, opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="text-xl"
+        className="text-base sm:text-xl"
       >
         {theme === "system" ? "💻" : isDark ? "🌙" : "☀️"}
       </motion.span>

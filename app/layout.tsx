@@ -1,4 +1,5 @@
 import { AnimatedBackground, Navbar, ThemeProvider } from "@/components";
+import { FavoritesProvider } from "@/context";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -36,6 +37,11 @@ export const metadata: Metadata = {
     "Muslim",
   ],
   authors: [{ name: "I Am Feeling" }],
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "I Am Feeling - Islamic Comfort & Guidance",
     description:
@@ -65,14 +71,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AnimatedBackground />
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-grow">{children}</main>
-            <footer className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              <p>Made with 💚 for the Ummah</p>
-            </footer>
-          </div>
+          <FavoritesProvider>
+            <AnimatedBackground />
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-grow">{children}</main>
+              <footer className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                <p>Made with 💚 for the Ummah</p>
+              </footer>
+            </div>
+          </FavoritesProvider>
         </ThemeProvider>
       </body>
     </html>

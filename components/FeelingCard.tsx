@@ -3,6 +3,7 @@
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { FavoriteButton } from "./FavoriteButton";
 import { GlassCard } from "./GlassCard";
 
 interface FeelingCardProps {
@@ -20,7 +21,11 @@ export function FeelingCard({ feeling, index }: FeelingCardProps) {
         delay: index * 0.05,
         ease: "easeOut",
       }}
+      className="relative"
     >
+      <div className="absolute top-3 right-3 z-10">
+        <FavoriteButton slug={feeling.slug} size="sm" />
+      </div>
       <Link
         href={`/feelings/${feeling.slug}`}
         className="block focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-3xl"
