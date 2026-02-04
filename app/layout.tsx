@@ -1,5 +1,5 @@
 import { AnimatedBackground, Navbar, ThemeProvider } from "@/components";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -7,6 +7,16 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f0fdf4" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: {
@@ -39,15 +49,6 @@ export const metadata: Metadata = {
     description:
       "Find comfort and spiritual guidance through Islamic teachings when you need it most.",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f0fdf4" },
-    { media: "(prefers-color-scheme: dark)", color: "#020617" },
-  ],
 };
 
 export default function RootLayout({
