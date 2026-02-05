@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, Feeling } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -14,26 +14,37 @@ export default function EditVersePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [feelings, setFeelings] = useState<Feeling[]>([]);
   const [formData, setFormData] = useState({
     suraNumber: "",
     verseNumber: "",
     arabicText: "",
     translationText: "",
     transliteration: "",
+    feelingId: "",
   });
 
   useEffect(() => {
-    const fetchVerse = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.getAdminVerseById(id);
-        if (response.data) {
-          const verse = response.data;
+        const [verseRes, feelingsRes] = await Promise.all([
+          api.getAdminVerseById(id),
+          api.getAdminFeelings(1, 100),
+        ]);
+        if (feelingsRes.data) setFeelings(feelingsRes.data);
+        if (verseRes.data) {
+          const verse = verseRes.data;
+          const feelingId =
+            typeof verse.feeling === "object"
+              ? verse.feeling?._id
+              : verse.feeling;
           setFormData({
             suraNumber: verse.suraNumber.toString(),
             verseNumber: verse.verseNumber.toString(),
             arabicText: verse.arabicText,
             translationText: verse.translationText,
             transliteration: verse.transliteration || "",
+            feelingId: feelingId || "",
           });
         }
       } catch (err) {
@@ -42,7 +53,7 @@ export default function EditVersePage() {
         setIsLoading(false);
       }
     };
-    fetchVerse();
+    fetchData();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,11 +62,10 @@ export default function EditVersePage() {
     setError("");
     try {
       await api.updateVerse(id, {
-        suraNumber: parseInt(formData.suraNumber),
-        verseNumber: parseInt(formData.verseNumber),
         arabicText: formData.arabicText,
         translationText: formData.translationText,
         transliteration: formData.transliteration || undefined,
+        feelingId: formData.feelingId || null,
       });
       router.push("/admin/verses");
     } catch (err) {
@@ -212,6 +222,26 @@ export default function EditVersePage() {
                 className={`${inputClass} min-h-[80px]`}
                 placeholder="Optional"
               />
+            </div>
+            <div>
+              <label className={labelClass}>Link to Feeling</label>
+              <select
+                value={formData.feelingId}
+                onChange={(e) =>
+                  setFormData({ ...formData, feelingId: e.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="">-- No feeling (standalone verse) --</option>
+                {feelings.map((feeling) => (
+                  <option key={feeling._id} value={feeling._id}>
+                    {feeling.emoji} {feeling.title}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-slate-500">
+                Select a feeling to link this verse to.
+              </p>
             </div>
           </div>
 

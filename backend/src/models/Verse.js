@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+/**
+ * Verse Model
+ *
+ * Represents a Quran verse.
+ * - References a Feeling (many verses can link to one feeling)
+ * - Admin links verse to a feeling when creating/editing
+ */
 const verseSchema = new mongoose.Schema(
   {
     suraNumber: {
@@ -32,6 +39,12 @@ const verseSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+    },
+    // Link to the feeling this verse is associated with
+    feeling: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Feeling",
+      default: null,
     },
   },
   {

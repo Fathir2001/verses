@@ -1,4 +1,5 @@
 const Dua = require("../models/Dua");
+const Feeling = require("../models/Feeling");
 const { asyncHandler } = require("../middleware/errorHandler");
 const {
   successResponse,
@@ -23,12 +24,21 @@ const createDua = asyncHandler(async (req, res) => {
     reference,
     category,
     benefits,
+    feelingId,
   } = req.body;
 
   // Check if dua with slug already exists
   const existingDua = await Dua.findOne({ slug: slug.toLowerCase() });
   if (existingDua) {
     return errorResponse(res, 400, `A dua with slug "${slug}" already exists`);
+  }
+
+  // If feelingId provided, validate it exists
+  if (feelingId) {
+    const feeling = await Feeling.findById(feelingId);
+    if (!feeling) {
+      return errorResponse(res, 400, "Selected feeling not found");
+    }
   }
 
   const dua = await Dua.create({
@@ -40,9 +50,12 @@ const createDua = asyncHandler(async (req, res) => {
     reference: reference || "",
     category: category || "",
     benefits: benefits || "",
+    feeling: feelingId || null,
   });
 
-  return successResponse(res, 201, "Dua created successfully", dua);
+  const populated = await dua.populate("feeling");
+
+  return successResponse(res, 201, "Dua created successfully", populated);
 });
 
 /**
@@ -52,7 +65,7 @@ const createDua = asyncHandler(async (req, res) => {
  */
 const updateDua = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const updateData = { ...req.body };
 
   const dua = await Dua.findById(id);
 
@@ -75,11 +88,25 @@ const updateDua = asyncHandler(async (req, res) => {
     updateData.slug = updateData.slug.toLowerCase();
   }
 
+  // Handle feelingId
+  if (updateData.feelingId !== undefined) {
+    if (updateData.feelingId) {
+      const feeling = await Feeling.findById(updateData.feelingId);
+      if (!feeling) {
+        return errorResponse(res, 400, "Selected feeling not found");
+      }
+      updateData.feeling = updateData.feelingId;
+    } else {
+      updateData.feeling = null;
+    }
+    delete updateData.feelingId;
+  }
+
   const updatedDua = await Dua.findByIdAndUpdate(
     id,
     { $set: updateData },
     { new: true, runValidators: true },
-  );
+  ).populate("feeling");
 
   return successResponse(res, 200, "Dua updated successfully", updatedDua);
 });
@@ -112,10 +139,18 @@ const getAllDuasAdmin = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
   const skip = (page - 1) * limit;
+  const { feelingId } = req.query;
+
+  const filter = {};
+  if (feelingId) filter.feeling = feelingId;
 
   const [duas, total] = await Promise.all([
-    Dua.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
-    Dua.countDocuments(),
+    Dua.find(filter)
+      .populate("feeling")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Dua.countDocuments(filter),
   ]);
 
   return paginatedResponse(res, 200, "Duas retrieved successfully", duas, {
@@ -133,7 +168,7 @@ const getAllDuasAdmin = asyncHandler(async (req, res) => {
 const getDuaById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const dua = await Dua.findById(id);
+  const dua = await Dua.findById(id).populate("feeling");
 
   if (!dua) {
     return errorResponse(res, 404, "Dua not found");

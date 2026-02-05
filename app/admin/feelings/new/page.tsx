@@ -1,11 +1,11 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError, CreateFeelingInput, Dua, Verse } from "@/lib/api";
+import { api, ApiError, CreateFeelingInput } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function NewFeelingPage() {
   const router = useRouter();
@@ -14,42 +14,63 @@ export default function NewFeelingPage() {
   const [errorDetails, setErrorDetails] = useState<
     Array<{ field: string; message: string }>
   >([]);
-  const [verses, setVerses] = useState<Verse[]>([]);
-  const [duas, setDuas] = useState<Dua[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+  const [actionErrors, setActionErrors] = useState<boolean[]>([]);
   const [formData, setFormData] = useState<CreateFeelingInput>({
     slug: "",
     title: "",
     emoji: "",
     preview: "",
     reminder: "",
-    verseId: "",
-    duaId: "",
     actions: [""],
   });
 
-  useEffect(() => {
-    const loadRefs = async () => {
-      try {
-        const [versesRes, duasRes] = await Promise.all([
-          api.getAdminVerses(1, 200),
-          api.getAdminDuas(1, 200),
-        ]);
-        if (versesRes.data) setVerses(versesRes.data);
-        if (duasRes.data) setDuas(duasRes.data);
-      } catch (err) {
-        if (err instanceof ApiError) {
-          setError(err.message);
-          setErrorDetails(err.errors || []);
-        }
-      }
-    };
-    loadRefs();
-  }, []);
+  // Auto-generate slug from title
+  const generateSlug = (title: string) =>
+    title
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const handleTitleChange = (value: string) => {
+    setFormData({
+      ...formData,
+      title: value,
+      slug: generateSlug(value),
+    });
+    if (fieldErrors.title) {
+      setFieldErrors({ ...fieldErrors, title: false });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setErrorDetails([]);
+
+    const nextFieldErrors: Record<string, boolean> = {
+      emoji: !(formData.emoji || "").trim(),
+      title: !(formData.title || "").trim(),
+      preview: !(formData.preview || "").trim(),
+      reminder: !(formData.reminder || "").trim(),
+    };
+
+    const nextActionErrors = (formData.actions || []).map((a) => !a.trim());
+    setActionErrors(nextActionErrors);
+
+    const hasFieldErrors = Object.values(nextFieldErrors).some(Boolean);
+    const hasActionErrors = nextActionErrors.some(Boolean);
+
+    if (hasFieldErrors || hasActionErrors) {
+      setFieldErrors(nextFieldErrors);
+      setError("Please fill all required fields.");
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
@@ -78,29 +99,12 @@ export default function NewFeelingPage() {
     }
   };
 
-  const updateField = (field: string, value: string | number | null) => {
-    const keys = field.split(".");
-    if (keys.length === 1) {
-      setFormData({ ...formData, [field]: value });
-    } else if (keys.length === 2) {
-      setFormData({
-        ...formData,
-        [keys[0]]: {
-          ...(formData[keys[0] as keyof CreateFeelingInput] as object),
-          [keys[1]]: value,
-        },
-      });
+  const updateField = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    if (fieldErrors[field]) {
+      setFieldErrors({ ...fieldErrors, [field]: false });
     }
   };
-
-  const normalizeSlug = (value: string) =>
-    value
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-+|-+$/g, "");
 
   const addAction = () => {
     setFormData({ ...formData, actions: [...formData.actions, ""] });
@@ -110,6 +114,11 @@ export default function NewFeelingPage() {
     const newActions = [...formData.actions];
     newActions[index] = value;
     setFormData({ ...formData, actions: newActions });
+    if (actionErrors[index]) {
+      const nextActionErrors = [...actionErrors];
+      nextActionErrors[index] = false;
+      setActionErrors(nextActionErrors);
+    }
   };
 
   const removeAction = (index: number) => {
@@ -118,12 +127,18 @@ export default function NewFeelingPage() {
       ...formData,
       actions: newActions.length > 0 ? newActions : [""],
     });
+    const nextActionErrors = actionErrors.filter((_, i) => i !== index);
+    setActionErrors(nextActionErrors.length > 0 ? nextActionErrors : [false]);
   };
 
-  const inputClass = `w-full px-4 py-3 rounded-xl border border-white/10 
-                      bg-white/5 backdrop-blur-sm text-white placeholder-slate-400
-                      focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50
-                      transition-all duration-200`;
+  const getInputClass = (hasError?: boolean) => {
+    const baseClass =
+      "w-full px-4 py-3 rounded-xl bg-white/5 backdrop-blur-sm text-white placeholder-slate-400 transition-all duration-200";
+    const borderClass = hasError
+      ? "border-2 border-red-500 focus:ring-2 focus:ring-red-500/50 focus:border-red-600"
+      : "border border-white/10 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50";
+    return `${baseClass} ${borderClass}`;
+  };
 
   const labelClass = "block text-sm font-medium text-slate-300 mb-2";
 
@@ -163,7 +178,7 @@ export default function NewFeelingPage() {
             transition={{ delay: 0.1 }}
             className="text-slate-400"
           >
-            Create a new emotional state with Islamic guidance
+            Create a new emotional state and link related content.
           </motion.p>
         </div>
 
@@ -206,6 +221,7 @@ export default function NewFeelingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
+          noValidate
           className="space-y-6"
         >
           {/* Basic Info */}
@@ -231,127 +247,51 @@ export default function NewFeelingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>Slug *</label>
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) =>
-                    updateField("slug", normalizeSlug(e.target.value))
-                  }
-                  className={inputClass}
-                  placeholder="e.g., feeling-anxious"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => updateField("title", e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g., Feeling Anxious"
-                  required
-                />
-              </div>
-
-              <div>
                 <label className={labelClass}>Emoji *</label>
                 <input
                   type="text"
                   value={formData.emoji}
                   onChange={(e) => updateField("emoji", e.target.value)}
-                  className={inputClass}
+                  className={getInputClass(fieldErrors.emoji)}
                   placeholder="e.g., 😰"
                   required
                 />
               </div>
 
               <div>
-                <label className={labelClass}>Preview *</label>
+                <label className={labelClass}>Name of the Feeling *</label>
                 <input
                   type="text"
-                  value={formData.preview}
-                  onChange={(e) => updateField("preview", e.target.value)}
-                  className={inputClass}
-                  placeholder="Short preview text"
+                  value={formData.title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  className={getInputClass(fieldErrors.title)}
+                  placeholder="e.g., Anxious"
                   required
                 />
               </div>
             </div>
 
             <div className="mt-6">
-              <label className={labelClass}>Reminder *</label>
-              <textarea
-                value={formData.reminder}
-                onChange={(e) => updateField("reminder", e.target.value)}
-                className={`${inputClass} min-h-[100px]`}
-                placeholder="A comforting reminder..."
+              <label className={labelClass}>Small Description *</label>
+              <input
+                type="text"
+                value={formData.preview}
+                onChange={(e) => updateField("preview", e.target.value)}
+                className={getInputClass(fieldErrors.preview)}
+                placeholder="A brief description shown on feeling cards"
                 required
               />
             </div>
-          </div>
 
-          {/* Verse + Dua References */}
-          <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              </span>
-              Verse & Dua References
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={labelClass}>Verse *</label>
-                <select
-                  value={formData.verseId}
-                  onChange={(e) => updateField("verseId", e.target.value)}
-                  className={inputClass}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a verse
-                  </option>
-                  {verses.map((verse) => (
-                    <option key={verse._id} value={verse._id}>
-                      {verse.suraNumber}:{verse.verseNumber} — {verse.reference}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={labelClass}>Dua *</label>
-                <select
-                  value={formData.duaId}
-                  onChange={(e) => updateField("duaId", e.target.value)}
-                  className={inputClass}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a dua
-                  </option>
-                  {duas.map((dua) => (
-                    <option key={dua._id} value={dua._id}>
-                      {dua.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="mt-6">
+              <label className={labelClass}>Gentle Reminder *</label>
+              <textarea
+                value={formData.reminder}
+                onChange={(e) => updateField("reminder", e.target.value)}
+                className={`${getInputClass(fieldErrors.reminder)} min-h-[100px]`}
+                placeholder="A comforting reminder for when someone feels this way..."
+                required
+              />
             </div>
           </div>
 
@@ -406,7 +346,7 @@ export default function NewFeelingPage() {
                     type="text"
                     value={action}
                     onChange={(e) => updateAction(index, e.target.value)}
-                    className={`${inputClass} flex-1`}
+                    className={`${getInputClass(actionErrors[index])} flex-1`}
                     placeholder={`Action ${index + 1}`}
                   />
                   {formData.actions.length > 1 && (

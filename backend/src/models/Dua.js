@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+/**
+ * Dua Model
+ *
+ * Represents a supplication (dua).
+ * - References a Feeling (many duas can link to one feeling)
+ * - Admin links dua to a feeling when creating/editing
+ */
 const duaSchema = new mongoose.Schema(
   {
     title: {
@@ -47,6 +54,12 @@ const duaSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+    },
+    // Link to the feeling this dua is associated with
+    feeling: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Feeling",
+      default: null,
     },
   },
   {

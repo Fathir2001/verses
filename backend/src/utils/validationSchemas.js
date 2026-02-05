@@ -13,11 +13,15 @@ const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
-// ============ Feeling Schemas ============
+// ============ Common Schemas ============
 
 const objectIdSchema = z
-  .string({ required_error: "ID is required" })
-  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID format");
+  .string()
+  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID format")
+  .optional()
+  .nullable();
+
+// ============ Feeling Schemas ============
 
 const createFeelingSchema = z.object({
   slug: z
@@ -42,8 +46,6 @@ const createFeelingSchema = z.object({
     .string({ required_error: "Reminder is required" })
     .min(1, "Reminder cannot be empty")
     .trim(),
-  verseId: objectIdSchema,
-  duaId: objectIdSchema,
   actions: z
     .array(z.string().trim().min(1, "Action cannot be empty"))
     .min(1, "At least one action is required"),
@@ -94,11 +96,45 @@ const createVerseSchema = z.object({
     .trim(),
   transliteration: z.string().trim().optional().default(""),
   reference: z.string().trim().optional().default(""),
+  feelingId: objectIdSchema,
 });
 
 const updateVerseSchema = createVerseSchema
   .partial()
   .omit({ suraNumber: true, verseNumber: true });
+
+// ============ Dua Schemas ============
+
+const createDuaSchema = z.object({
+  title: z
+    .string({ required_error: "Title is required" })
+    .min(1, "Title cannot be empty")
+    .trim(),
+  slug: z
+    .string({ required_error: "Slug is required" })
+    .min(1, "Slug cannot be empty")
+    .toLowerCase()
+    .trim()
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug can only contain lowercase letters, numbers, and hyphens",
+    ),
+  arabic: z
+    .string({ required_error: "Arabic text is required" })
+    .min(1, "Arabic text cannot be empty")
+    .trim(),
+  transliteration: z.string().trim().optional().default(""),
+  meaning: z
+    .string({ required_error: "Meaning is required" })
+    .min(1, "Meaning cannot be empty")
+    .trim(),
+  reference: z.string().trim().optional().default(""),
+  category: z.string().trim().optional().default(""),
+  benefits: z.string().trim().optional().default(""),
+  feelingId: objectIdSchema,
+});
+
+const updateDuaSchema = createDuaSchema.partial();
 
 // ============ Param Schemas ============
 
@@ -136,6 +172,8 @@ module.exports = {
   updateSuraSchema,
   createVerseSchema,
   updateVerseSchema,
+  createDuaSchema,
+  updateDuaSchema,
   mongoIdParamSchema,
   slugParamSchema,
   suraNumberParamSchema,

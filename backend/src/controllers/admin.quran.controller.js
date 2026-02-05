@@ -1,5 +1,6 @@
 const Sura = require("../models/Sura");
 const Verse = require("../models/Verse");
+const Feeling = require("../models/Feeling");
 const { asyncHandler } = require("../middleware/errorHandler");
 const {
   successResponse,
@@ -137,6 +138,7 @@ const createVerse = asyncHandler(async (req, res) => {
     translationText,
     transliteration,
     reference,
+    feelingId,
   } = req.body;
 
   // Check if verse already exists
@@ -149,6 +151,14 @@ const createVerse = asyncHandler(async (req, res) => {
     );
   }
 
+  // If feelingId provided, validate it exists
+  if (feelingId) {
+    const feeling = await Feeling.findById(feelingId);
+    if (!feeling) {
+      return errorResponse(res, 400, "Selected feeling not found");
+    }
+  }
+
   const verse = await Verse.create({
     suraNumber,
     verseNumber,
@@ -156,9 +166,12 @@ const createVerse = asyncHandler(async (req, res) => {
     translationText,
     transliteration: transliteration || "",
     reference: reference || `Qur'an ${suraNumber}:${verseNumber}`,
+    feeling: feelingId || null,
   });
 
-  return successResponse(res, 201, "Verse created successfully", verse);
+  const populated = await verse.populate("feeling");
+
+  return successResponse(res, 201, "Verse created successfully", populated);
 });
 
 /**
@@ -168,7 +181,7 @@ const createVerse = asyncHandler(async (req, res) => {
  */
 const updateVerse = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const updateData = { ...req.body };
 
   const verse = await Verse.findById(id);
 
@@ -176,11 +189,25 @@ const updateVerse = asyncHandler(async (req, res) => {
     return errorResponse(res, 404, "Verse not found");
   }
 
+  // Handle feelingId
+  if (updateData.feelingId !== undefined) {
+    if (updateData.feelingId) {
+      const feeling = await Feeling.findById(updateData.feelingId);
+      if (!feeling) {
+        return errorResponse(res, 400, "Selected feeling not found");
+      }
+      updateData.feeling = updateData.feelingId;
+    } else {
+      updateData.feeling = null;
+    }
+    delete updateData.feelingId;
+  }
+
   const updatedVerse = await Verse.findByIdAndUpdate(
     id,
     { $set: updateData },
     { new: true, runValidators: true },
-  );
+  ).populate("feeling");
 
   return successResponse(res, 200, "Verse updated successfully", updatedVerse);
 });
@@ -217,12 +244,15 @@ const getAllVersesAdmin = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 50;
   const skip = (page - 1) * limit;
-  const { suraNumber } = req.query;
+  const { suraNumber, feelingId } = req.query;
 
-  const filter = suraNumber ? { suraNumber: parseInt(suraNumber, 10) } : {};
+  const filter = {};
+  if (suraNumber) filter.suraNumber = parseInt(suraNumber, 10);
+  if (feelingId) filter.feeling = feelingId;
 
   const [verses, total] = await Promise.all([
     Verse.find(filter)
+      .populate("feeling")
       .sort({ suraNumber: 1, verseNumber: 1 })
       .skip(skip)
       .limit(limit),
@@ -244,7 +274,7 @@ const getAllVersesAdmin = asyncHandler(async (req, res) => {
 const getVerseById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const verse = await Verse.findById(id);
+  const verse = await Verse.findById(id).populate("feeling");
 
   if (!verse) {
     return errorResponse(res, 404, "Verse not found");

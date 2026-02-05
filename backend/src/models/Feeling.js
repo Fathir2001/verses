@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+/**
+ * Feeling Model
+ *
+ * Represents an emotional state with Islamic guidance.
+ * - Verses and Duas link TO this model (one feeling can have many verses/duas)
+ * - Admin creates feeling first, then links verses/duas to it
+ */
 const feelingSchema = new mongoose.Schema(
   {
     slug: {
@@ -33,16 +40,6 @@ const feelingSchema = new mongoose.Schema(
       required: [true, "Reminder is required"],
       trim: true,
     },
-    verse: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Verse",
-      required: [true, "Verse reference is required"],
-    },
-    dua: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Dua",
-      required: [true, "Dua reference is required"],
-    },
     actions: {
       type: [String],
       required: [true, "Actions are required"],
@@ -68,36 +65,6 @@ feelingSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.__v;
   return obj;
-};
-
-// Static method to get feeling in frontend-compatible format
-feelingSchema.statics.toFrontendFormat = function (feeling) {
-  const verse =
-    feeling.verse && typeof feeling.verse === "object" ? feeling.verse : null;
-  const dua =
-    feeling.dua && typeof feeling.dua === "object" ? feeling.dua : null;
-
-  return {
-    slug: feeling.slug,
-    title: feeling.title,
-    emoji: feeling.emoji || "",
-    preview: feeling.preview,
-    reminder: feeling.reminder,
-    quran: {
-      arabic: verse?.arabicText || "",
-      text: verse?.translationText || "",
-      reference: verse?.reference || "",
-      ...(verse?.suraNumber && { suraNumber: verse.suraNumber }),
-      ...(verse?.verseNumber && { verseNumber: verse.verseNumber }),
-    },
-    dua: {
-      arabic: dua?.arabic || "",
-      transliteration: dua?.transliteration || "",
-      meaning: dua?.meaning || "",
-      reference: dua?.reference || "",
-    },
-    actions: feeling.actions,
-  };
 };
 
 const Feeling = mongoose.model("Feeling", feelingSchema);

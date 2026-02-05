@@ -280,8 +280,12 @@ export interface Feeling {
   emoji: string;
   preview: string;
   reminder: string;
-  verse?: Verse | string;
-  dua?: Dua | string;
+  // These are populated from reverse lookup (verses/duas that reference this feeling)
+  verses?: Verse[];
+  duas?: Dua[];
+  // Backward compatibility - first verse/dua
+  quran?: Verse | null;
+  dua?: Dua | null;
   actions: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -293,8 +297,6 @@ export interface CreateFeelingInput {
   emoji?: string;
   preview: string;
   reminder: string;
-  verseId: string;
-  duaId: string;
   actions: string[];
 }
 
@@ -325,6 +327,7 @@ export interface Verse {
   translationText: string;
   transliteration: string;
   reference: string;
+  feeling?: Feeling | string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -336,6 +339,7 @@ export interface CreateVerseInput {
   translationText: string;
   transliteration?: string;
   reference?: string;
+  feelingId?: string | null;
 }
 
 export interface Dua {
@@ -348,6 +352,7 @@ export interface Dua {
   reference: string;
   category: string;
   benefits: string;
+  feeling?: Feeling | string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -361,6 +366,7 @@ export interface CreateDuaInput {
   reference?: string;
   category?: string;
   benefits?: string;
+  feelingId?: string | null;
 }
 
 // Export singleton instance

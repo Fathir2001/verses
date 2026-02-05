@@ -1,23 +1,37 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, Feeling } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function NewVersePage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [feelings, setFeelings] = useState<Feeling[]>([]);
   const [formData, setFormData] = useState({
     suraNumber: "",
     verseNumber: "",
     arabicText: "",
     translationText: "",
     transliteration: "",
+    feelingId: "",
   });
+
+  useEffect(() => {
+    const loadFeelings = async () => {
+      try {
+        const res = await api.getAdminFeelings(1, 100);
+        if (res.data) setFeelings(res.data);
+      } catch (err) {
+        console.error("Failed to load feelings:", err);
+      }
+    };
+    loadFeelings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +45,7 @@ export default function NewVersePage() {
         arabicText: formData.arabicText,
         translationText: formData.translationText,
         transliteration: formData.transliteration || undefined,
+        feelingId: formData.feelingId || undefined,
       });
       router.push("/admin/verses");
     } catch (err) {
@@ -191,6 +206,28 @@ export default function NewVersePage() {
                 className={`${inputClass} min-h-[80px]`}
                 placeholder="Bismillahir Rahmanir Raheem (optional)"
               />
+            </div>
+
+            <div>
+              <label className={labelClass}>Link to Feeling</label>
+              <select
+                value={formData.feelingId}
+                onChange={(e) =>
+                  setFormData({ ...formData, feelingId: e.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="">-- No feeling (standalone verse) --</option>
+                {feelings.map((feeling) => (
+                  <option key={feeling._id} value={feeling._id}>
+                    {feeling.emoji} {feeling.title}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-slate-500">
+                Select a feeling to link this verse to. One feeling can have
+                multiple verses.
+              </p>
             </div>
           </div>
 

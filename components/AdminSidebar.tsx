@@ -125,14 +125,18 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
         <div className="p-6 border-b border-white/10">
           <Link href="/admin" className="flex items-center gap-3 group">
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30"
+              whileHover={{ scale: 1.05 }}
+              className="w-12 h-12 rounded-xl overflow-hidden shadow-lg"
             >
-              <span className="text-white font-bold text-xl">V</span>
+              <img
+                src="/enhanced_image.png"
+                alt="Think_Different Logo"
+                className="w-full h-full object-cover"
+              />
             </motion.div>
             <div>
               <h1 className="font-bold text-white text-lg group-hover:text-emerald-400 transition-colors">
-                Verses Admin
+                Think_Different
               </h1>
               <p className="text-xs text-slate-400">Content Management</p>
             </div>

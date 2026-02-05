@@ -26,6 +26,14 @@ function getDailyFeeling(feelings: Feeling[]): Feeling {
 
 export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
   const dailyFeeling = getDailyFeeling(feelings);
+  const versePreview =
+    dailyFeeling.verses?.[0] ||
+    (dailyFeeling.quran
+      ? {
+          text: dailyFeeling.quran.text,
+          reference: dailyFeeling.quran.reference,
+        }
+      : null);
 
   // Get today's date in a nice format
   const today = new Date();
@@ -92,14 +100,16 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
               </p>
 
               {/* Qur'an verse preview */}
-              <blockquote className="border-l-3 border-emerald-500/40 pl-3 py-1">
-                <p className="text-sm italic text-slate-600 dark:text-slate-400 line-clamp-2">
-                  &ldquo;{dailyFeeling.quran.text}&rdquo;
-                </p>
-                <cite className="text-xs text-emerald-600 dark:text-emerald-400 not-italic">
-                  {dailyFeeling.quran.reference}
-                </cite>
-              </blockquote>
+              {versePreview && (
+                <blockquote className="border-l-3 border-emerald-500/40 pl-3 py-1">
+                  <p className="text-sm italic text-slate-600 dark:text-slate-400 line-clamp-2">
+                    &ldquo;{versePreview.text}&rdquo;
+                  </p>
+                  <cite className="text-xs text-emerald-600 dark:text-emerald-400 not-italic">
+                    {versePreview.reference}
+                  </cite>
+                </blockquote>
+              )}
             </div>
           </div>
         </Link>

@@ -93,7 +93,7 @@ export default function AdminDashboard() {
             transition={{ delay: 0.1 }}
             className="text-slate-400"
           >
-            Welcome back! Here&apos;s an overview of your content.
+            Welcome to Think_Different content management.
           </motion.p>
         </div>
 
@@ -166,80 +166,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Recent Feelings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 overflow-hidden"
-        >
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <span className="text-xl">✨</span>
-              Recent Feelings
-            </h2>
-            <Link
-              href="/admin/feelings"
-              className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
-            >
-              View all
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Link>
-          </div>
-          <div className="divide-y divide-white/5">
-            {isLoading ? (
-              <div className="p-8 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400 mx-auto" />
-              </div>
-            ) : recentFeelings.length === 0 ? (
-              <div className="p-8 text-center text-slate-500">
-                No feelings found. Create your first one!
-              </div>
-            ) : (
-              recentFeelings.map((feeling, index) => (
-                <motion.div
-                  key={feeling._id || feeling.slug}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.05 }}
-                >
-                  <Link
-                    href={`/admin/feelings/${feeling._id}/edit`}
-                    className="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group"
-                  >
-                    <span className="text-2xl transform group-hover:scale-110 transition-transform">
-                      {feeling.emoji || "📝"}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white group-hover:text-emerald-400 transition-colors truncate">
-                        {feeling.title}
-                      </p>
-                      <p className="text-sm text-slate-500 truncate">
-                        {feeling.preview}
-                      </p>
-                    </div>
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-slate-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-400 transition-all">
-                      {feeling.slug}
-                    </span>
-                  </Link>
-                </motion.div>
-              ))
-            )}
-          </div>
-        </motion.div>
-
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -260,9 +186,9 @@ export default function AdminDashboard() {
                 gradient: "from-emerald-500 to-teal-500",
               },
               {
-                href: "/admin/suras/new",
-                label: "Add Sura",
-                icon: "📖",
+                href: "/admin/duas/new",
+                label: "Add Dua",
+                icon: "🤲",
                 gradient: "from-blue-500 to-indigo-500",
               },
               {

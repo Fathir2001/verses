@@ -1,11 +1,17 @@
 /**
  * Seed All Data Script
  *
+ * NEW DATA MODEL:
+ * - Feelings are standalone (no verse/dua references)
+ * - Verses have a `feeling` field that references a Feeling
+ * - Duas have a `feeling` field that references a Feeling
+ * - One feeling can have MULTIPLE verses and MULTIPLE duas
+ *
  * This script seeds:
  * 1. Suras - Basic Quran sura information
- * 2. Verses - Quran verses extracted from feelings.json
- * 3. Feelings - Linked to verses via suraNumber and verseNumber
- * 4. Duas - Supplications extracted from feelings.json
+ * 2. Feelings - Standalone feelings with no references
+ * 3. Verses - Quran verses that reference their associated feeling
+ * 4. Duas - Supplications that reference their associated feeling
  *
  * Usage:
  *   node src/scripts/seedAll.js
@@ -207,10 +213,55 @@ const seedAll = async () => {
     console.log(`   ✅ Seeded ${surasCreated} suras`);
 
     // ========================================
-    // STEP 2: Extract and Seed Verses from Feelings
+    // STEP 2: Seed Feelings (standalone - no verse/dua refs)
     // ========================================
-    console.log("\n📖 Extracting and seeding Verses from feelings...");
-    const versesMap = new Map(); // To avoid duplicates
+    console.log("\n💭 Seeding Feelings (standalone)...");
+    let feelingsCreated = 0;
+    let feelingsUpdated = 0;
+    const feelingsIdMap = new Map(); // Map slug -> feeling._id
+
+    for (const feeling of feelingsData) {
+      try {
+        const result = await Feeling.findOneAndUpdate(
+          { slug: feeling.slug },
+          {
+            $set: {
+              slug: feeling.slug,
+              title: feeling.title,
+              emoji: feeling.emoji || "",
+              preview: feeling.preview,
+              reminder: feeling.reminder,
+              actions: feeling.actions || [],
+            },
+          },
+          { upsert: true, new: true, runValidators: true },
+        );
+
+        feelingsIdMap.set(feeling.slug, result._id);
+
+        if (
+          result.createdAt &&
+          result.updatedAt &&
+          result.createdAt.getTime() === result.updatedAt.getTime()
+        ) {
+          feelingsCreated++;
+        } else {
+          feelingsUpdated++;
+        }
+      } catch (err) {
+        console.error(
+          `   ❌ Error with feeling "${feeling.slug}": ${err.message}`,
+        );
+      }
+    }
+    console.log(
+      `   ✅ Created ${feelingsCreated} feelings, updated ${feelingsUpdated}`,
+    );
+
+    // ========================================
+    // STEP 3: Seed Verses with Feeling references
+    // ========================================
+    console.log("\n📖 Seeding Verses (with feeling references)...");
     let versesCreated = 0;
 
     for (const feeling of feelingsData) {
@@ -224,36 +275,26 @@ const seedAll = async () => {
         continue;
       }
 
-      // For verse ranges like 94:5-6, we create one verse entry with combined text
-      const key = `${parsed.suraNumber}:${parsed.verseStart}${parsed.verseEnd !== parsed.verseStart ? `-${parsed.verseEnd}` : ""}`;
-
-      if (!versesMap.has(key)) {
-        versesMap.set(key, {
-          suraNumber: parsed.suraNumber,
-          verseNumber: parsed.verseStart,
-          verseEnd: parsed.verseEnd,
-          arabicText: feeling.quran.arabic || "",
-          translationText: feeling.quran.text || "",
-          reference: feeling.quran.reference,
-        });
+      const feelingId = feelingsIdMap.get(feeling.slug);
+      if (!feelingId) {
+        console.log(`   ⚠️  No feeling found for slug: ${feeling.slug}`);
+        continue;
       }
-    }
 
-    // Insert verses
-    for (const [key, verseData] of versesMap) {
       try {
         await Verse.findOneAndUpdate(
           {
-            suraNumber: verseData.suraNumber,
-            verseNumber: verseData.verseNumber,
+            suraNumber: parsed.suraNumber,
+            verseNumber: parsed.verseStart,
           },
           {
             $set: {
-              suraNumber: verseData.suraNumber,
-              verseNumber: verseData.verseNumber,
-              arabicText: verseData.arabicText,
-              translationText: verseData.translationText,
-              reference: verseData.reference,
+              suraNumber: parsed.suraNumber,
+              verseNumber: parsed.verseStart,
+              arabicText: feeling.quran.arabic || "",
+              translationText: feeling.quran.text || "",
+              reference: feeling.quran.reference,
+              feeling: feelingId, // Link to the feeling
             },
           },
           { upsert: true, new: true },
@@ -261,19 +302,22 @@ const seedAll = async () => {
         versesCreated++;
       } catch (err) {
         if (err.code === 11000) {
-          // Duplicate key - just update
-          console.log(`   ⚠️  Verse ${key} already exists, updating...`);
+          console.log(
+            `   ⚠️  Verse ${parsed.suraNumber}:${parsed.verseStart} already exists, updating...`,
+          );
         } else {
-          console.error(`   ❌ Error seeding verse ${key}: ${err.message}`);
+          console.error(
+            `   ❌ Error seeding verse ${parsed.suraNumber}:${parsed.verseStart}: ${err.message}`,
+          );
         }
       }
     }
     console.log(`   ✅ Seeded ${versesCreated} verses`);
 
     // ========================================
-    // STEP 3: Seed Duas from Feelings
+    // STEP 4: Seed Duas with Feeling references
     // ========================================
-    console.log("\n🤲 Seeding Duas from feelings...");
+    console.log("\n🤲 Seeding Duas (with feeling references)...");
     let duasCreated = 0;
     let duasUpdated = 0;
 
@@ -299,6 +343,12 @@ const seedAll = async () => {
     for (const feeling of feelingsData) {
       if (!feeling.dua) continue;
 
+      const feelingId = feelingsIdMap.get(feeling.slug);
+      if (!feelingId) {
+        console.log(`   ⚠️  No feeling found for slug: ${feeling.slug}`);
+        continue;
+      }
+
       const duaData = {
         title: `Dua for ${feeling.title}`,
         slug: `dua-for-${feeling.slug}`,
@@ -308,6 +358,7 @@ const seedAll = async () => {
         reference: feeling.dua.reference || "",
         category: getCategoryFromFeeling(feeling.title),
         benefits: `This dua is recommended when feeling ${feeling.title.toLowerCase()}.`,
+        feeling: feelingId, // Link to the feeling
       };
 
       try {
@@ -333,82 +384,6 @@ const seedAll = async () => {
       }
     }
     console.log(`   ✅ Created ${duasCreated} duas, updated ${duasUpdated}`);
-
-    // ========================================
-    // STEP 4: Seed Feelings with Verse + Dua References
-    // ========================================
-    console.log("\n💭 Seeding Feelings with verse + dua references...");
-    let feelingsCreated = 0;
-    let feelingsUpdated = 0;
-
-    for (const feeling of feelingsData) {
-      try {
-        // Parse the Quran reference to get sura and verse numbers
-        let suraNumber = null;
-        let verseNumber = null;
-
-        if (feeling.quran && feeling.quran.reference) {
-          const parsed = parseQuranReference(feeling.quran.reference);
-          if (parsed) {
-            suraNumber = parsed.suraNumber;
-            verseNumber = parsed.verseStart;
-          }
-        }
-
-        const verse = await Verse.findOne({
-          suraNumber,
-          verseNumber,
-        });
-
-        if (!verse) {
-          console.error(
-            `   ❌ Verse not found for feeling "${feeling.slug}" (${suraNumber}:${verseNumber})`,
-          );
-          continue;
-        }
-
-        const dua = await Dua.findOne({ slug: `dua-for-${feeling.slug}` });
-
-        if (!dua) {
-          console.error(`   ❌ Dua not found for feeling "${feeling.slug}"`);
-          continue;
-        }
-
-        const result = await Feeling.findOneAndUpdate(
-          { slug: feeling.slug },
-          {
-            $set: {
-              slug: feeling.slug,
-              title: feeling.title,
-              emoji: feeling.emoji || "",
-              preview: feeling.preview,
-              reminder: feeling.reminder,
-              verse: verse._id,
-              dua: dua._id,
-              actions: feeling.actions || [],
-            },
-          },
-          { upsert: true, new: true, runValidators: true },
-        );
-
-        if (
-          result.createdAt &&
-          result.updatedAt &&
-          result.createdAt.getTime() === result.updatedAt.getTime()
-        ) {
-          feelingsCreated++;
-        } else {
-          feelingsUpdated++;
-        }
-      } catch (err) {
-        console.error(
-          `   ❌ Error with feeling "${feeling.slug}": ${err.message}`,
-        );
-      }
-    }
-    console.log(
-      `   ✅ Created ${feelingsCreated} feelings, updated ${feelingsUpdated}`,
-    );
 
     // ========================================
     // Summary

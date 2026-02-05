@@ -1,53 +1,90 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError, CreateDuaInput } from "@/lib/api";
+import { api, ApiError, CreateDuaInput, Feeling } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function NewDuaPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [feelings, setFeelings] = useState<Feeling[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
 
-  const [formData, setFormData] = useState<CreateDuaInput>({
-    title: "",
-    slug: "",
+  const [formData, setFormData] = useState({
     arabic: "",
     transliteration: "",
     meaning: "",
     reference: "",
-    category: "",
-    benefits: "",
+    feelingId: "",
   });
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
+  useEffect(() => {
+    const loadFeelings = async () => {
+      try {
+        const res = await api.getAdminFeelings(1, 100);
+        if (res.data) setFeelings(res.data);
+      } catch (err) {
+        console.error("Failed to load feelings", err);
+      }
+    };
+    loadFeelings();
+  }, []);
+
+  const generateSlug = (arabic: string) => {
+    // Generate slug from first few words of Arabic text
+    const words = arabic.trim().split(/\s+/).slice(0, 3);
+    return `dua-${Date.now()}`;
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData({
-      ...formData,
-      title,
-      slug: generateSlug(title),
-    });
+  const updateField = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    // Clear error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors({ ...fieldErrors, [field]: false });
+    }
+  };
+
+  const getInputClass = (hasError?: boolean) => {
+    if (hasError) {
+      return "w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-red-500 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all";
+    }
+    return "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    const errors: Record<string, boolean> = {};
+    if (!formData.arabic.trim()) errors.arabic = true;
+    if (!formData.transliteration.trim()) errors.transliteration = true;
+    if (!formData.meaning.trim()) errors.meaning = true;
+    if (!formData.reference.trim()) errors.reference = true;
+    if (!formData.feelingId) errors.feelingId = true;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError("Please fill in all required fields");
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
     try {
-      await api.createDua(formData);
+      const { feelingId, ...duaData } = formData;
+      await api.createDua({
+        ...duaData,
+        title: `Dua ${Date.now()}`,
+        slug: generateSlug(formData.arabic),
+        category: "",
+        benefits: "",
+        feelingId: feelingId || null,
+      } as CreateDuaInput);
       router.push("/admin/duas");
     } catch (err) {
       if (err instanceof ApiError) {
@@ -133,44 +170,9 @@ export default function NewDuaPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
+          noValidate
           className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6 space-y-6"
         >
-          {/* Title & Slug */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={handleTitleChange}
-                required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                         placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                         transition-all"
-                placeholder="e.g., Dua for Protection"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-                required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                         placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                         transition-all"
-                placeholder="dua-for-protection"
-              />
-            </div>
-          </div>
-
           {/* Arabic Text */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -178,15 +180,10 @@ export default function NewDuaPage() {
             </label>
             <textarea
               value={formData.arabic}
-              onChange={(e) =>
-                setFormData({ ...formData, arabic: e.target.value })
-              }
-              required
+              onChange={(e) => updateField("arabic", e.target.value)}
               rows={3}
               dir="rtl"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-arabic text-xl
-                       placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                       transition-all"
+              className={getInputClass(fieldErrors.arabic) + " font-arabic text-xl"}
               placeholder="اللَّهُمَّ..."
             />
           </div>
@@ -194,18 +191,14 @@ export default function NewDuaPage() {
           {/* Transliteration */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Transliteration
+              Transliteration *
             </label>
             <input
               type="text"
               value={formData.transliteration}
-              onChange={(e) =>
-                setFormData({ ...formData, transliteration: e.target.value })
-              }
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                       placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                       transition-all"
-              placeholder="Allahumma..."
+              onChange={(e) => updateField("transliteration", e.target.value)}
+              className={getInputClass(fieldErrors.transliteration)}
+              placeholder="Allahumma antas-salam wa minkas-salam..."
             />
           </div>
 
@@ -216,70 +209,44 @@ export default function NewDuaPage() {
             </label>
             <textarea
               value={formData.meaning}
-              onChange={(e) =>
-                setFormData({ ...formData, meaning: e.target.value })
-              }
-              required
+              onChange={(e) => updateField("meaning", e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                       placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                       transition-all"
-              placeholder="O Allah, protect me..."
+              className={getInputClass(fieldErrors.meaning)}
+              placeholder="O Allah, You are Peace and from You is peace..."
             />
           </div>
 
-          {/* Reference & Category */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Reference
-              </label>
-              <input
-                type="text"
-                value={formData.reference}
-                onChange={(e) =>
-                  setFormData({ ...formData, reference: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                         placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                         transition-all"
-                placeholder="e.g., Sahih al-Bukhari"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Category
-              </label>
-              <input
-                type="text"
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                         placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                         transition-all"
-                placeholder="e.g., Morning, Evening, Protection"
-              />
-            </div>
-          </div>
-
-          {/* Benefits */}
+          {/* Reference */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Benefits
+              Reference *
             </label>
-            <textarea
-              value={formData.benefits}
-              onChange={(e) =>
-                setFormData({ ...formData, benefits: e.target.value })
-              }
-              rows={2}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white
-                       placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
-                       transition-all"
-              placeholder="Describe the benefits of this dua..."
+            <input
+              type="text"
+              value={formData.reference}
+              onChange={(e) => updateField("reference", e.target.value)}
+              className={getInputClass(fieldErrors.reference)}
+              placeholder="e.g., Sahih Muslim"
             />
+          </div>
+
+          {/* Link to Feeling */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Link to Feeling *
+            </label>
+            <select
+              value={formData.feelingId}
+              onChange={(e) => updateField("feelingId", e.target.value)}
+              className={fieldErrors.feelingId ? "w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-red-500 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all" : "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"}
+            >
+              <option value="">-- Select a feeling --</option>
+              {feelings.map((feeling) => (
+                <option key={feeling._id} value={feeling._id}>
+                  {feeling.emoji} {feeling.title}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Submit Button */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError, CreateFeelingInput, Dua, Verse } from "@/lib/api";
+import { api, ApiError, CreateFeelingInput } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -17,47 +17,27 @@ export default function EditFeelingPage() {
   const [errorDetails, setErrorDetails] = useState<
     Array<{ field: string; message: string }>
   >([]);
-  const [verses, setVerses] = useState<Verse[]>([]);
-  const [duas, setDuas] = useState<Dua[]>([]);
   const [formData, setFormData] = useState<Partial<CreateFeelingInput>>({
     slug: "",
     title: "",
     emoji: "",
     preview: "",
     reminder: "",
-    verseId: "",
-    duaId: "",
     actions: [""],
   });
 
   useEffect(() => {
     const fetchFeeling = async () => {
       try {
-        const [versesRes, duasRes, feelingRes] = await Promise.all([
-          api.getAdminVerses(1, 200),
-          api.getAdminDuas(1, 200),
-          api.getAdminFeelingById(id),
-        ]);
-        if (versesRes.data) setVerses(versesRes.data);
-        if (duasRes.data) setDuas(duasRes.data);
+        const feelingRes = await api.getAdminFeelingById(id);
         if (feelingRes.data) {
           const feeling = feelingRes.data;
-          const verseId =
-            typeof feeling.verse === "string"
-              ? feeling.verse
-              : feeling.verse?._id || "";
-          const duaId =
-            typeof feeling.dua === "string"
-              ? feeling.dua
-              : feeling.dua?._id || "";
           setFormData({
             slug: feeling.slug,
             title: feeling.title,
             emoji: feeling.emoji,
             preview: feeling.preview,
             reminder: feeling.reminder,
-            verseId,
-            duaId,
             actions: feeling.actions.length > 0 ? feeling.actions : [""],
           });
         }
@@ -99,29 +79,27 @@ export default function EditFeelingPage() {
     }
   };
 
-  const updateField = (field: string, value: string | number | null) => {
-    const keys = field.split(".");
-    if (keys.length === 1) {
-      setFormData({ ...formData, [field]: value });
-    } else if (keys.length === 2) {
-      setFormData({
-        ...formData,
-        [keys[0]]: {
-          ...(formData[keys[0] as keyof Partial<CreateFeelingInput>] as object),
-          [keys[1]]: value,
-        },
-      });
-    }
+  const updateField = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
   };
 
-  const normalizeSlug = (value: string) =>
-    value
+  // Auto-generate slug from title
+  const generateSlug = (title: string) =>
+    title
       .toLowerCase()
       .trim()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-+|-+$/g, "");
+
+  const handleTitleChange = (value: string) => {
+    setFormData({
+      ...formData,
+      title: value,
+      slug: generateSlug(value),
+    });
+  };
 
   const addAction = () =>
     setFormData({ ...formData, actions: [...(formData.actions || []), ""] });
@@ -255,28 +233,6 @@ export default function EditFeelingPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>Slug *</label>
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) =>
-                    updateField("slug", normalizeSlug(e.target.value))
-                  }
-                  className={inputClass}
-                  required
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => updateField("title", e.target.value)}
-                  className={inputClass}
-                  required
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Emoji *</label>
                 <input
                   type="text"
@@ -287,83 +243,34 @@ export default function EditFeelingPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Preview *</label>
+                <label className={labelClass}>Name of the Feeling *</label>
                 <input
                   type="text"
-                  value={formData.preview}
-                  onChange={(e) => updateField("preview", e.target.value)}
+                  value={formData.title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
                   className={inputClass}
                   required
                 />
               </div>
             </div>
             <div className="mt-6">
-              <label className={labelClass}>Reminder *</label>
+              <label className={labelClass}>Small Description *</label>
+              <input
+                type="text"
+                value={formData.preview}
+                onChange={(e) => updateField("preview", e.target.value)}
+                className={inputClass}
+                required
+              />
+            </div>
+            <div className="mt-6">
+              <label className={labelClass}>Gentle Reminder *</label>
               <textarea
                 value={formData.reminder}
                 onChange={(e) => updateField("reminder", e.target.value)}
                 className={`${inputClass} min-h-[100px]`}
                 required
               />
-            </div>
-          </div>
-
-          <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              </span>
-              Verse & Dua References
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={labelClass}>Verse *</label>
-                <select
-                  value={formData.verseId || ""}
-                  onChange={(e) => updateField("verseId", e.target.value)}
-                  className={inputClass}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a verse
-                  </option>
-                  {verses.map((verse) => (
-                    <option key={verse._id} value={verse._id}>
-                      {verse.suraNumber}:{verse.verseNumber} — {verse.reference}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Dua *</label>
-                <select
-                  value={formData.duaId || ""}
-                  onChange={(e) => updateField("duaId", e.target.value)}
-                  className={inputClass}
-                  required
-                >
-                  <option value="" disabled>
-                    Select a dua
-                  </option>
-                  {duas.map((dua) => (
-                    <option key={dua._id} value={dua._id}>
-                      {dua.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
 

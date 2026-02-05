@@ -12,6 +12,7 @@ import {
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 
 interface FeelingDetailClientProps {
   feeling: Feeling;
@@ -20,17 +21,84 @@ interface FeelingDetailClientProps {
 export default function FeelingDetailClient({
   feeling,
 }: FeelingDetailClientProps) {
+  // State for navigating multiple verses/duas
+  const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  const [currentDuaIndex, setCurrentDuaIndex] = useState(0);
+
+  // Get verses and duas arrays (use backward-compatible fields if arrays not available)
+  const verses = feeling.verses?.length
+    ? feeling.verses
+    : feeling.quran
+      ? [feeling.quran]
+      : [];
+  const duas = feeling.duas?.length
+    ? feeling.duas
+    : feeling.dua
+      ? [feeling.dua]
+      : [];
+
+  // Current verse and dua
+  const currentVerse = verses[currentVerseIndex] || null;
+  const currentDua = duas[currentDuaIndex] || null;
+
   const shareUrl =
     typeof window !== "undefined"
       ? window.location.href
       : `/feelings/${feeling.slug}`;
 
-  const verseText = feeling.quran.arabic
-    ? `${feeling.quran.arabic}\n\n${feeling.quran.text}\n\n— ${feeling.quran.reference}`
-    : `${feeling.quran.text}\n\n— ${feeling.quran.reference}`;
-  const duaText = feeling.dua.arabic
-    ? `${feeling.dua.arabic}\n\n${feeling.dua.transliteration}\n\n"${feeling.dua.meaning}"\n\n— ${feeling.dua.reference || ""}`
-    : `${feeling.dua.transliteration}\n\n"${feeling.dua.meaning}"\n\n— ${feeling.dua.reference || ""}`;
+  const verseText = currentVerse
+    ? currentVerse.arabic
+      ? `${currentVerse.arabic}\n\n${currentVerse.text}\n\n— ${currentVerse.reference}`
+      : `${currentVerse.text}\n\n— ${currentVerse.reference}`
+    : "";
+  const duaText = currentDua
+    ? currentDua.arabic
+      ? `${currentDua.arabic}\n\n${currentDua.transliteration}\n\n"${currentDua.meaning}"\n\n— ${currentDua.reference || ""}`
+      : `${currentDua.transliteration}\n\n"${currentDua.meaning}"\n\n— ${currentDua.reference || ""}`
+    : "";
+
+  // Navigation helpers
+  const hasMultipleVerses = verses.length > 1;
+  const hasMultipleDuas = duas.length > 1;
+
+  const goToPrevVerse = () =>
+    setCurrentVerseIndex((prev) => (prev > 0 ? prev - 1 : verses.length - 1));
+  const goToNextVerse = () =>
+    setCurrentVerseIndex((prev) => (prev < verses.length - 1 ? prev + 1 : 0));
+  const goToPrevDua = () =>
+    setCurrentDuaIndex((prev) => (prev > 0 ? prev - 1 : duas.length - 1));
+  const goToNextDua = () =>
+    setCurrentDuaIndex((prev) => (prev < duas.length - 1 ? prev + 1 : 0));
+
+  // Navigation button component
+  const NavButton = ({
+    direction,
+    onClick,
+  }: {
+    direction: "prev" | "next";
+    onClick: () => void;
+  }) => (
+    <button
+      onClick={onClick}
+      className="p-2 rounded-full bg-white/20 dark:bg-slate-700/50 hover:bg-white/40 dark:hover:bg-slate-600/50 
+                 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+      aria-label={direction === "prev" ? "Previous" : "Next"}
+    >
+      <svg
+        className="w-5 h-5 text-slate-700 dark:text-slate-200"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d={direction === "prev" ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"}
+        />
+      </svg>
+    </button>
+  );
 
   return (
     <PageTransition>
@@ -99,50 +167,86 @@ export default function FeelingDetailClient({
 
           {/* Qur'an Verse */}
           <SectionBlock title="Qur'anic Comfort" icon="📖" delay={0.2}>
-            <blockquote className="border-l-4 border-emerald-500/50 pl-4 py-2 mb-4">
-              {feeling.quran.arabic && (
-                <p
-                  className="text-2xl sm:text-3xl text-right leading-loose font-arabic text-slate-800 dark:text-white mb-4"
-                  dir="rtl"
-                >
-                  {feeling.quran.arabic}
-                </p>
-              )}
-              <p className="text-lg leading-relaxed italic mb-2">
-                &ldquo;{feeling.quran.text}&rdquo;
+            {currentVerse ? (
+              <>
+                {/* Navigation header for multiple verses */}
+                {hasMultipleVerses && (
+                  <div className="flex items-center justify-between mb-4">
+                    <NavButton direction="prev" onClick={goToPrevVerse} />
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                      Verse {currentVerseIndex + 1} of {verses.length}
+                    </span>
+                    <NavButton direction="next" onClick={goToNextVerse} />
+                  </div>
+                )}
+                <blockquote className="border-l-4 border-emerald-500/50 pl-4 py-2 mb-4">
+                  {currentVerse.arabic && (
+                    <p
+                      className="text-2xl sm:text-3xl text-right leading-loose font-arabic text-slate-800 dark:text-white mb-4"
+                      dir="rtl"
+                    >
+                      {currentVerse.arabic}
+                    </p>
+                  )}
+                  <p className="text-lg leading-relaxed italic mb-2">
+                    &ldquo;{currentVerse.text}&rdquo;
+                  </p>
+                  <cite className="text-sm text-emerald-600 dark:text-emerald-400 not-italic font-medium">
+                    {currentVerse.reference}
+                  </cite>
+                </blockquote>
+                <CopyButton text={verseText} label="Copy Verse" />
+              </>
+            ) : (
+              <p className="text-slate-500 dark:text-slate-400 italic">
+                No verse linked to this feeling yet.
               </p>
-              <cite className="text-sm text-emerald-600 dark:text-emerald-400 not-italic font-medium">
-                {feeling.quran.reference}
-              </cite>
-            </blockquote>
-            <CopyButton text={verseText} label="Copy Verse" />
+            )}
           </SectionBlock>
 
           {/* Dua */}
           <SectionBlock title="Dua for You" icon="🤲" delay={0.3}>
-            <div className="space-y-4 mb-4">
-              {feeling.dua.arabic && (
-                <p
-                  className="text-2xl sm:text-3xl text-right leading-loose font-arabic text-slate-800 dark:text-white"
-                  dir="rtl"
-                >
-                  {feeling.dua.arabic}
-                </p>
-              )}
-              <p className="text-base sm:text-lg italic text-slate-600 dark:text-slate-300">
-                {feeling.dua.transliteration}
+            {currentDua ? (
+              <>
+                {/* Navigation header for multiple duas */}
+                {hasMultipleDuas && (
+                  <div className="flex items-center justify-between mb-4">
+                    <NavButton direction="prev" onClick={goToPrevDua} />
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                      Dua {currentDuaIndex + 1} of {duas.length}
+                    </span>
+                    <NavButton direction="next" onClick={goToNextDua} />
+                  </div>
+                )}
+                <div className="space-y-4 mb-4">
+                  {currentDua.arabic && (
+                    <p
+                      className="text-2xl sm:text-3xl text-right leading-loose font-arabic text-slate-800 dark:text-white"
+                      dir="rtl"
+                    >
+                      {currentDua.arabic}
+                    </p>
+                  )}
+                  <p className="text-base sm:text-lg italic text-slate-600 dark:text-slate-300">
+                    {currentDua.transliteration}
+                  </p>
+                  <p className="text-base leading-relaxed">
+                    <span className="font-medium">Meaning: </span>
+                    &ldquo;{currentDua.meaning}&rdquo;
+                  </p>
+                  {currentDua.reference && (
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                      — {currentDua.reference}
+                    </p>
+                  )}
+                </div>
+                <CopyButton text={duaText} label="Copy Dua" />
+              </>
+            ) : (
+              <p className="text-slate-500 dark:text-slate-400 italic">
+                No dua linked to this feeling yet.
               </p>
-              <p className="text-base leading-relaxed">
-                <span className="font-medium">Meaning: </span>
-                &ldquo;{feeling.dua.meaning}&rdquo;
-              </p>
-              {feeling.dua.reference && (
-                <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                  — {feeling.dua.reference}
-                </p>
-              )}
-            </div>
-            <CopyButton text={duaText} label="Copy Dua" />
+            )}
           </SectionBlock>
 
           {/* Small Actions */}
