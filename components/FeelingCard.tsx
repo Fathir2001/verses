@@ -41,13 +41,7 @@ export function FeelingCard({ feeling, index }: FeelingCardProps) {
           </div>
 
           <div className="flex flex-col h-full relative z-[1]">
-            <motion.span
-              className="text-4xl mb-3"
-              whileHover={{ scale: 1.2, rotate: 10 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              {feeling.emoji}
-            </motion.span>
+            <span className="text-4xl mb-3">{feeling.emoji}</span>
 
             <h2
               className="text-xl font-semibold text-slate-800 dark:text-white mb-2 

@@ -65,9 +65,9 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
 
       // Glass panel behind text - sized to contain all content
       const panelWidth = width - 120;
-      const panelHeight = height * 0.65;
+      const panelHeight = height * 0.6;
       const panelX = (width - panelWidth) / 2;
-      const panelY = height * 0.15;
+      const panelY = height * 0.22;
       const panelRadius = 40;
 
       ctx.save();
@@ -93,122 +93,194 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       const panelBottom = panelY + panelHeight - 40;
       const panelCenterX = width / 2;
 
-      // Draw emoji - inside panel
-      ctx.font = "120px sans-serif";
-      ctx.fillText(feeling.emoji, panelCenterX, panelTop + 80);
+      // Draw logo at top (before panel) - large and visible with glow
+      const topLogoImg = new Image();
+      topLogoImg.crossOrigin = "anonymous";
+      topLogoImg.onload = () => {
+        const topLogoSize = 160;
+        const topLogoX = (width - topLogoSize) / 2;
+        const topLogoY = 50;
 
-      // Draw "I Am Feeling" title - inside panel
-      ctx.font = "bold 64px sans-serif";
-      ctx.fillText(
-        `I Am Feeling ${feeling.title}`,
-        panelCenterX,
-        panelTop + 170,
-      );
-
-      // Draw content based on type
-      const padding = 100;
-      const maxWidth = panelWidth - padding;
-
-      // Arabic text - center aligned inside panel
-      if (
-        (contentType === "verse" && feeling.quran.arabic) ||
-        (contentType === "dua" && feeling.dua.arabic)
-      ) {
-        const arabicText =
-          contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
-        ctx.font = "bold 56px sans-serif";
-        ctx.textAlign = "center";
-
-        // Word wrap for Arabic
-        const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
-        let yPos = panelTop + 280;
-        arabicLines.forEach((line) => {
-          ctx.fillText(line, panelCenterX, yPos);
-          yPos += 80;
-        });
-      }
-
-      // English translation or transliteration - center aligned
-      ctx.textAlign = "center";
-      const englishText =
-        contentType === "verse"
-          ? feeling.quran.text
-          : feeling.dua.transliteration;
-
-      ctx.font = "italic bold 44px sans-serif";
-      const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
-      let englishY = panelTop + 520;
-      englishLines.forEach((line) => {
-        ctx.fillText(line, panelCenterX, englishY);
-        englishY += 60;
-      });
-
-      // Meaning (for dua only)
-      if (contentType === "dua") {
-        ctx.font = "bold 38px sans-serif";
-        const meaningLines = wrapText(
-          ctx,
-          `"${feeling.dua.meaning}"`,
-          maxWidth,
+        // Draw multiple glow layers for intense effect
+        // Layer 1: Large outer purple glow
+        ctx.save();
+        ctx.shadowColor = "rgba(168, 85, 247, 1)";
+        ctx.shadowBlur = 80;
+        ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.beginPath();
+        ctx.arc(
+          width / 2,
+          topLogoY + topLogoSize / 2,
+          topLogoSize / 2 + 40,
+          0,
+          Math.PI * 2,
         );
-        let meaningY = englishY + 40;
-        meaningLines.forEach((line) => {
-          ctx.fillText(line, panelCenterX, meaningY);
-          meaningY += 50;
-        });
-      }
+        ctx.fill();
+        ctx.restore();
 
-      // Reference - inside panel near bottom
-      ctx.font = "bold 40px sans-serif";
-      ctx.fillStyle = textColor;
-      const reference =
-        contentType === "verse"
-          ? feeling.quran.reference
-          : feeling.dua.reference || "";
-      ctx.fillText(`— ${reference}`, panelCenterX, panelBottom - 20);
+        // Layer 2: Medium pink glow
+        ctx.save();
+        ctx.shadowColor = "rgba(236, 72, 153, 1)";
+        ctx.shadowBlur = 60;
+        ctx.fillStyle = "rgba(236, 72, 153, 0.4)";
+        ctx.beginPath();
+        ctx.arc(
+          width / 2,
+          topLogoY + topLogoSize / 2,
+          topLogoSize / 2 + 30,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+        ctx.restore();
 
-      // Client branding with logo and dark glassy card background
-      const brandingText = "© 2026 Think_Different";
-      ctx.font = "bold 38px sans-serif";
-      const brandingMetrics = ctx.measureText(brandingText);
-      const brandingX = width / 2;
-      const brandingY = height * 0.93;
-      const logoSize = 50;
-      const cardPadding = 30;
-      const cardWidth = brandingMetrics.width + logoSize + cardPadding * 3;
-      const cardHeight = 80;
-      const cardRadius = 20;
+        // Layer 3: Inner white glow
+        ctx.save();
+        ctx.shadowColor = "rgba(255, 255, 255, 1)";
+        ctx.shadowBlur = 40;
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.beginPath();
+        ctx.arc(
+          width / 2,
+          topLogoY + topLogoSize / 2,
+          topLogoSize / 2 + 15,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+        ctx.restore();
 
-      // Draw glassy card background
-      ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
-      ctx.beginPath();
-      ctx.roundRect(
-        brandingX - cardWidth / 2,
-        brandingY - cardHeight / 2 - 10,
-        cardWidth,
-        cardHeight,
-        cardRadius,
-      );
-      ctx.fill();
+        // Draw the logo image clipped to circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+          width / 2,
+          topLogoY + topLogoSize / 2,
+          topLogoSize / 2,
+          0,
+          Math.PI * 2,
+        );
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(topLogoImg, topLogoX, topLogoY, topLogoSize, topLogoSize);
+        ctx.restore();
 
-      // Draw border for glass effect
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
+        // Continue drawing rest of content after logo loads
+        drawRestOfContent();
+      };
+      topLogoImg.onerror = () => {
+        // If logo fails, just continue with content
+        drawRestOfContent();
+      };
+      topLogoImg.src = "/enhanced_image.png";
 
-      // Draw logo
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      logoImg.onload = () => {
-        const logoX = brandingX - cardWidth / 2 + cardPadding;
-        const logoY = brandingY - logoSize / 2 - 10;
-        ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+      const drawRestOfContent = () => {
+        // Draw emoji - inside panel
+        ctx.font = "100px sans-serif";
+        ctx.fillText(feeling.emoji, panelCenterX, panelTop + 70);
 
-        // Draw the text on top (after logo loads)
-        ctx.fillStyle = "#f8fafc";
-        ctx.textAlign = "left";
-        ctx.fillText(brandingText, logoX + logoSize + 15, brandingY);
+        // Draw "I Am Feeling" title - inside panel
+        ctx.font = "bold 60px sans-serif";
+        ctx.fillText(
+          `I Am Feeling ${feeling.title}`,
+          panelCenterX,
+          panelTop + 150,
+        );
+
+        // Draw content based on type
+        const padding = 100;
+        const maxWidth = panelWidth - padding;
+
+        // Arabic text - center aligned inside panel
+        if (
+          (contentType === "verse" && feeling.quran.arabic) ||
+          (contentType === "dua" && feeling.dua.arabic)
+        ) {
+          const arabicText =
+            contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
+          ctx.font = "bold 52px sans-serif";
+          ctx.textAlign = "center";
+
+          // Word wrap for Arabic
+          const arabicLines = wrapText(ctx, arabicText || "", maxWidth);
+          let yPos = panelTop + 250;
+          arabicLines.forEach((line) => {
+            ctx.fillText(line, panelCenterX, yPos);
+            yPos += 75;
+          });
+        }
+
+        // English translation or transliteration - center aligned
         ctx.textAlign = "center";
+        const englishText =
+          contentType === "verse"
+            ? feeling.quran.text
+            : feeling.dua.transliteration;
+
+        ctx.font = "italic bold 40px sans-serif";
+        const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
+        let englishY = panelTop + 480;
+        englishLines.forEach((line) => {
+          ctx.fillText(line, panelCenterX, englishY);
+          englishY += 55;
+        });
+
+        // Meaning (for dua only)
+        if (contentType === "dua") {
+          ctx.font = "bold 36px sans-serif";
+          const meaningLines = wrapText(
+            ctx,
+            `"${feeling.dua.meaning}"`,
+            maxWidth,
+          );
+          let meaningY = englishY + 35;
+          meaningLines.forEach((line) => {
+            ctx.fillText(line, panelCenterX, meaningY);
+            meaningY += 48;
+          });
+        }
+
+        // Reference - inside panel near bottom
+        ctx.font = "bold 38px sans-serif";
+        ctx.fillStyle = textColor;
+        const reference =
+          contentType === "verse"
+            ? feeling.quran.reference
+            : feeling.dua.reference || "";
+        ctx.fillText(`— ${reference}`, panelCenterX, panelBottom - 20);
+
+        // Client branding - text only (no logo)
+        const brandingText = "© 2026 Think_Different";
+        ctx.font = "bold 38px sans-serif";
+        const brandingMetrics = ctx.measureText(brandingText);
+        const brandingX = width / 2;
+        const brandingY = height * 0.93;
+        const cardPadding = 40;
+        const cardWidth = brandingMetrics.width + cardPadding * 2;
+        const cardHeight = 70;
+        const cardRadius = 20;
+
+        // Draw glassy card background
+        ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
+        ctx.beginPath();
+        ctx.roundRect(
+          brandingX - cardWidth / 2,
+          brandingY - cardHeight / 2 - 10,
+          cardWidth,
+          cardHeight,
+          cardRadius,
+        );
+        ctx.fill();
+
+        // Draw border for glass effect
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw the text
+        ctx.fillStyle = "#f8fafc";
+        ctx.textAlign = "center";
+        ctx.fillText(brandingText, brandingX, brandingY);
 
         setIsGenerating(false);
 
@@ -218,22 +290,8 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         link.download = `Think-Different-${feeling.title}-${contentType}.png`;
         link.href = dataUrl;
         link.click();
-      };
-      logoImg.onerror = () => {
-        // If logo fails to load, just draw text
-        ctx.fillStyle = "#f8fafc";
-        ctx.fillText(brandingText, brandingX, brandingY);
-
-        setIsGenerating(false);
-
-        const dataUrl = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.download = `Think-Different-${feeling.title}-${contentType}.png`;
-        link.href = dataUrl;
-        link.click();
-      };
-      logoImg.src = "/enhanced_image.png";
-    };
+      }; // end drawRestOfContent
+    }; // end drawContent
 
     // Always load the mosque image for all themes
     const img = new Image();
@@ -335,15 +393,24 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-slate-950/20" />
 
-          {/* Glassy text panel - smaller to show more background */}
-          <div className="absolute inset-x-6 top-[25%] bottom-[25%] rounded-2xl bg-slate-900/35 border border-white/20 shadow-xl backdrop-blur-md" />
+          {/* Logo at top with glowing circle */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg shadow-purple-500/30 flex items-center justify-center">
+            <img
+              src="/enhanced_image.png"
+              alt="Logo"
+              className="w-8 h-8 object-contain"
+            />
+          </div>
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-slate-50">
-            <span className="text-3xl mb-1">{feeling.emoji}</span>
-            <p className="text-xs font-bold mb-2">
+          {/* Glassy text panel - positioned below logo */}
+          <div className="absolute inset-x-4 top-[18%] bottom-[18%] rounded-2xl bg-slate-900/35 border border-white/20 shadow-xl backdrop-blur-md" />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 pt-14 text-center text-slate-50">
+            <span className="text-2xl mb-0.5">{feeling.emoji}</span>
+            <p className="text-[10px] font-bold mb-1">
               I Am Feeling {feeling.title}
             </p>
-            <p className="text-[8px] italic line-clamp-3 text-slate-200">
+            <p className="text-[7px] italic line-clamp-3 text-slate-200">
               {contentType === "verse"
                 ? `"${feeling.quran.text}"`
                 : `"${feeling.dua.transliteration}"`}
