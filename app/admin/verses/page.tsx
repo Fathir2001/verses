@@ -54,7 +54,7 @@ export default function AdminVersesPage() {
   return (
     <AdminSidebar>
       <div>
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <motion.h1
               initial={{ opacity: 0, x: -20 }}
@@ -104,7 +104,7 @@ export default function AdminVersesPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-6"
+          className="mb-4"
         >
           <div className="relative w-72">
             <input

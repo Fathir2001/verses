@@ -80,7 +80,7 @@ export default function EditDuaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     const errors: Record<string, boolean> = {};
     if (!formData.arabic.trim()) errors.arabic = true;
@@ -216,7 +216,9 @@ export default function EditDuaPage() {
               onChange={(e) => updateField("arabic", e.target.value)}
               rows={3}
               dir="rtl"
-              className={getInputClass(fieldErrors.arabic) + " font-arabic text-xl"}
+              className={
+                getInputClass(fieldErrors.arabic) + " font-arabic text-xl"
+              }
               placeholder="اللَّهُمَّ..."
             />
           </div>
@@ -271,7 +273,11 @@ export default function EditDuaPage() {
             <select
               value={formData.feelingId}
               onChange={(e) => updateField("feelingId", e.target.value)}
-              className={fieldErrors.feelingId ? "w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-red-500 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all" : "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"}
+              className={
+                fieldErrors.feelingId
+                  ? "w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-red-500 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                  : "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              }
             >
               <option value="">-- Select a feeling --</option>
               {feelings.map((feeling) => (

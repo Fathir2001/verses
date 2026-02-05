@@ -144,7 +144,7 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4">
+        <nav className="p-4">
           <p className="px-4 mb-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
             Menu
           </p>
@@ -265,7 +265,7 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-8"
+          className="p-6"
         >
           {children}
         </motion.div>
