@@ -8,6 +8,7 @@ export { IslamicDateBanner } from "./IslamicDateBanner";
 export { Navbar } from "./Navbar";
 export { NotFoundCard } from "./NotFoundCard";
 export { PageTransition } from "./PageTransition";
+export { RootLayoutClient } from "./RootLayoutClient";
 export { SearchBox } from "./SearchBox";
 export { SectionBlock } from "./SectionBlock";
 export { ShareButton } from "./ShareButton";

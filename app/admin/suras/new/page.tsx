@@ -1,0 +1,246 @@
+"use client";
+
+import { AdminSidebar } from "@/components/AdminSidebar";
+import { api, ApiError, CreateSuraInput } from "@/lib/api";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function NewSuraPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState<CreateSuraInput>({
+    suraNumber: 1,
+    nameArabic: "",
+    nameEnglish: "",
+    transliteration: "",
+    totalVerses: null,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      await api.createSura(formData);
+      router.push("/admin/suras");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const inputClass = `w-full px-4 py-3 rounded-xl border border-white/10 
+                      bg-white/5 backdrop-blur-sm text-white placeholder-slate-400
+                      focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50
+                      transition-all duration-200`;
+
+  const labelClass = "block text-sm font-medium text-slate-300 mb-2";
+
+  return (
+    <AdminSidebar>
+      <div className="max-w-2xl">
+        <div className="mb-8">
+          <Link
+            href="/admin/suras"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors mb-4"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Suras
+          </Link>
+          <motion.h1
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-3xl font-bold text-white mb-2"
+          >
+            Add New Sura
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-slate-400"
+          >
+            Add a new Quran chapter to the database
+          </motion.p>
+        </div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm"
+          >
+            <p className="text-red-300 flex items-center gap-2">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {error}
+            </p>
+          </motion.div>
+        )}
+
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          onSubmit={handleSubmit}
+          className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6"
+        >
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className={labelClass}>Sura Number *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="114"
+                  value={formData.suraNumber}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      suraNumber: parseInt(e.target.value),
+                    })
+                  }
+                  className={inputClass}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Total Verses</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.totalVerses || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      totalVerses: e.target.value
+                        ? parseInt(e.target.value)
+                        : null,
+                    })
+                  }
+                  className={inputClass}
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Name (Arabic) *</label>
+              <input
+                type="text"
+                value={formData.nameArabic}
+                onChange={(e) =>
+                  setFormData({ ...formData, nameArabic: e.target.value })
+                }
+                className={`${inputClass} text-xl`}
+                dir="rtl"
+                placeholder="الفاتحة"
+                required
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Name (English) *</label>
+              <input
+                type="text"
+                value={formData.nameEnglish}
+                onChange={(e) =>
+                  setFormData({ ...formData, nameEnglish: e.target.value })
+                }
+                className={inputClass}
+                placeholder="The Opening"
+                required
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Transliteration *</label>
+              <input
+                type="text"
+                value={formData.transliteration}
+                onChange={(e) =>
+                  setFormData({ ...formData, transliteration: e.target.value })
+                }
+                className={inputClass}
+                placeholder="Al-Fatihah"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
+            <Link
+              href="/admin/suras"
+              className="flex-1 px-6 py-4 rounded-xl border border-white/20 text-slate-300
+                       hover:bg-white/10 hover:text-white text-center font-medium transition-all"
+            >
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500
+                       hover:shadow-lg hover:shadow-blue-500/25 text-white font-medium
+                       disabled:opacity-50 disabled:cursor-not-allowed transition-all
+                       flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  Create Sura
+                </>
+              )}
+            </button>
+          </div>
+        </motion.form>
+      </div>
+    </AdminSidebar>
+  );
+}

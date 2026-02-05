@@ -2,7 +2,6 @@
 
 import {
   FeelingCard,
-  FeelingOfTheDay,
   IslamicDateBanner,
   PageTransition,
   SearchBox,
@@ -22,7 +21,6 @@ export default function FeelingsPage() {
   }, [searchQuery]);
 
   const noResults = searchQuery && filteredFeelings.length === 0;
-  const showFeelingOfDay = !searchQuery;
 
   return (
     <PageTransition>
@@ -51,13 +49,6 @@ export default function FeelingsPage() {
             teachings.
           </p>
         </motion.div>
-
-        {/* Feeling of the Day */}
-        {showFeelingOfDay && (
-          <div className="mb-10">
-            <FeelingOfTheDay feelings={allFeelings} />
-          </div>
-        )}
 
         {/* Search */}
         <div className="max-w-md mx-auto mb-8">
