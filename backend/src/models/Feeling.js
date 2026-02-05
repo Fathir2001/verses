@@ -113,7 +113,7 @@ const feelingSchema = new mongoose.Schema(
 );
 
 // Indexes
-feelingSchema.index({ slug: 1 });
+// Note: unique: true on slug already creates an index
 feelingSchema.index({ title: "text", preview: "text" });
 
 // Transform output to match frontend JSON shape

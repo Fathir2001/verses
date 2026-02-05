@@ -35,8 +35,7 @@ const suraSchema = new mongoose.Schema(
   },
 );
 
-// Index on suraNumber for faster lookups
-suraSchema.index({ suraNumber: 1 });
+// Note: unique: true on suraNumber already creates an index
 
 // Transform output
 suraSchema.methods.toJSON = function () {

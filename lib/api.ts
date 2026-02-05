@@ -215,6 +215,44 @@ class ApiClient {
   async getAdminVerseById(id: string) {
     return this.request<Verse>(`/admin/verses/${id}`);
   }
+
+  // Admin Dua endpoints
+  async getAdminDuas(page = 1, limit = 20) {
+    return this.request<Dua[]>(`/admin/duas?page=${page}&limit=${limit}`);
+  }
+
+  async getAdminDuaById(id: string) {
+    return this.request<Dua>(`/admin/duas/${id}`);
+  }
+
+  async createDua(dua: CreateDuaInput) {
+    return this.request<Dua>("/admin/duas", {
+      method: "POST",
+      body: JSON.stringify(dua),
+    });
+  }
+
+  async updateDua(id: string, dua: Partial<CreateDuaInput>) {
+    return this.request<Dua>(`/admin/duas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(dua),
+    });
+  }
+
+  async deleteDua(id: string) {
+    return this.request<{ id: string }>(`/admin/duas/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Public Dua endpoints
+  async getDuas() {
+    return this.request<Dua[]>("/duas");
+  }
+
+  async getDuaBySlug(slug: string) {
+    return this.request<Dua>(`/duas/${slug}`);
+  }
 }
 
 // Error class
@@ -318,6 +356,31 @@ export interface CreateVerseInput {
   translationText: string;
   transliteration?: string;
   reference?: string;
+}
+
+export interface Dua {
+  _id: string;
+  title: string;
+  slug: string;
+  arabic: string;
+  transliteration: string;
+  meaning: string;
+  reference: string;
+  category: string;
+  benefits: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateDuaInput {
+  title: string;
+  slug: string;
+  arabic: string;
+  transliteration?: string;
+  meaning: string;
+  reference?: string;
+  category?: string;
+  benefits?: string;
 }
 
 // Export singleton instance

@@ -15,6 +15,8 @@ const publicFeelingsRoutes = require("./routes/public.feelings.routes");
 const adminFeelingsRoutes = require("./routes/admin.feelings.routes");
 const publicQuranRoutes = require("./routes/public.quran.routes");
 const adminQuranRoutes = require("./routes/admin.quran.routes");
+const publicDuasRoutes = require("./routes/public.duas.routes");
+const adminDuasRoutes = require("./routes/admin.duas.routes");
 
 // Initialize express app
 const app = express();
@@ -95,10 +97,12 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/feelings", publicFeelingsRoutes);
 app.use("/api/suras", publicQuranRoutes);
+app.use("/api/duas", publicDuasRoutes);
 
 // Admin routes
 app.use("/api/admin/feelings", adminFeelingsRoutes);
 app.use("/api/admin", adminQuranRoutes);
+app.use("/api/admin/duas", adminDuasRoutes);
 
 // ============ ERROR HANDLING ============
 

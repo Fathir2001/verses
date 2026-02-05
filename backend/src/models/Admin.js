@@ -27,8 +27,7 @@ const adminSchema = new mongoose.Schema(
   },
 );
 
-// Index on email for faster lookups
-adminSchema.index({ email: 1 });
+// Note: unique: true on email already creates an index
 
 // Hash password before saving
 adminSchema.pre("save", async function (next) {

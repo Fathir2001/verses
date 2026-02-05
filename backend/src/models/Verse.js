@@ -42,8 +42,8 @@ const verseSchema = new mongoose.Schema(
 // Compound unique index for suraNumber + verseNumber
 verseSchema.index({ suraNumber: 1, verseNumber: 1 }, { unique: true });
 
-// Additional indexes for queries
-verseSchema.index({ suraNumber: 1 });
+// Note: The compound index above includes suraNumber, so a separate suraNumber index is redundant
+// If you need to query by suraNumber alone frequently, you can add: verseSchema.index({ suraNumber: 1 });
 
 // Virtual for generating reference if not provided
 verseSchema.pre("save", function (next) {

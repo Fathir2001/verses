@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     feelings: 0,
-    suras: 0,
+    duas: 0,
     verses: 0,
   });
   const [recentFeelings, setRecentFeelings] = useState<Feeling[]>([]);
@@ -19,15 +19,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [feelingsRes, surasRes, versesRes] = await Promise.all([
+        const [feelingsRes, duasRes, versesRes] = await Promise.all([
           api.getAdminFeelings(1, 5),
-          api.getAdminSuras(1, 1),
+          api.getAdminDuas(1, 1),
           api.getAdminVerses(1, 1),
         ]);
 
         setStats({
           feelings: feelingsRes.pagination?.totalItems || 0,
-          suras: surasRes.pagination?.totalItems || 0,
+          duas: duasRes.pagination?.totalItems || 0,
           verses: versesRes.pagination?.totalItems || 0,
         });
 
@@ -58,10 +58,10 @@ export default function AdminDashboard() {
       bgGlow: "bg-emerald-500/20",
     },
     {
-      label: "Suras",
-      value: stats.suras,
-      href: "/admin/suras",
-      icon: "📖",
+      label: "Duas",
+      value: stats.duas,
+      href: "/admin/duas",
+      icon: "🤲",
       gradient: "from-blue-400 to-indigo-500",
       bgGlow: "bg-blue-500/20",
     },
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       label: "Verses",
       value: stats.verses,
       href: "/admin/verses",
-      icon: "📜",
+      icon: "📖",
       gradient: "from-purple-400 to-pink-500",
       bgGlow: "bg-purple-500/20",
     },

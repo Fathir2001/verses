@@ -5,6 +5,7 @@
  * 1. Suras - Basic Quran sura information
  * 2. Verses - Quran verses extracted from feelings.json
  * 3. Feelings - Linked to verses via suraNumber and verseNumber
+ * 4. Duas - Supplications extracted from feelings.json
  *
  * Usage:
  *   node src/scripts/seedAll.js
@@ -24,6 +25,7 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const Feeling = require("../models/Feeling");
 const Verse = require("../models/Verse");
 const Sura = require("../models/Sura");
+const Dua = require("../models/Dua");
 
 // Parse CLI arguments
 const parseArgs = () => {
@@ -176,6 +178,7 @@ const seedAll = async () => {
         Sura.deleteMany({}),
         Verse.deleteMany({}),
         Feeling.deleteMany({}),
+        Dua.deleteMany({}),
       ]);
       console.log("   All data cleared");
     }
@@ -335,6 +338,70 @@ const seedAll = async () => {
     );
 
     // ========================================
+    // STEP 4: Seed Duas from Feelings
+    // ========================================
+    console.log("\n🤲 Seeding Duas from feelings...");
+    let duasCreated = 0;
+    let duasUpdated = 0;
+
+    // Helper function to get category based on feeling
+    const getCategoryFromFeeling = (feelingTitle) => {
+      const categories = {
+        Sad: "Comfort & Solace",
+        Anxious: "Peace & Trust",
+        Lonely: "Connection",
+        Angry: "Self-Control",
+        Hopeless: "Hope & Mercy",
+        Grateful: "Gratitude",
+        Overwhelmed: "Ease & Relief",
+        Lost: "Guidance",
+        Guilty: "Forgiveness",
+        Afraid: "Protection",
+        Jealous: "Contentment",
+        Peaceful: "Peace & Dhikr",
+      };
+      return categories[feelingTitle] || "General";
+    };
+
+    for (const feeling of feelingsData) {
+      if (!feeling.dua) continue;
+
+      const duaData = {
+        title: `Dua for ${feeling.title}`,
+        slug: `dua-for-${feeling.slug}`,
+        arabic: feeling.dua.arabic || "",
+        transliteration: feeling.dua.transliteration || "",
+        meaning: feeling.dua.meaning || "",
+        reference: feeling.dua.reference || "",
+        category: getCategoryFromFeeling(feeling.title),
+        benefits: `This dua is recommended when feeling ${feeling.title.toLowerCase()}.`,
+      };
+
+      try {
+        const result = await Dua.findOneAndUpdate(
+          { slug: duaData.slug },
+          { $set: duaData },
+          { upsert: true, new: true, runValidators: true },
+        );
+
+        if (
+          result.createdAt &&
+          result.updatedAt &&
+          result.createdAt.getTime() === result.updatedAt.getTime()
+        ) {
+          duasCreated++;
+        } else {
+          duasUpdated++;
+        }
+      } catch (err) {
+        console.error(
+          `   ❌ Error with dua "${duaData.title}": ${err.message}`,
+        );
+      }
+    }
+    console.log(`   ✅ Created ${duasCreated} duas, updated ${duasUpdated}`);
+
+    // ========================================
     // Summary
     // ========================================
     console.log(`
@@ -347,6 +414,7 @@ const seedAll = async () => {
 ║   📚 Suras:    ${String(surasCreated).padStart(3)}                                        ║
 ║   📖 Verses:   ${String(versesCreated).padStart(3)}                                        ║
 ║   💭 Feelings: ${String(feelingsCreated + feelingsUpdated).padStart(3)}                                        ║
+║   🤲 Duas:     ${String(duasCreated + duasUpdated).padStart(3)}                                        ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
     `);
