@@ -1,3 +1,4 @@
+export { AdminSidebar } from "./AdminSidebar";
 export { AnimatedBackground } from "./AnimatedBackground";
 export { CopyButton } from "./CopyButton";
 export { FavoriteButton } from "./FavoriteButton";
