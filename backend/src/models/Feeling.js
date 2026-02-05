@@ -1,60 +1,5 @@
 const mongoose = require("mongoose");
 
-// Sub-schema for Quran reference
-const quranSubSchema = new mongoose.Schema(
-  {
-    text: {
-      type: String,
-      required: [true, "Quran text is required"],
-      trim: true,
-    },
-    reference: {
-      type: String,
-      required: [true, "Quran reference is required"],
-      trim: true,
-    },
-    suraNumber: {
-      type: Number,
-      min: [1, "Sura number must be at least 1"],
-      max: [114, "Sura number cannot exceed 114"],
-      default: null,
-    },
-    verseNumber: {
-      type: Number,
-      min: [1, "Verse number must be at least 1"],
-      default: null,
-    },
-  },
-  { _id: false },
-);
-
-// Sub-schema for Dua
-const duaSubSchema = new mongoose.Schema(
-  {
-    arabic: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    transliteration: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    meaning: {
-      type: String,
-      required: [true, "Dua meaning is required"],
-      trim: true,
-    },
-    reference: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-  },
-  { _id: false },
-);
-
 const feelingSchema = new mongoose.Schema(
   {
     slug: {
@@ -88,13 +33,15 @@ const feelingSchema = new mongoose.Schema(
       required: [true, "Reminder is required"],
       trim: true,
     },
-    quran: {
-      type: quranSubSchema,
-      required: [true, "Quran reference is required"],
+    verse: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Verse",
+      required: [true, "Verse reference is required"],
     },
     dua: {
-      type: duaSubSchema,
-      required: [true, "Dua is required"],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Dua",
+      required: [true, "Dua reference is required"],
     },
     actions: {
       type: [String],
@@ -125,6 +72,11 @@ feelingSchema.methods.toJSON = function () {
 
 // Static method to get feeling in frontend-compatible format
 feelingSchema.statics.toFrontendFormat = function (feeling) {
+  const verse =
+    feeling.verse && typeof feeling.verse === "object" ? feeling.verse : null;
+  const dua =
+    feeling.dua && typeof feeling.dua === "object" ? feeling.dua : null;
+
   return {
     slug: feeling.slug,
     title: feeling.title,
@@ -132,18 +84,17 @@ feelingSchema.statics.toFrontendFormat = function (feeling) {
     preview: feeling.preview,
     reminder: feeling.reminder,
     quran: {
-      text: feeling.quran.text,
-      reference: feeling.quran.reference,
-      ...(feeling.quran.suraNumber && { suraNumber: feeling.quran.suraNumber }),
-      ...(feeling.quran.verseNumber && {
-        verseNumber: feeling.quran.verseNumber,
-      }),
+      arabic: verse?.arabicText || "",
+      text: verse?.translationText || "",
+      reference: verse?.reference || "",
+      ...(verse?.suraNumber && { suraNumber: verse.suraNumber }),
+      ...(verse?.verseNumber && { verseNumber: verse.verseNumber }),
     },
     dua: {
-      arabic: feeling.dua.arabic || "",
-      transliteration: feeling.dua.transliteration || "",
-      meaning: feeling.dua.meaning,
-      reference: feeling.dua.reference || "",
+      arabic: dua?.arabic || "",
+      transliteration: dua?.transliteration || "",
+      meaning: dua?.meaning || "",
+      reference: dua?.reference || "",
     },
     actions: feeling.actions,
   };

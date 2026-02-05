@@ -1,5 +1,4 @@
 const Feeling = require("../models/Feeling");
-const Verse = require("../models/Verse");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { successResponse, errorResponse } = require("../utils/apiResponse");
 
@@ -7,26 +6,8 @@ const { successResponse, errorResponse } = require("../utils/apiResponse");
  * Helper function to enrich feeling with verse data from database
  */
 const enrichFeelingWithVerse = async (feeling) => {
-  const formatted = Feeling.toFrontendFormat(feeling);
-
-  // If feeling has suraNumber and verseNumber, fetch the actual verse
-  if (feeling.quran?.suraNumber && feeling.quran?.verseNumber) {
-    const verse = await Verse.findOne({
-      suraNumber: feeling.quran.suraNumber,
-      verseNumber: feeling.quran.verseNumber,
-    });
-
-    if (verse) {
-      // Enrich with verse data from database
-      formatted.quran.arabic = verse.arabicText;
-      formatted.quran.text = verse.translationText || formatted.quran.text;
-      if (verse.transliteration) {
-        formatted.quran.transliteration = verse.transliteration;
-      }
-    }
-  }
-
-  return formatted;
+  const populated = await feeling.populate(["verse", "dua"]);
+  return Feeling.toFrontendFormat(populated);
 };
 
 /**

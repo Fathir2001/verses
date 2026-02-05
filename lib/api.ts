@@ -280,18 +280,8 @@ export interface Feeling {
   emoji: string;
   preview: string;
   reminder: string;
-  quran: {
-    text: string;
-    reference: string;
-    suraNumber?: number;
-    verseNumber?: number;
-  };
-  dua: {
-    arabic: string;
-    transliteration: string;
-    meaning: string;
-    reference: string;
-  };
+  verse?: Verse | string;
+  dua?: Dua | string;
   actions: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -303,18 +293,8 @@ export interface CreateFeelingInput {
   emoji?: string;
   preview: string;
   reminder: string;
-  quran: {
-    text: string;
-    reference: string;
-    suraNumber?: number | null;
-    verseNumber?: number | null;
-  };
-  dua: {
-    arabic?: string;
-    transliteration?: string;
-    meaning: string;
-    reference?: string;
-  };
+  verseId: string;
+  duaId: string;
   actions: string[];
 }
 

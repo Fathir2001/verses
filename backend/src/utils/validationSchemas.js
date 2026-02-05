@@ -15,50 +15,20 @@ const loginSchema = z.object({
 
 // ============ Feeling Schemas ============
 
-const quranSubSchema = z.object({
-  text: z
-    .string({ required_error: "Quran text is required" })
-    .min(1, "Quran text cannot be empty")
-    .trim(),
-  reference: z
-    .string({ required_error: "Quran reference is required" })
-    .min(1, "Quran reference cannot be empty")
-    .trim(),
-  suraNumber: z
-    .number()
-    .int()
-    .min(1, "Sura number must be at least 1")
-    .max(114, "Sura number cannot exceed 114")
-    .optional()
-    .nullable(),
-  verseNumber: z
-    .number()
-    .int()
-    .min(1, "Verse number must be at least 1")
-    .optional()
-    .nullable(),
-});
-
-const duaSubSchema = z.object({
-  arabic: z.string().trim().optional().default(""),
-  transliteration: z.string().trim().optional().default(""),
-  meaning: z
-    .string({ required_error: "Dua meaning is required" })
-    .min(1, "Dua meaning cannot be empty")
-    .trim(),
-  reference: z.string().trim().optional().default(""),
-});
+const objectIdSchema = z
+  .string({ required_error: "ID is required" })
+  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID format");
 
 const createFeelingSchema = z.object({
   slug: z
     .string({ required_error: "Slug is required" })
     .min(1, "Slug cannot be empty")
+    .toLowerCase()
+    .trim()
     .regex(
       /^[a-z0-9-]+$/,
       "Slug can only contain lowercase letters, numbers, and hyphens",
-    )
-    .toLowerCase()
-    .trim(),
+    ),
   title: z
     .string({ required_error: "Title is required" })
     .min(1, "Title cannot be empty")
@@ -72,8 +42,8 @@ const createFeelingSchema = z.object({
     .string({ required_error: "Reminder is required" })
     .min(1, "Reminder cannot be empty")
     .trim(),
-  quran: quranSubSchema,
-  dua: duaSubSchema,
+  verseId: objectIdSchema,
+  duaId: objectIdSchema,
   actions: z
     .array(z.string().trim().min(1, "Action cannot be empty"))
     .min(1, "At least one action is required"),

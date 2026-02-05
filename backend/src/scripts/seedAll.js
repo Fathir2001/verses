@@ -271,74 +271,7 @@ const seedAll = async () => {
     console.log(`   ✅ Seeded ${versesCreated} verses`);
 
     // ========================================
-    // STEP 3: Seed Feelings with Verse References
-    // ========================================
-    console.log("\n💭 Seeding Feelings with verse references...");
-    let feelingsCreated = 0;
-    let feelingsUpdated = 0;
-
-    for (const feeling of feelingsData) {
-      try {
-        // Parse the Quran reference to get sura and verse numbers
-        let suraNumber = null;
-        let verseNumber = null;
-
-        if (feeling.quran && feeling.quran.reference) {
-          const parsed = parseQuranReference(feeling.quran.reference);
-          if (parsed) {
-            suraNumber = parsed.suraNumber;
-            verseNumber = parsed.verseStart;
-          }
-        }
-
-        const result = await Feeling.findOneAndUpdate(
-          { slug: feeling.slug },
-          {
-            $set: {
-              slug: feeling.slug,
-              title: feeling.title,
-              emoji: feeling.emoji || "",
-              preview: feeling.preview,
-              reminder: feeling.reminder,
-              quran: {
-                text: feeling.quran?.text || "",
-                reference: feeling.quran?.reference || "",
-                suraNumber: suraNumber,
-                verseNumber: verseNumber,
-              },
-              dua: {
-                arabic: feeling.dua?.arabic || "",
-                transliteration: feeling.dua?.transliteration || "",
-                meaning: feeling.dua?.meaning || "",
-                reference: feeling.dua?.reference || "",
-              },
-              actions: feeling.actions || [],
-            },
-          },
-          { upsert: true, new: true, runValidators: true },
-        );
-
-        if (
-          result.createdAt &&
-          result.updatedAt &&
-          result.createdAt.getTime() === result.updatedAt.getTime()
-        ) {
-          feelingsCreated++;
-        } else {
-          feelingsUpdated++;
-        }
-      } catch (err) {
-        console.error(
-          `   ❌ Error with feeling "${feeling.slug}": ${err.message}`,
-        );
-      }
-    }
-    console.log(
-      `   ✅ Created ${feelingsCreated} feelings, updated ${feelingsUpdated}`,
-    );
-
-    // ========================================
-    // STEP 4: Seed Duas from Feelings
+    // STEP 3: Seed Duas from Feelings
     // ========================================
     console.log("\n🤲 Seeding Duas from feelings...");
     let duasCreated = 0;
@@ -400,6 +333,82 @@ const seedAll = async () => {
       }
     }
     console.log(`   ✅ Created ${duasCreated} duas, updated ${duasUpdated}`);
+
+    // ========================================
+    // STEP 4: Seed Feelings with Verse + Dua References
+    // ========================================
+    console.log("\n💭 Seeding Feelings with verse + dua references...");
+    let feelingsCreated = 0;
+    let feelingsUpdated = 0;
+
+    for (const feeling of feelingsData) {
+      try {
+        // Parse the Quran reference to get sura and verse numbers
+        let suraNumber = null;
+        let verseNumber = null;
+
+        if (feeling.quran && feeling.quran.reference) {
+          const parsed = parseQuranReference(feeling.quran.reference);
+          if (parsed) {
+            suraNumber = parsed.suraNumber;
+            verseNumber = parsed.verseStart;
+          }
+        }
+
+        const verse = await Verse.findOne({
+          suraNumber,
+          verseNumber,
+        });
+
+        if (!verse) {
+          console.error(
+            `   ❌ Verse not found for feeling "${feeling.slug}" (${suraNumber}:${verseNumber})`,
+          );
+          continue;
+        }
+
+        const dua = await Dua.findOne({ slug: `dua-for-${feeling.slug}` });
+
+        if (!dua) {
+          console.error(`   ❌ Dua not found for feeling "${feeling.slug}"`);
+          continue;
+        }
+
+        const result = await Feeling.findOneAndUpdate(
+          { slug: feeling.slug },
+          {
+            $set: {
+              slug: feeling.slug,
+              title: feeling.title,
+              emoji: feeling.emoji || "",
+              preview: feeling.preview,
+              reminder: feeling.reminder,
+              verse: verse._id,
+              dua: dua._id,
+              actions: feeling.actions || [],
+            },
+          },
+          { upsert: true, new: true, runValidators: true },
+        );
+
+        if (
+          result.createdAt &&
+          result.updatedAt &&
+          result.createdAt.getTime() === result.updatedAt.getTime()
+        ) {
+          feelingsCreated++;
+        } else {
+          feelingsUpdated++;
+        }
+      } catch (err) {
+        console.error(
+          `   ❌ Error with feeling "${feeling.slug}": ${err.message}`,
+        );
+      }
+    }
+    console.log(
+      `   ✅ Created ${feelingsCreated} feelings, updated ${feelingsUpdated}`,
+    );
 
     // ========================================
     // Summary

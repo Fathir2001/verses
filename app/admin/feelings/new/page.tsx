@@ -1,54 +1,77 @@
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { api, ApiError, CreateFeelingInput } from "@/lib/api";
+import { api, ApiError, CreateFeelingInput, Dua, Verse } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function NewFeelingPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [errorDetails, setErrorDetails] = useState<
+    Array<{ field: string; message: string }>
+  >([]);
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [duas, setDuas] = useState<Dua[]>([]);
   const [formData, setFormData] = useState<CreateFeelingInput>({
     slug: "",
     title: "",
     emoji: "",
     preview: "",
     reminder: "",
-    quran: {
-      text: "",
-      reference: "",
-      suraNumber: null,
-      verseNumber: null,
-    },
-    dua: {
-      arabic: "",
-      transliteration: "",
-      meaning: "",
-      reference: "",
-    },
+    verseId: "",
+    duaId: "",
     actions: [""],
   });
+
+  useEffect(() => {
+    const loadRefs = async () => {
+      try {
+        const [versesRes, duasRes] = await Promise.all([
+          api.getAdminVerses(1, 200),
+          api.getAdminDuas(1, 200),
+        ]);
+        if (versesRes.data) setVerses(versesRes.data);
+        if (duasRes.data) setDuas(duasRes.data);
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setError(err.message);
+          setErrorDetails(err.errors || []);
+        }
+      }
+    };
+    loadRefs();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setErrorDetails([]);
     setIsSubmitting(true);
 
     try {
+      const cleanedActions = formData.actions.filter((a) => a.trim() !== "");
+      if (cleanedActions.length === 0) {
+        setError("Please add at least one action.");
+        setIsSubmitting(false);
+        return;
+      }
       const cleanedData = {
         ...formData,
-        actions: formData.actions.filter((a) => a.trim() !== ""),
+        actions: cleanedActions,
       };
       await api.createFeeling(cleanedData);
       router.push("/admin/feelings");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
+        setErrorDetails(err.errors || []);
       } else {
         setError("Failed to create feeling");
+        setErrorDetails([]);
       }
     } finally {
       setIsSubmitting(false);
@@ -69,6 +92,15 @@ export default function NewFeelingPage() {
       });
     }
   };
+
+  const normalizeSlug = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
   const addAction = () => {
     setFormData({ ...formData, actions: [...formData.actions, ""] });
@@ -157,6 +189,16 @@ export default function NewFeelingPage() {
               </svg>
               {error}
             </p>
+            {errorDetails.length > 0 && (
+              <ul className="mt-3 space-y-1 text-sm text-red-200">
+                {errorDetails.map((detail, index) => (
+                  <li key={`${detail.field}-${index}`}>
+                    <span className="font-medium">{detail.field}:</span>{" "}
+                    {detail.message}
+                  </li>
+                ))}
+              </ul>
+            )}
           </motion.div>
         )}
 
@@ -193,7 +235,9 @@ export default function NewFeelingPage() {
                 <input
                   type="text"
                   value={formData.slug}
-                  onChange={(e) => updateField("slug", e.target.value)}
+                  onChange={(e) =>
+                    updateField("slug", normalizeSlug(e.target.value))
+                  }
                   className={inputClass}
                   placeholder="e.g., feeling-anxious"
                   required
@@ -249,7 +293,7 @@ export default function NewFeelingPage() {
             </div>
           </div>
 
-          {/* Quran Section */}
+          {/* Verse + Dua References */}
           <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
             <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
@@ -267,142 +311,46 @@ export default function NewFeelingPage() {
                   />
                 </svg>
               </span>
-              Quran Reference
+              Verse & Dua References
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <label className={labelClass}>Verse Text *</label>
-                <textarea
-                  value={formData.quran.text}
-                  onChange={(e) => updateField("quran.text", e.target.value)}
-                  className={`${inputClass} min-h-[100px]`}
-                  dir="rtl"
-                  placeholder="Arabic verse text..."
-                  required
-                />
-              </div>
-
               <div>
-                <label className={labelClass}>Reference *</label>
-                <input
-                  type="text"
-                  value={formData.quran.reference}
-                  onChange={(e) =>
-                    updateField("quran.reference", e.target.value)
-                  }
+                <label className={labelClass}>Verse *</label>
+                <select
+                  value={formData.verseId}
+                  onChange={(e) => updateField("verseId", e.target.value)}
                   className={inputClass}
-                  placeholder="e.g., Surah Al-Baqarah 2:286"
                   required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>Sura Number</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="114"
-                    value={formData.quran.suraNumber || ""}
-                    onChange={(e) =>
-                      updateField(
-                        "quran.suraNumber",
-                        e.target.value ? parseInt(e.target.value) : null,
-                      )
-                    }
-                    className={inputClass}
-                    placeholder="1-114"
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Verse Number</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={formData.quran.verseNumber || ""}
-                    onChange={(e) =>
-                      updateField(
-                        "quran.verseNumber",
-                        e.target.value ? parseInt(e.target.value) : null,
-                      )
-                    }
-                    className={inputClass}
-                    placeholder="Verse #"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Dua Section */}
-          <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-purple-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
-                  />
-                </svg>
-              </span>
-              Dua (Supplication)
-            </h2>
-
-            <div className="space-y-6">
-              <div>
-                <label className={labelClass}>Arabic *</label>
-                <textarea
-                  value={formData.dua.arabic}
-                  onChange={(e) => updateField("dua.arabic", e.target.value)}
-                  className={`${inputClass} min-h-[100px]`}
-                  dir="rtl"
-                  placeholder="Arabic dua text..."
-                  required
-                />
+                  <option value="" disabled>
+                    Select a verse
+                  </option>
+                  {verses.map((verse) => (
+                    <option key={verse._id} value={verse._id}>
+                      {verse.suraNumber}:{verse.verseNumber} — {verse.reference}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
-                <label className={labelClass}>Transliteration *</label>
-                <textarea
-                  value={formData.dua.transliteration}
-                  onChange={(e) =>
-                    updateField("dua.transliteration", e.target.value)
-                  }
-                  className={`${inputClass} min-h-[80px]`}
-                  placeholder="Transliteration..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Meaning *</label>
-                <textarea
-                  value={formData.dua.meaning}
-                  onChange={(e) => updateField("dua.meaning", e.target.value)}
-                  className={`${inputClass} min-h-[80px]`}
-                  placeholder="English meaning..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Reference *</label>
-                <input
-                  type="text"
-                  value={formData.dua.reference}
-                  onChange={(e) => updateField("dua.reference", e.target.value)}
+                <label className={labelClass}>Dua *</label>
+                <select
+                  value={formData.duaId}
+                  onChange={(e) => updateField("duaId", e.target.value)}
                   className={inputClass}
-                  placeholder="e.g., Sahih Bukhari"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select a dua
+                  </option>
+                  {duas.map((dua) => (
+                    <option key={dua._id} value={dua._id}>
+                      {dua.title}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

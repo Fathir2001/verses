@@ -1,4 +1,6 @@
 const Feeling = require("../models/Feeling");
+const Verse = require("../models/Verse");
+const Dua = require("../models/Dua");
 const { asyncHandler, AppError } = require("../middleware/errorHandler");
 const {
   successResponse,
@@ -12,7 +14,7 @@ const {
  * @access  Private (Admin)
  */
 const createFeeling = asyncHandler(async (req, res) => {
-  const { slug, title, emoji, preview, reminder, quran, dua, actions } =
+  const { slug, title, emoji, preview, reminder, verseId, duaId, actions } =
     req.body;
 
   // Check if feeling with slug already exists
@@ -25,6 +27,19 @@ const createFeeling = asyncHandler(async (req, res) => {
     );
   }
 
+  const [verse, dua] = await Promise.all([
+    Verse.findById(verseId),
+    Dua.findById(duaId),
+  ]);
+
+  if (!verse) {
+    return errorResponse(res, 400, "Selected verse not found");
+  }
+
+  if (!dua) {
+    return errorResponse(res, 400, "Selected dua not found");
+  }
+
   // Create feeling
   const feeling = await Feeling.create({
     slug: slug.toLowerCase(),
@@ -32,16 +47,18 @@ const createFeeling = asyncHandler(async (req, res) => {
     emoji: emoji || "",
     preview,
     reminder,
-    quran,
-    dua,
+    verse: verse._id,
+    dua: dua._id,
     actions,
   });
+
+  const populated = await feeling.populate(["verse", "dua"]);
 
   return successResponse(
     res,
     201,
     "Feeling created successfully",
-    Feeling.toFrontendFormat(feeling),
+    Feeling.toFrontendFormat(populated),
   );
 });
 
@@ -76,6 +93,24 @@ const updateFeeling = asyncHandler(async (req, res) => {
     updateData.slug = updateData.slug.toLowerCase();
   }
 
+  if (updateData.verseId) {
+    const verse = await Verse.findById(updateData.verseId);
+    if (!verse) {
+      return errorResponse(res, 400, "Selected verse not found");
+    }
+    updateData.verse = updateData.verseId;
+    delete updateData.verseId;
+  }
+
+  if (updateData.duaId) {
+    const dua = await Dua.findById(updateData.duaId);
+    if (!dua) {
+      return errorResponse(res, 400, "Selected dua not found");
+    }
+    updateData.dua = updateData.duaId;
+    delete updateData.duaId;
+  }
+
   // Update the feeling
   const updatedFeeling = await Feeling.findByIdAndUpdate(
     id,
@@ -83,11 +118,13 @@ const updateFeeling = asyncHandler(async (req, res) => {
     { new: true, runValidators: true },
   );
 
+  const populated = await updatedFeeling.populate(["verse", "dua"]);
+
   return successResponse(
     res,
     200,
     "Feeling updated successfully",
-    Feeling.toFrontendFormat(updatedFeeling),
+    Feeling.toFrontendFormat(populated),
   );
 });
 
@@ -146,7 +183,7 @@ const getAllFeelingsAdmin = asyncHandler(async (req, res) => {
 const getFeelingById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const feeling = await Feeling.findById(id);
+  const feeling = await Feeling.findById(id).populate(["verse", "dua"]);
 
   if (!feeling) {
     return errorResponse(res, 404, "Feeling not found");
