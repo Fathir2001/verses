@@ -28,7 +28,7 @@ export function Navbar() {
                        focus:ring-purple-500/50 rounded-xl px-1 py-1 -mx-1 -my-1"
           >
             <motion.div
-              className="relative px-2 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
+              className="relative flex items-center gap-2 px-2 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
                          dark:from-purple-500/25 dark:via-pink-500/25 dark:to-orange-500/25
                          border-2 border-purple-400/40 dark:border-purple-500/40 
                          shadow-lg shadow-purple-500/10 dark:shadow-purple-500/20 overflow-hidden"
@@ -38,6 +38,15 @@ export function Navbar() {
               }}
               transition={{ type: "spring", stiffness: 400 }}
             >
+              {/* Logo */}
+              <motion.img
+                src="/enhanced_image.png"
+                alt="Think Different Logo"
+                className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.5, duration: 0.6, type: "spring" }}
+              />
               {/* Animated shimmer effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent"

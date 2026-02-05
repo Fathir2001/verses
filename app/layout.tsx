@@ -76,13 +76,20 @@ export default function RootLayout({
             <div className="min-h-screen flex flex-col">
               <Navbar />
               <main className="flex-grow">{children}</main>
-              <footer className="py-6 text-center space-y-1">
+              <footer className="py-6 text-center space-y-2">
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-300 text-glow">
                   Made with 💚 for the Ummah
                 </p>
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-400 text-glow">
-                  © 2026 Think_Different
-                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <img
+                    src="/enhanced_image.png"
+                    alt="Think Different Logo"
+                    className="w-6 h-6 object-contain"
+                  />
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-400 text-glow">
+                    © 2026 Think_Different
+                  </p>
+                </div>
               </footer>
             </div>
           </FavoritesProvider>

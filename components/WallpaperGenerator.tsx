@@ -167,15 +167,16 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           : feeling.dua.reference || "";
       ctx.fillText(`— ${reference}`, panelCenterX, panelBottom - 20);
 
-      // Client branding with dark glassy card background
+      // Client branding with logo and dark glassy card background
       const brandingText = "© 2026 Think_Different";
       ctx.font = "bold 38px sans-serif";
       const brandingMetrics = ctx.measureText(brandingText);
       const brandingX = width / 2;
       const brandingY = height * 0.93;
+      const logoSize = 50;
       const cardPadding = 30;
-      const cardWidth = brandingMetrics.width + cardPadding * 2;
-      const cardHeight = 70;
+      const cardWidth = brandingMetrics.width + logoSize + cardPadding * 3;
+      const cardHeight = 80;
       const cardRadius = 20;
 
       // Draw glassy card background
@@ -195,18 +196,43 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Draw the text on top
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillText(brandingText, brandingX, brandingY);
+      // Draw logo
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      logoImg.onload = () => {
+        const logoX = brandingX - cardWidth / 2 + cardPadding;
+        const logoY = brandingY - logoSize / 2 - 10;
+        ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
-      setIsGenerating(false);
+        // Draw the text on top (after logo loads)
+        ctx.fillStyle = "#f8fafc";
+        ctx.textAlign = "left";
+        ctx.fillText(brandingText, logoX + logoSize + 15, brandingY);
+        ctx.textAlign = "center";
 
-      // Download the image
-      const dataUrl = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = `Think-Different-${feeling.title}-${contentType}.png`;
-      link.href = dataUrl;
-      link.click();
+        setIsGenerating(false);
+
+        // Download the image
+        const dataUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.download = `Think-Different-${feeling.title}-${contentType}.png`;
+        link.href = dataUrl;
+        link.click();
+      };
+      logoImg.onerror = () => {
+        // If logo fails to load, just draw text
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillText(brandingText, brandingX, brandingY);
+
+        setIsGenerating(false);
+
+        const dataUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.download = `Think-Different-${feeling.title}-${contentType}.png`;
+        link.href = dataUrl;
+        link.click();
+      };
+      logoImg.src = "/enhanced_image.png";
     };
 
     // Always load the mosque image for all themes
