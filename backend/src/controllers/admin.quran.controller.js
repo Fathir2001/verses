@@ -105,6 +105,23 @@ const getAllSurasAdmin = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get sura by ID
+ * @route   GET /api/admin/suras/:id
+ * @access  Private (Admin)
+ */
+const getSuraById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const sura = await Sura.findById(id);
+
+  if (!sura) {
+    return errorResponse(res, 404, "Sura not found");
+  }
+
+  return successResponse(res, 200, "Sura retrieved successfully", sura);
+});
+
 // ============ VERSE CONTROLLERS ============
 
 /**
@@ -287,6 +304,7 @@ module.exports = {
   updateSura,
   deleteSura,
   getAllSurasAdmin,
+  getSuraById,
   // Verse controllers
   createVerse,
   updateVerse,

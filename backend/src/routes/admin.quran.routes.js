@@ -6,6 +6,7 @@ const {
   updateSura,
   deleteSura,
   getAllSurasAdmin,
+  getSuraById,
   // Verse controllers
   createVerse,
   updateVerse,
@@ -35,6 +36,13 @@ router.use(protect, isAdmin);
  * @access  Private (Admin)
  */
 router.get("/suras", getAllSurasAdmin);
+
+/**
+ * @route   GET /api/admin/suras/:id
+ * @desc    Get sura by ID
+ * @access  Private (Admin)
+ */
+router.get("/suras/:id", validate(mongoIdParamSchema, "params"), getSuraById);
 
 /**
  * @route   POST /api/admin/suras
