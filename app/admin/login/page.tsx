@@ -253,7 +253,7 @@ export default function AdminLoginPage() {
         >
           <p className="text-slate-500 text-sm flex items-center justify-center gap-2">
             <span className="text-lg">🌙</span>
-            Verses Admin • Think_Different
+            Admin • Think_Different
           </p>
         </motion.div>
       </motion.div>

@@ -4,7 +4,7 @@ import { useAdminAuth } from "@/context/AdminAuthContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface AdminSidebarProps {
   children: React.ReactNode;
@@ -93,12 +93,17 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
   const { admin, isLoading, isAuthenticated, logout } = useAdminAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/admin/login");
     }
   }, [isLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   if (isLoading) {
     return (
@@ -113,20 +118,68 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 backdrop-blur-xl bg-white/5">
+        <Link href="/admin" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg overflow-hidden shadow-lg">
+            <img
+              src="/enhanced_image.png"
+              alt="Think_Different Logo"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <span className="font-semibold text-white">Think_Different</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
+          className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+          aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isSidebarOpen}
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-72 backdrop-blur-xl bg-white/5 border-r border-white/10 flex flex-col"
+        initial={false}
+        animate={{
+          x: isSidebarOpen ? 0 : -288,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className={`fixed md:static inset-y-0 left-0 z-[55] w-72 backdrop-blur-xl bg-white/5 border-r border-white/10 flex flex-col md:translate-x-0 ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-white/10">
+        {/* Logo + Close Button */}
+        <div className="p-6 border-b border-white/10 flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 rounded-xl overflow-hidden shadow-lg"
+              className="w-12 h-12 rounded-xl overflow-hidden shadow-lg pointer-events-none"
             >
               <img
                 src="/enhanced_image.png"
@@ -141,6 +194,31 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
               <p className="text-xs text-slate-400">Content Management</p>
             </div>
           </Link>
+          {/* Mobile Close Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsSidebarOpen(false);
+            }}
+            className="md:hidden p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 transition-colors relative z-[70]"
+            aria-label="Close menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
 
         {/* Navigation */}
@@ -265,7 +343,7 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-6"
+          className="p-4 sm:p-6 lg:p-8"
         >
           {children}
         </motion.div>

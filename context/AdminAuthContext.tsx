@@ -27,6 +27,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+let cachedAdmin: Admin | null | undefined;
+let inflightAdmin: Promise<Admin | null> | null = null;
+
+const fetchAdminOnce = async (): Promise<Admin | null> => {
+  if (cachedAdmin !== undefined) {
+    return cachedAdmin;
+  }
+  if (inflightAdmin) {
+    return inflightAdmin;
+  }
+
+  inflightAdmin = api
+    .getMe()
+    .then((response) => {
+      cachedAdmin = response.data ?? null;
+      return cachedAdmin;
+    })
+    .finally(() => {
+      inflightAdmin = null;
+    });
+
+  return inflightAdmin;
+};
+
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,13 +67,21 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const response = await api.getMe();
-        if (response.data) {
-          setAdmin(response.data);
+        const adminData = await fetchAdminOnce();
+        if (adminData) {
+          setAdmin(adminData);
         }
-      } catch {
-        // Token invalid, clear it
-        api.logout();
+      } catch (err) {
+        if (err instanceof ApiError) {
+          if (err.status === 401 || err.status === 403) {
+            api.logout();
+            cachedAdmin = null;
+          } else if (err.status === 429) {
+            setError("Too many requests. Please wait a moment and refresh.");
+          } else {
+            setError(err.message);
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -67,6 +99,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         const response = await api.login(email, password);
         if (response.data?.admin) {
           setAdmin(response.data.admin);
+          cachedAdmin = response.data.admin;
           router.push("/admin");
         }
       } catch (err) {
@@ -86,6 +119,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     api.logout();
     setAdmin(null);
+    cachedAdmin = null;
     router.push("/admin/login");
   }, [router]);
 
