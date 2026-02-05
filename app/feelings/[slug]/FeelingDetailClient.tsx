@@ -74,18 +74,25 @@ export default function FeelingDetailClient({
   const NavButton = ({
     direction,
     onClick,
+    disabled,
   }: {
     direction: "prev" | "next";
     onClick: () => void;
+    disabled?: boolean;
   }) => (
     <button
       onClick={onClick}
-      className="p-2 rounded-full bg-white/20 dark:bg-slate-700/50 hover:bg-white/40 dark:hover:bg-slate-600/50 
-                 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+      disabled={disabled}
+      className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
+        disabled
+          ? "bg-white/10 dark:bg-slate-700/30 text-slate-400 border-white/10 cursor-not-allowed"
+          : "bg-emerald-500 text-white border-emerald-400/60 shadow-md shadow-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/40 hover:brightness-105"
+      }`}
       aria-label={direction === "prev" ? "Previous" : "Next"}
+      aria-disabled={disabled}
     >
       <svg
-        className="w-5 h-5 text-slate-700 dark:text-slate-200"
+        className="w-5 h-5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -97,6 +104,9 @@ export default function FeelingDetailClient({
           d={direction === "prev" ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"}
         />
       </svg>
+      <span className="text-sm font-semibold">
+        {direction === "prev" ? "Prev" : "Next"}
+      </span>
     </button>
   );
 
@@ -170,13 +180,21 @@ export default function FeelingDetailClient({
             {currentVerse ? (
               <>
                 {/* Navigation header for multiple verses */}
-                {hasMultipleVerses && (
+                {verses.length > 0 && (
                   <div className="flex items-center justify-between mb-4">
-                    <NavButton direction="prev" onClick={goToPrevVerse} />
+                    <NavButton
+                      direction="prev"
+                      onClick={goToPrevVerse}
+                      disabled={!hasMultipleVerses}
+                    />
                     <span className="text-sm text-slate-500 dark:text-slate-400">
                       Verse {currentVerseIndex + 1} of {verses.length}
                     </span>
-                    <NavButton direction="next" onClick={goToNextVerse} />
+                    <NavButton
+                      direction="next"
+                      onClick={goToNextVerse}
+                      disabled={!hasMultipleVerses}
+                    />
                   </div>
                 )}
                 <blockquote className="border-l-4 border-emerald-500/50 pl-4 py-2 mb-4">
@@ -209,13 +227,21 @@ export default function FeelingDetailClient({
             {currentDua ? (
               <>
                 {/* Navigation header for multiple duas */}
-                {hasMultipleDuas && (
+                {duas.length > 0 && (
                   <div className="flex items-center justify-between mb-4">
-                    <NavButton direction="prev" onClick={goToPrevDua} />
+                    <NavButton
+                      direction="prev"
+                      onClick={goToPrevDua}
+                      disabled={!hasMultipleDuas}
+                    />
                     <span className="text-sm text-slate-500 dark:text-slate-400">
                       Dua {currentDuaIndex + 1} of {duas.length}
                     </span>
-                    <NavButton direction="next" onClick={goToNextDua} />
+                    <NavButton
+                      direction="next"
+                      onClick={goToNextDua}
+                      disabled={!hasMultipleDuas}
+                    />
                   </div>
                 )}
                 <div className="space-y-4 mb-4">
