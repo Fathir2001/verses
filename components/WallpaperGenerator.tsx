@@ -38,6 +38,27 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const verseContent =
+    feeling.verses?.[0] ||
+    (feeling.quran
+      ? {
+          arabic: feeling.quran.arabic,
+          text: feeling.quran.text,
+          reference: feeling.quran.reference,
+        }
+      : null);
+
+  const duaContent =
+    feeling.duas?.[0] ||
+    (feeling.dua
+      ? {
+          arabic: feeling.dua.arabic,
+          transliteration: feeling.dua.transliteration,
+          meaning: feeling.dua.meaning,
+          reference: feeling.dua.reference,
+        }
+      : null);
+
   const currentImage = imageOptions[imageKey];
 
   const generateWallpaper = useCallback(async () => {
@@ -193,11 +214,11 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
 
         // Arabic text - center aligned inside panel
         if (
-          (contentType === "verse" && feeling.quran.arabic) ||
-          (contentType === "dua" && feeling.dua.arabic)
+          (contentType === "verse" && verseContent?.arabic) ||
+          (contentType === "dua" && duaContent?.arabic)
         ) {
           const arabicText =
-            contentType === "verse" ? feeling.quran.arabic : feeling.dua.arabic;
+            contentType === "verse" ? verseContent?.arabic : duaContent?.arabic;
           ctx.font = "bold 52px sans-serif";
           ctx.textAlign = "center";
 
@@ -214,8 +235,8 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         ctx.textAlign = "center";
         const englishText =
           contentType === "verse"
-            ? feeling.quran.text
-            : feeling.dua.transliteration;
+            ? verseContent?.text || ""
+            : duaContent?.transliteration || "";
 
         ctx.font = "italic bold 40px sans-serif";
         const englishLines = wrapText(ctx, `"${englishText}"`, maxWidth);
@@ -230,7 +251,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
           ctx.font = "bold 36px sans-serif";
           const meaningLines = wrapText(
             ctx,
-            `"${feeling.dua.meaning}"`,
+            `"${duaContent?.meaning || ""}"`,
             maxWidth,
           );
           let meaningY = englishY + 35;
@@ -245,8 +266,8 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         ctx.fillStyle = textColor;
         const reference =
           contentType === "verse"
-            ? feeling.quran.reference
-            : feeling.dua.reference || "";
+            ? verseContent?.reference || ""
+            : duaContent?.reference || "";
         ctx.fillText(`— ${reference}`, panelCenterX, panelBottom - 20);
 
         // Client branding - text only (no logo)
@@ -412,14 +433,14 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
             </p>
             <p className="text-[7px] italic line-clamp-3 text-slate-200">
               {contentType === "verse"
-                ? `"${feeling.quran.text}"`
-                : `"${feeling.dua.transliteration}"`}
+                ? `"${verseContent?.text || ""}"`
+                : `"${duaContent?.transliteration || ""}"`}
             </p>
             <p className="text-[6px] mt-1 font-semibold text-slate-200">
               —{" "}
               {contentType === "verse"
-                ? feeling.quran.reference
-                : feeling.dua.reference}
+                ? verseContent?.reference || ""
+                : duaContent?.reference || ""}
             </p>
             <p className="text-[6px] mt-2 font-bold text-slate-100">
               © 2026 Think_Different

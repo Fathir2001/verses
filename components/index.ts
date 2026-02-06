@@ -1,3 +1,4 @@
+export { AdminSidebar } from "./AdminSidebar";
 export { AnimatedBackground } from "./AnimatedBackground";
 export { CopyButton } from "./CopyButton";
 export { FavoriteButton } from "./FavoriteButton";
@@ -8,6 +9,7 @@ export { IslamicDateBanner } from "./IslamicDateBanner";
 export { Navbar } from "./Navbar";
 export { NotFoundCard } from "./NotFoundCard";
 export { PageTransition } from "./PageTransition";
+export { RootLayoutClient } from "./RootLayoutClient";
 export { SearchBox } from "./SearchBox";
 export { SectionBlock } from "./SectionBlock";
 export { ShareButton } from "./ShareButton";

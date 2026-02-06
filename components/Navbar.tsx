@@ -3,11 +3,38 @@
 import { useFavorites } from "@/context";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
   const { favorites } = useFavorites();
   const favoriteCount = favorites.length;
+  const router = useRouter();
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    clickCountRef.current += 1;
+
+    // Reset timer on each click
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+    }
+
+    // If 3 clicks within the time window, navigate to admin
+    if (clickCountRef.current >= 3) {
+      clickCountRef.current = 0;
+      router.push("/admin/login");
+      return;
+    }
+
+    // Reset click count after 1 second of no clicks
+    clickTimerRef.current = setTimeout(() => {
+      clickCountRef.current = 0;
+    }, 1000);
+  };
 
   return (
     <motion.nav
@@ -22,10 +49,10 @@ export function Navbar() {
                         backdrop-blur-xl border border-white/20 dark:border-white/10 
                         shadow-glass dark:shadow-glass-dark px-3 py-2 sm:px-5 sm:py-2.5"
         >
-          <Link
-            href="/feelings"
+          <div
+            onClick={handleLogoClick}
             className="flex items-center group focus:outline-none focus:ring-2 
-                       focus:ring-purple-500/50 rounded-xl px-1 py-1 -mx-1 -my-1"
+                       focus:ring-purple-500/50 rounded-xl px-1 py-1 -mx-1 -my-1 cursor-pointer"
           >
             <motion.div
               className="relative flex items-center gap-2 px-2 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 
@@ -112,7 +139,7 @@ export function Navbar() {
                 🤲 I Am Feeling • Islamic Comfort & Guidance
               </span>
             </motion.div>
-          </Link>
+          </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Home Link */}
