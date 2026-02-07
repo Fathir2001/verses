@@ -307,7 +307,7 @@ export default function FeelingDetailClient({
               Know someone who might need this? Share it with them.
             </p>
             <ShareButton
-              title={`I Am Feeling ${feeling.title}`}
+              title={`Think Different - Feeling ${feeling.title}`}
               text={feeling.preview}
               url={shareUrl}
             />

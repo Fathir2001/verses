@@ -200,7 +200,7 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
         ctx.font = "100px sans-serif";
         ctx.fillText(feeling.emoji, panelCenterX, panelTop + 70);
 
-        // Draw "I Am Feeling" title - inside panel
+        // Draw feeling title - inside panel
         ctx.font = "bold 60px sans-serif";
         ctx.fillText(
           `I Am Feeling ${feeling.title}`,
