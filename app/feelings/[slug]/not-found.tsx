@@ -1,4 +1,4 @@
-import { NotFoundCard } from "@/components";
+import { NotFoundCard } from "@/components/NotFoundCard";
 
 export default function FeelingNotFound() {
   return (

@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  FeelingCard,
-  IslamicDateBanner,
-  PageTransition,
-  SearchBox,
-} from "@/components";
+import { FeelingCard } from "@/components/FeelingCard";
+import { IslamicDateBanner } from "@/components/IslamicDateBanner";
+import { PageTransition } from "@/components/PageTransition";
+import { SearchBox } from "@/components/SearchBox";
 import { getAllFeelings, searchFeelings } from "@/lib/feelings";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
@@ -107,14 +105,13 @@ export default function FeelingsPage() {
             </button>
           </motion.div>
         ) : (
-          <motion.div
+          <div
             className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
-            layout
           >
             {filteredFeelings.map((feeling, index) => (
               <FeelingCard key={feeling.slug} feeling={feeling} index={index} />
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </PageTransition>
