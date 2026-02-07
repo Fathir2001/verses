@@ -64,11 +64,7 @@ export default function AdminDuasPage() {
 
         {/* Header */}
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4"
-          >
+          <div className="flex items-center gap-4 animate-fade-in-up">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
               <span className="text-2xl">🤲</span>
             </div>
@@ -80,13 +76,9 @@ export default function AdminDuasPage() {
                 Manage all duas and supplications
               </p>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-          >
+          <div className="animate-fade-in-up">
             <Link
               href="/admin/duas/new"
               className="group relative inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl 
@@ -113,15 +105,11 @@ export default function AdminDuasPage() {
               </svg>
               <span className="relative font-semibold text-white">Add Dua</span>
             </Link>
-          </motion.div>
+          </div>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-xl"
-          >
+          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-xl animate-fade-in-up">
             <p className="text-red-300 flex items-center gap-3">
               <span className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
                 <svg
@@ -140,16 +128,11 @@ export default function AdminDuasPage() {
               </span>
               {error}
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Table Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="relative rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/10 overflow-hidden shadow-2xl"
-        >
+        <div className="relative rounded-3xl backdrop-blur-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/10 overflow-hidden shadow-2xl animate-fade-in-up">
           {/* Decorative corner glow */}
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl" />
@@ -227,11 +210,8 @@ export default function AdminDuasPage() {
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {duas.map((dua, index) => (
-                      <motion.tr
+                      <tr
                         key={dua._id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
                         className="group hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent transition-all duration-300"
                       >
                         <td className="px-6 py-5">
@@ -308,7 +288,7 @@ export default function AdminDuasPage() {
                             </button>
                           </div>
                         </td>
-                      </motion.tr>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
@@ -379,7 +359,7 @@ export default function AdminDuasPage() {
               )}
             </>
           )}
-        </motion.div>
+        </div>
 
         {/* Delete Modal */}
         <AnimatePresence>

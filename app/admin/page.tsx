@@ -2,7 +2,6 @@
 
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, Feeling } from "@/lib/api";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -117,11 +116,7 @@ export default function AdminDashboard() {
 
         {/* Header */}
         <div className="relative mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 mb-3"
-          >
+          <div className="flex items-center gap-4 mb-3 animate-fade-in-up">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <span className="text-2xl">✨</span>
             </div>
@@ -133,15 +128,11 @@ export default function AdminDashboard() {
                 Welcome to Think_Different content management
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-xl shadow-lg shadow-red-500/10"
-          >
+          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-xl shadow-lg shadow-red-500/10 animate-fade-in-up">
             <p className="text-red-300 flex items-center gap-3">
               <span className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
                 <svg
@@ -160,17 +151,16 @@ export default function AdminDashboard() {
               </span>
               {error}
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {statCards.map((stat, i) => (
-            <motion.div
+            <div
               key={stat.label}
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: i * 0.15, type: "spring", stiffness: 100 }}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${i * 150}ms` }}
             >
               <Link
                 href={stat.href}
@@ -203,14 +193,13 @@ export default function AdminDashboard() {
                       )}
                     </p>
                   </div>
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 10 }}
+                  <div
                     className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.gradient} 
                               flex items-center justify-center shadow-xl ${stat.shadowColor}
-                              transform transition-all duration-300`}
+                              transform hover:scale-110 hover:rotate-[10deg] transition-all duration-300`}
                   >
                     <span className="text-3xl">{stat.icon}</span>
-                  </motion.div>
+                  </div>
                 </div>
 
                 <div className="relative mt-6 flex items-center justify-between">
@@ -237,16 +226,12 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
+        <div className="animate-fade-in-up animate-delay-300">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/25">
               <span className="text-lg">⚡</span>
@@ -256,11 +241,10 @@ export default function AdminDashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
-              <motion.div
+              <div
                 key={action.href}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${400 + index * 100}ms` }}
               >
                 <Link
                   href={action.href}
@@ -300,18 +284,13 @@ export default function AdminDashboard() {
                     />
                   </svg>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Activity Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-10"
-        >
+        <div className="mt-10 animate-fade-in-up animate-delay-300">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
               <span className="text-lg">📊</span>
@@ -347,7 +326,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </AdminSidebar>
   );

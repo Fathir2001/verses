@@ -1,7 +1,6 @@
 "use client";
 
 import { useAdminAuth } from "@/context/AdminAuthContext";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -40,12 +39,7 @@ export default function AdminLoginPage() {
       {/* Grid Pattern Overlay */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNMzAgMzBtLTEgMGExIDEgMCAxIDAgMiAwIDEgMSAwIDEgMCAtMiAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9nPjwvc3ZnPg==')] opacity-50" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative w-full max-w-md"
-      >
+      <div className="relative w-full max-w-md animate-fade-in-up">
         {/* Main Card */}
         <div className="relative rounded-[2rem] overflow-hidden">
           {/* Card Glow Effect */}
@@ -59,17 +53,13 @@ export default function AdminLoginPage() {
 
             {/* Header */}
             <div className="relative text-center mb-10">
-              <motion.div
-                className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 shadow-2xl shadow-emerald-500/40 mb-6 overflow-hidden"
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 shadow-2xl shadow-emerald-500/40 mb-6 overflow-hidden hover:scale-105 hover:rotate-[5deg] transition-transform duration-300">
                 <img
                   src="/enhanced_image.png"
                   alt="Think Different Logo"
                   className="w-16 h-16 object-contain"
                 />
-              </motion.div>
+              </div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-300 bg-clip-text text-transparent mb-3">
                 Admin Portal
               </h1>
@@ -78,11 +68,7 @@ export default function AdminLoginPage() {
 
             {/* Error */}
             {(error || localError) && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-sm"
-              >
+              <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-red-500/20 to-rose-500/10 border border-red-500/30 backdrop-blur-sm animate-fade-in-up">
                 <p className="text-sm text-red-300 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
                     <svg
@@ -101,7 +87,7 @@ export default function AdminLoginPage() {
                   </span>
                   {error || localError}
                 </p>
-              </motion.div>
+              </div>
             )}
 
             {/* Form */}
@@ -199,12 +185,10 @@ export default function AdminLoginPage() {
               </div>
 
               {/* Submit Button */}
-              <motion.button
+              <button
                 type="submit"
                 disabled={isLoading}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="relative w-full group overflow-hidden"
+                className="relative w-full group overflow-hidden hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] transition-transform duration-200"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl opacity-70 group-hover:opacity-100 blur transition-opacity" />
                 <div
@@ -253,7 +237,7 @@ export default function AdminLoginPage() {
                     </>
                   )}
                 </div>
-              </motion.button>
+              </button>
             </form>
 
             {/* Back Link */}
@@ -282,12 +266,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Footer Branding */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-10 text-center space-y-2"
-        >
+        <div className="mt-10 text-center space-y-2 animate-fade-in-up animate-delay-300">
           <p className="text-slate-500 text-sm flex items-center justify-center gap-2">
             <span className="text-lg">🌙</span>
             <span>Verses Admin</span>
@@ -297,8 +276,8 @@ export default function AdminLoginPage() {
           <p className="text-slate-600 text-xs">
             Secure Content Management Portal
           </p>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

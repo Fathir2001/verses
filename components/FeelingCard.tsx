@@ -1,7 +1,6 @@
 "use client";
 
 import type { Feeling } from "@/types/feeling";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { memo } from "react";
 import { FavoriteButton } from "./FavoriteButton";
@@ -20,16 +19,9 @@ export const FeelingCard = memo(function FeelingCard({
   const delay = Math.min(index * 0.05, 0.3);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{
-        duration: 0.4,
-        delay,
-        ease: "easeOut",
-      }}
-      className="relative"
+    <div
+      className="relative animate-fade-in-up"
+      style={{ animationDelay: `${delay}s` }}
     >
       <div className="absolute top-3 right-3 z-10">
         <FavoriteButton slug={feeling.slug} size="sm" />
@@ -68,13 +60,11 @@ export const FeelingCard = memo(function FeelingCard({
                             font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             >
               <span>Find comfort</span>
-              <motion.svg
+              <svg
                 className="w-4 h-4 ml-1"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                initial={{ x: 0 }}
-                whileHover={{ x: 3 }}
               >
                 <path
                   strokeLinecap="round"
@@ -82,11 +72,11 @@ export const FeelingCard = memo(function FeelingCard({
                   strokeWidth={2}
                   d="M9 5l7 7-7 7"
                 />
-              </motion.svg>
+              </svg>
             </div>
           </div>
         </GlassCard>
       </Link>
-    </motion.div>
+    </div>
   );
 });

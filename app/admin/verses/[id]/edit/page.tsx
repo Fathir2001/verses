@@ -2,7 +2,6 @@
 
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, Feeling } from "@/lib/api";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -111,29 +110,16 @@ export default function EditVersePage() {
             </svg>
             Back to Verses
           </Link>
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-3xl font-bold text-white mb-2"
-          >
+          <h1 className="text-3xl font-bold text-white mb-2 animate-fade-in-up">
             Edit Verse
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-slate-400"
-          >
+          </h1>
+          <p className="text-slate-400 animate-fade-in-up animate-delay-100">
             Update this Quran verse
-          </motion.p>
+          </p>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm"
-          >
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm animate-fade-in-up">
             <p className="text-red-300 flex items-center gap-2">
               <svg
                 className="w-5 h-5"
@@ -150,14 +136,12 @@ export default function EditVersePage() {
               </svg>
               {error}
             </p>
-          </motion.div>
+          </div>
         )}
 
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <form
           onSubmit={handleSubmit}
-          className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6"
+          className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6 animate-fade-in-up"
         >
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
@@ -282,7 +266,7 @@ export default function EditVersePage() {
               )}
             </button>
           </div>
-        </motion.form>
+        </form>
       </div>
     </AdminSidebar>
   );
