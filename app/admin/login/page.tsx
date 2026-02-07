@@ -32,15 +32,9 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* CSS-only Background Orbs (no framer-motion JS cost) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[128px] animate-[drift_8s_ease-in-out_infinite]"
-        />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-[drift-reverse_10s_ease-in-out_infinite]"
-        />
-        <div
-          className="absolute top-1/2 right-1/3 w-64 h-64 bg-purple-500/15 rounded-full blur-[80px] animate-[drift_6s_ease-in-out_infinite]"
-        />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[128px] animate-[drift_8s_ease-in-out_infinite]" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-[drift-reverse_10s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-purple-500/15 rounded-full blur-[80px] animate-[drift_6s_ease-in-out_infinite]" />
       </div>
 
       {/* Grid Pattern Overlay */}
