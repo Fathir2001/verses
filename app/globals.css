@@ -130,3 +130,28 @@
 
 /* Google Font for Arabic text */
 @import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap");
+
+/* CSS-only admin background orb animations (replaces framer-motion JS) */
+@keyframes drift {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(100px, 50px);
+    }
+}
+
+@keyframes drift-reverse {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-80px, -60px);
+    }
+}

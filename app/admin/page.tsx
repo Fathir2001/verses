@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminSidebar } from "@/components";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, Feeling } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -108,11 +108,11 @@ export default function AdminDashboard() {
   return (
     <AdminSidebar>
       <div className="relative">
-        {/* Ambient Background Effects */}
+        {/* Ambient Background Effects — CSS only, no JS */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[128px] animate-pulse" />
-          <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] animate-pulse" />
-          <div className="absolute top-1/2 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-[90px] animate-pulse" />
+          <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:1s]" />
+          <div className="absolute top-1/2 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-[90px] animate-pulse [animation-delay:2s]" />
         </div>
 
         {/* Header */}
