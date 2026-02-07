@@ -155,3 +155,154 @@
         transform: translate(-80px, -60px);
     }
 }
+
+/* Page enter animation — lightweight CSS replaces framer-motion PageTransition */
+@keyframes page-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-page-in {
+    animation: page-in 0.25s ease-out both;
+}
+
+/* Background blob animations — CSS replaces 3 framer-motion infinite loops */
+@keyframes blob-1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(50px, 100px) scale(1.1);
+    }
+}
+
+@keyframes blob-2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-70px, 50px) scale(1.15);
+    }
+}
+
+@keyframes blob-3 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(30px, -60px) scale(1.05);
+    }
+}
+
+.animate-blob-1 {
+    animation: blob-1 20s ease-in-out infinite;
+}
+
+.animate-blob-2 {
+    animation: blob-2 25s ease-in-out 2s infinite;
+}
+
+.animate-blob-3 {
+    animation: blob-3 18s ease-in-out 4s infinite;
+}
+
+/* CSS fade-in-up — replaces common motion.div initial/animate pattern */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out both;
+}
+
+/* Staggered delays for children */
+.animate-delay-100 {
+    animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+    animation-delay: 0.3s;
+}
+
+/* Subtle pulse for decorative icons — replaces motion infinite scale */
+@keyframes gentle-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animate-gentle-pulse {
+    animation: gentle-pulse 2s ease-in-out 3s infinite;
+}
+
+/* Moon wobble — replaces IslamicDateBanner motion rotate/scale */
+@keyframes moon-wobble {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(5deg) scale(1.05);
+    }
+
+    75% {
+        transform: rotate(-5deg) scale(1);
+    }
+}
+
+.animate-moon-wobble {
+    animation: moon-wobble 4s ease-in-out infinite;
+}
+
+/* Star twinkle — replaces IslamicDateBanner motion opacity */
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.animate-twinkle {
+    animation: twinkle 2s ease-in-out infinite;
+}

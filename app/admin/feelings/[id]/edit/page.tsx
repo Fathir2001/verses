@@ -2,7 +2,6 @@
 
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, CreateFeelingInput } from "@/lib/api";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -154,29 +153,16 @@ export default function EditFeelingPage() {
             </svg>
             Back to Feelings
           </Link>
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-3xl font-bold text-white mb-2"
-          >
+          <h1 className="text-3xl font-bold text-white mb-2 animate-fade-in-up">
             Edit Feeling
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-slate-400"
-          >
+          </h1>
+          <p className="text-slate-400 animate-fade-in-up animate-delay-100">
             Update this emotional state
-          </motion.p>
+          </p>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm"
-          >
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm animate-fade-in-up">
             <p className="text-red-300 flex items-center gap-2">
               <svg
                 className="w-5 h-5"
@@ -203,15 +189,10 @@ export default function EditFeelingPage() {
                 ))}
               </ul>
             )}
-          </motion.div>
+          </div>
         )}
 
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
           <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
             <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
@@ -388,7 +369,7 @@ export default function EditFeelingPage() {
               )}
             </button>
           </div>
-        </motion.form>
+        </form>
       </div>
     </AdminSidebar>
   );

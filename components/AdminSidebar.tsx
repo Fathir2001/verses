@@ -1,7 +1,7 @@
 "use client";
 
 import { useAdminAuth } from "@/context/AdminAuthContext";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"; // kept for mobile overlay exit animation only
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -135,13 +135,11 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={isMobile ? { x: isSidebarOpen ? 0 : -288 } : { x: 0 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+      <aside
         className={`fixed md:static inset-y-0 left-0 z-[55] w-72 
                    backdrop-blur-2xl bg-gradient-to-b from-white/10 via-white/5 to-transparent
                    border-r border-white/10 flex flex-col 
+                   transition-transform duration-300 ease-in-out
                    -translate-x-full md:translate-x-0
                    ${isSidebarOpen ? "!translate-x-0" : ""}`}
       >
@@ -156,16 +154,13 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
         <div className="relative p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <Link href="/admin" className="flex items-center gap-3 group">
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/30 ring-2 ring-white/20 group-hover:ring-emerald-500/50 transition-all"
-              >
+              <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/30 ring-2 ring-white/20 group-hover:ring-emerald-500/50 hover:scale-105 hover:rotate-[5deg] transition-all duration-300">
                 <img
                   src="/enhanced_image.png"
                   alt="Think_Different Logo"
                   className="w-full h-full object-cover"
                 />
-              </motion.div>
+              </div>
               <div>
                 <h1 className="font-bold text-white text-lg group-hover:text-emerald-400 transition-colors">
                   Think_Different
@@ -217,11 +212,10 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
                 (item.href !== "/admin" && pathname.startsWith(item.href));
 
               return (
-                <motion.li
+                <li
                   key={item.href}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.1 }}
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <Link
                     href={item.href}
@@ -251,13 +245,10 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
                     </span>
 
                     {isActive && (
-                      <motion.div
-                        layoutId="activeIndicator"
-                        className="ml-auto w-2.5 h-2.5 rounded-full bg-white shadow-lg shadow-white/50"
-                      />
+                      <div className="ml-auto w-2.5 h-2.5 rounded-full bg-white shadow-lg shadow-white/50" />
                     )}
                   </Link>
-                </motion.li>
+                </li>
               );
             })}
           </ul>
@@ -312,15 +303,14 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
             </div>
           </div>
 
-          <motion.button
+          <button
             onClick={logout}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             className="group w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-2xl
                      bg-gradient-to-r from-red-500/10 to-rose-500/5 
                      border border-red-500/20 hover:border-red-500/40
                      text-red-400 hover:text-red-300
                      hover:shadow-lg hover:shadow-red-500/10
+                     hover:scale-[1.02] active:scale-[0.98]
                      transition-all duration-300"
           >
             <svg
@@ -337,20 +327,13 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
               />
             </svg>
             <span className="font-semibold">Sign Out</span>
-          </motion.button>
+          </button>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="p-4 sm:p-6 lg:p-8"
-        >
-          {children}
-        </motion.div>
+        <div className="p-4 sm:p-6 lg:p-8 animate-fade-in-up">{children}</div>
       </main>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, Sura } from "@/lib/api";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -55,26 +54,14 @@ export default function AdminSurasPage() {
       <div>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <motion.h1
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-3xl font-bold text-white mb-2"
-            >
+            <h1 className="text-3xl font-bold text-white mb-2 animate-fade-in-up">
               Suras
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-slate-400"
-            >
+            </h1>
+            <p className="text-slate-400 animate-fade-in-up">
               Manage Quran chapters
-            </motion.p>
+            </p>
           </div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
+          <div className="animate-fade-in-up">
             <Link
               href="/admin/suras/new"
               className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500
@@ -95,15 +82,11 @@ export default function AdminSurasPage() {
               </svg>
               Add Sura
             </Link>
-          </motion.div>
+          </div>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm"
-          >
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 backdrop-blur-sm animate-fade-in-up">
             <p className="text-red-300 flex items-center gap-2">
               <svg
                 className="w-5 h-5"
@@ -120,14 +103,10 @@ export default function AdminSurasPage() {
               </svg>
               {error}
             </p>
-          </motion.div>
+          </div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 overflow-hidden"
-        >
+        <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 overflow-hidden animate-fade-in-up">
           {isLoading ? (
             <div className="p-12 text-center">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400 mx-auto"></div>
@@ -275,15 +254,11 @@ export default function AdminSurasPage() {
               )}
             </>
           )}
-        </motion.div>
+        </div>
 
         {deleteConfirm && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="backdrop-blur-xl bg-slate-900/90 border border-white/10 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
-            >
+            <div className="backdrop-blur-xl bg-slate-900/90 border border-white/10 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl animate-fade-in-up">
               <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
                 <svg
                   className="w-6 h-6 text-red-400"
@@ -321,7 +296,7 @@ export default function AdminSurasPage() {
                   Delete
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
       </div>
