@@ -12,7 +12,10 @@ interface FeelingCardProps {
   index: number;
 }
 
-export const FeelingCard = memo(function FeelingCard({ feeling, index }: FeelingCardProps) {
+export const FeelingCard = memo(function FeelingCard({
+  feeling,
+  index,
+}: FeelingCardProps) {
   // Cap stagger delay so cards beyond the first row don't wait too long
   const delay = Math.min(index * 0.05, 0.3);
 

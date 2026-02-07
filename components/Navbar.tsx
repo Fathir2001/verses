@@ -17,12 +17,18 @@ export function Navbar() {
   // Pre-compute letter animations once — avoids recreating 15 objects every render
   const letterElements = useMemo(() => {
     const directions = [
-      { x: -80, y: -50 }, { x: 80, y: -50 }, { x: -80, y: 50 },
-      { x: 80, y: 50 }, { x: 0, y: -80 }, { x: 0, y: 80 },
-      { x: -100, y: 0 }, { x: 100, y: 0 },
+      { x: -80, y: -50 },
+      { x: 80, y: -50 },
+      { x: -80, y: 50 },
+      { x: 80, y: 50 },
+      { x: 0, y: -80 },
+      { x: 0, y: 80 },
+      { x: -100, y: 0 },
+      { x: 100, y: 0 },
     ];
     const rotations = [
-      -120, 90, -60, 150, -30, 180, -150, 45, -90, 120, -45, 135, -75, 100, -135,
+      -120, 90, -60, 150, -30, 180, -150, 45, -90, 120, -45, 135, -75, 100,
+      -135,
     ];
     return "Think_Different".split("").map((letter, index) => {
       const dir = directions[index % directions.length];
@@ -33,9 +39,21 @@ export function Navbar() {
           className="bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 
                      dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 
                      bg-clip-text text-transparent drop-shadow-sm"
-          initial={{ opacity: 0, x: dir.x, y: dir.y, scale: 0, rotate: initialRotate }}
+          initial={{
+            opacity: 0,
+            x: dir.x,
+            y: dir.y,
+            scale: 0,
+            rotate: initialRotate,
+          }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
-          transition={{ delay: 1.0 + index * 0.15, duration: 0.8, type: "spring", stiffness: 150, damping: 12 }}
+          transition={{
+            delay: 1.0 + index * 0.15,
+            duration: 0.8,
+            type: "spring",
+            stiffness: 150,
+            damping: 12,
+          }}
           whileHover={{ scale: 1.3, y: -4, transition: { duration: 0.2 } }}
           style={{ display: "inline-block" }}
         >

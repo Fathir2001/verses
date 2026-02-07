@@ -14,7 +14,10 @@ import { useState } from "react";
 
 // Lazy load the heavy WallpaperGenerator (541 lines + canvas rendering)
 const WallpaperGenerator = dynamic(
-  () => import("@/components/WallpaperGenerator").then((mod) => ({ default: mod.WallpaperGenerator })),
+  () =>
+    import("@/components/WallpaperGenerator").then((mod) => ({
+      default: mod.WallpaperGenerator,
+    })),
   {
     ssr: false,
     loading: () => (

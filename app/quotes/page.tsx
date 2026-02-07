@@ -158,9 +158,7 @@ export default function QuotesPage() {
         </p>
 
         {/* Quotes Grid */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredQuotes.map((quote, index) => (
               <QuoteCard
@@ -199,9 +197,11 @@ interface QuoteCardProps {
   formatQuoteText: (quote: Quote) => string;
 }
 
-const QuoteCard = memo(function QuoteCard(
-  { quote, index, formatQuoteText }: QuoteCardProps,
-) {
+const QuoteCard = memo(function QuoteCard({
+  quote,
+  index,
+  formatQuoteText,
+}: QuoteCardProps) {
   const delay = Math.min(index * 0.05, 0.3);
 
   return (
