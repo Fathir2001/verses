@@ -95,17 +95,25 @@ export async function generateMetadata({
 }
 
 export default async function FeelingPage({ params }: FeelingPageProps) {
-  // Fetch from API to get full data with verses and duas arrays
-  let feeling = await getFeelingFromAPI(params.slug);
+  // Start with local data for instant render (no network dependency)
+  const localFeeling = getLocalFeeling(params.slug);
+  if (!localFeeling) {
+    notFound();
+  }
 
-  // Fallback to local data if API fails
-  if (!feeling) {
-    const localFeeling = getLocalFeeling(params.slug);
-    if (!localFeeling) {
-      notFound();
+  // Try API in parallel for enriched data (verses/duas arrays), with a short timeout
+  // If API fails or is slow (e.g. Render cold-start), local data is already available
+  let feeling: Feeling = localFeeling;
+  try {
+    const apiFeeling = await Promise.race([
+      getFeelingFromAPI(params.slug),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+    ]);
+    if (apiFeeling) {
+      feeling = apiFeeling;
     }
-    // Use local data structure
-    feeling = localFeeling;
+  } catch {
+    // API failed — use local data silently
   }
 
   return <FeelingDetailClient feeling={feeling} />;

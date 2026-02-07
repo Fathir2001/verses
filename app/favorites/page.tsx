@@ -1,40 +1,24 @@
 "use client";
 
-import { FeelingCard, GlassCard, PageTransition } from "@/components";
-import { useFavorites } from "@/context";
+import { FeelingCard } from "@/components/FeelingCard";
+import { GlassCard } from "@/components/GlassCard";
+import { PageTransition } from "@/components/PageTransition";
+import { useFavorites } from "@/context/FavoritesContext";
 import { getAllFeelings } from "@/lib/feelings";
-import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+
+// Pre-compute outside component — this is a synchronous JSON read
+const allFeelings = getAllFeelings();
 
 export default function FavoritesPage() {
   const { favorites } = useFavorites();
-  const [allFeelings, setAllFeelings] = useState<Feeling[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Get all feelings data
-    const feelings = getAllFeelings();
-    setAllFeelings(feelings);
-    setIsLoading(false);
-  }, []);
-
-  const favoriteFeelings = allFeelings.filter((feeling) =>
-    favorites.includes(feeling.slug),
+  const favoriteFeelings = useMemo(
+    () => allFeelings.filter((feeling) => favorites.includes(feeling.slug)),
+    [favorites],
   );
-
-  if (isLoading) {
-    return (
-      <PageTransition>
-        <div className="mx-auto max-w-6xl px-4 py-8">
-          <div className="flex items-center justify-center min-h-[50vh]">
-            <div className="animate-pulse text-slate-400">Loading...</div>
-          </div>
-        </div>
-      </PageTransition>
-    );
-  }
 
   return (
     <PageTransition>

@@ -1,10 +1,13 @@
 "use client";
 
-import { CopyButton, GlassCard, PageTransition, SearchBox } from "@/components";
+import { CopyButton } from "@/components/CopyButton";
+import { GlassCard } from "@/components/GlassCard";
+import { PageTransition } from "@/components/PageTransition";
+import { SearchBox } from "@/components/SearchBox";
 import { getAllCategories, getDailyQuote, searchQuotes } from "@/lib/quotes";
 import type { Quote } from "@/types/quote";
 import { AnimatePresence, motion } from "framer-motion";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 // Pre-compute static data outside component to avoid re-computation
 const categories = getAllCategories();
@@ -155,10 +158,7 @@ export default function QuotesPage() {
         </p>
 
         {/* Quotes Grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
-          layout
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredQuotes.map((quote, index) => (
               <QuoteCard
@@ -169,7 +169,7 @@ export default function QuotesPage() {
               />
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
         {filteredQuotes.length === 0 && (
           <motion.div
@@ -197,18 +197,20 @@ interface QuoteCardProps {
   formatQuoteText: (quote: Quote) => string;
 }
 
-const QuoteCard = forwardRef<HTMLDivElement, QuoteCardProps>(function QuoteCard(
-  { quote, index, formatQuoteText },
-  ref,
-) {
+const QuoteCard = memo(function QuoteCard({
+  quote,
+  index,
+  formatQuoteText,
+}: QuoteCardProps) {
+  const delay = Math.min(index * 0.05, 0.3);
+
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      layout
+      transition={{ duration: 0.3, delay }}
     >
       <GlassCard hover className="p-5 h-full">
         <div className="flex flex-col h-full">

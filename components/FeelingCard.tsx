@@ -3,6 +3,7 @@
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { memo } from "react";
 import { FavoriteButton } from "./FavoriteButton";
 import { GlassCard } from "./GlassCard";
 
@@ -11,14 +12,21 @@ interface FeelingCardProps {
   index: number;
 }
 
-export function FeelingCard({ feeling, index }: FeelingCardProps) {
+export const FeelingCard = memo(function FeelingCard({
+  feeling,
+  index,
+}: FeelingCardProps) {
+  // Cap stagger delay so cards beyond the first row don't wait too long
+  const delay = Math.min(index * 0.05, 0.3);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{
         duration: 0.4,
-        delay: index * 0.05,
+        delay,
         ease: "easeOut",
       }}
       className="relative"
@@ -81,4 +89,4 @@ export function FeelingCard({ feeling, index }: FeelingCardProps) {
       </Link>
     </motion.div>
   );
-}
+});

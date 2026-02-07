@@ -1,18 +1,30 @@
 "use client";
 
-import {
-  CopyButton,
-  FavoriteButton,
-  GlassCard,
-  PageTransition,
-  SectionBlock,
-  ShareButton,
-  WallpaperGenerator,
-} from "@/components";
+import { CopyButton } from "@/components/CopyButton";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { GlassCard } from "@/components/GlassCard";
+import { PageTransition } from "@/components/PageTransition";
+import { SectionBlock } from "@/components/SectionBlock";
+import { ShareButton } from "@/components/ShareButton";
 import type { Feeling } from "@/types/feeling";
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
+
+// Lazy load the heavy WallpaperGenerator (541 lines + canvas rendering)
+const WallpaperGenerator = dynamic(
+  () =>
+    import("@/components/WallpaperGenerator").then((mod) => ({
+      default: mod.WallpaperGenerator,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-32 rounded-3xl bg-white/50 dark:bg-slate-800/50 animate-pulse" />
+    ),
+  },
+);
 
 interface FeelingDetailClientProps {
   feeling: Feeling;
