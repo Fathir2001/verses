@@ -30,33 +30,16 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Orbs */}
+      {/* CSS-only Background Orbs (no framer-motion JS cost) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[128px]"
+        <div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[128px] animate-[drift_8s_ease-in-out_infinite]"
         />
-        <motion.div
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 40, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px]"
+        <div
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-[drift-reverse_10s_ease-in-out_infinite]"
         />
-        <motion.div
-          animate={{
-            x: [0, 20, 0],
-            y: [0, 20, 0],
-          }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 right-1/3 w-64 h-64 bg-purple-500/15 rounded-full blur-[80px]"
+        <div
+          className="absolute top-1/2 right-1/3 w-64 h-64 bg-purple-500/15 rounded-full blur-[80px] animate-[drift_6s_ease-in-out_infinite]"
         />
       </div>
 
@@ -83,11 +66,15 @@ export default function AdminLoginPage() {
             {/* Header */}
             <div className="relative text-center mb-10">
               <motion.div
-                className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 shadow-2xl shadow-emerald-500/40 mb-6"
+                className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 shadow-2xl shadow-emerald-500/40 mb-6 overflow-hidden"
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
-                <span className="text-4xl">🔐</span>
+                <img
+                  src="/enhanced_image.png"
+                  alt="Think Different Logo"
+                  className="w-16 h-16 object-contain"
+                />
               </motion.div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-300 bg-clip-text text-transparent mb-3">
                 Admin Portal

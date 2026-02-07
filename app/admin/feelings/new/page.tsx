@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminSidebar } from "@/components";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { api, ApiError, CreateFeelingInput } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
