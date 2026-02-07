@@ -135,7 +135,7 @@ export function Navbar() {
                 {letterElements}
               </span>
               <span className="relative mt-0.5 hidden sm:block text-[10px] sm:text-xs font-semibold text-slate-700/90 dark:text-slate-300/90 text-center">
-                🤲 I Am Feeling • Islamic Comfort & Guidance
+                🤲 Think Different • Islamic Comfort & Guidance
               </span>
             </motion.div>
           </div>

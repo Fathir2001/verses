@@ -88,8 +88,9 @@ export async function generateMetadata({
     title: `Feeling ${feeling.title}`,
     description: `${feeling.preview} Find Quranic verses, duas, and comfort for when you're feeling ${feeling.title.toLowerCase()}.`,
     openGraph: {
-      title: `I Am Feeling ${feeling.title} ${feeling.emoji}`,
+      title: `Feeling ${feeling.title} ${feeling.emoji} | Think Different`,
       description: feeling.preview,
+      images: ["/enhanced_image.png"],
     },
   };
 }
