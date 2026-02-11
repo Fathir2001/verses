@@ -16,15 +16,6 @@
     /* Smooth scrolling */
     html {
         scroll-behavior: smooth;
-        /* Optimize scroll performance */
-        overflow-x: hidden;
-        overflow-y: scroll;
-    }
-
-    * {
-        /* Prevent layout shifts during animations */
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
     }
 
     /* Respect reduced motion */
@@ -73,11 +64,6 @@
     /* Base body styles */
     body {
         @apply bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-700 dark:text-slate-200 transition-colors duration-300;
-        /* GPU acceleration for smoother scrolling */
-        -webkit-overflow-scrolling: touch;
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        perspective: 1000px;
     }
 }
 
