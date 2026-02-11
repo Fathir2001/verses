@@ -8,7 +8,6 @@
 [build.environment]
   NODE_VERSION = "18"
   NEXT_TELEMETRY_DISABLED = "1"
-  NEXT_PRIVATE_STANDALONE = "true"
 
 # Next.js plugin for SSR support on Netlify
 [[plugins]]
