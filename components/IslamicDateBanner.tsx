@@ -12,15 +12,23 @@ export function IslamicDateBanner() {
   const [mounted, setMounted] = useState(false);
   const [islamicDate, setIslamicDate] = useState<string>("");
   const [occasion, setOccasion] =
-    useState<ReturnType<typeof getCurrentOccasion>>(null);
+    useState<Awaited<ReturnType<typeof getCurrentOccasion>>>(null);
   const [gregorianDate, setGregorianDate] = useState<string>("");
 
   useEffect(() => {
     setMounted(true);
     const now = new Date();
-    const hijriDate = toIslamicDate(now);
-    setIslamicDate(formatIslamicDate(hijriDate));
-    setOccasion(getCurrentOccasion());
+
+    // Async function to fetch Islamic date
+    const loadIslamicDate = async () => {
+      const hijriDate = await toIslamicDate(now);
+      setIslamicDate(formatIslamicDate(hijriDate));
+      const currentOccasion = await getCurrentOccasion();
+      setOccasion(currentOccasion);
+    };
+
+    loadIslamicDate();
+
     setGregorianDate(
       now.toLocaleDateString("en-US", {
         weekday: "long",
