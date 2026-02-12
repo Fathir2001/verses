@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "thinkdifferent",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/enhanced_image.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -21,7 +21,7 @@
     "android": {
       "package": "com.thinkdifferent.verses",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/enhanced_image.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

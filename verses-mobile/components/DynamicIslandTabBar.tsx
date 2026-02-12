@@ -237,7 +237,7 @@ export default function DynamicIslandTabBar({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 34 : 20,
+    bottom: Platform.OS === "ios" ? 34 : 50,
     left: 0,
     right: 0,
     alignItems: "center",
