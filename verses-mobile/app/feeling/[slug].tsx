@@ -15,11 +15,13 @@ import { getFeelingBySlug } from "@/lib/api";
 import { isFavorite, toggleFavorite } from "@/lib/favorites";
 import { Feeling } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
+  ImageBackground,
   Platform,
   Pressable,
   ScrollView,
@@ -39,7 +41,7 @@ export default function FeelingDetailScreen() {
   const [duaIdx, setDuaIdx] = useState(0);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
-  const colorScheme = useTheme().colorScheme;
+  const { colorScheme, toggleTheme, isDark } = useTheme();
   const colors = Colors[colorScheme];
 
   const loadData = useCallback(async () => {
@@ -152,432 +154,578 @@ export default function FeelingDetailScreen() {
   const hasMultipleDuas = duas.length > 1;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
+    <ImageBackground
+      source={require("@/assets/background.jpeg")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      {/* ===== HERO HEADER ===== */}
-      <LinearGradient
-        colors={[colors.gradientStart, colors.gradientEnd]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.hero}
-      >
-        {/* Decorations */}
-        <View style={styles.heroDecor1}>
-          <Text style={{ fontSize: 160, opacity: 0.06 }}>{feeling.emoji}</Text>
-        </View>
-        <View style={styles.heroDecor2}>
-          <Text style={{ fontSize: 40, opacity: 0.15 }}>✨</Text>
-        </View>
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor:
+            colorScheme === "dark"
+              ? "rgba(15, 23, 42, 0.7)"
+              : "rgba(255, 255, 255, 0.5)",
+        }}
+      />
 
-        {/* Back + Actions */}
-        <View style={styles.heroTopRow}>
-          <Pressable onPress={() => router.back()} style={styles.heroBtn}>
-            <Ionicons name="arrow-back" size={22} color="#fff" />
-          </Pressable>
-
-          <View style={styles.heroActions}>
-            <Pressable onPress={handleFavorite} style={styles.heroBtn}>
-              <Ionicons
-                name={isFav ? "heart" : "heart-outline"}
-                size={22}
-                color={isFav ? "#F87171" : "#fff"}
-              />
-            </Pressable>
-            <Pressable onPress={handleShare} style={styles.heroBtn}>
-              <Ionicons name="share-outline" size={22} color="#fff" />
-            </Pressable>
-          </View>
-        </View>
-
-        {/* Emoji & Title */}
-        <View style={styles.heroCenter}>
-          <View style={styles.heroEmojiCircle}>
-            <Text style={{ fontSize: 52 }}>{feeling.emoji}</Text>
-          </View>
-          <Text style={styles.heroTitle}>Feeling {feeling.title}</Text>
-          <Text style={styles.heroPreview}>{feeling.preview}</Text>
-
-          {/* Fav badge */}
-          {isFav && (
-            <View style={styles.favBadge}>
-              <Ionicons name="heart" size={12} color="#F87171" />
-              <Text style={styles.favBadgeText}>Saved to favorites</Text>
-            </View>
-          )}
-        </View>
-      </LinearGradient>
-
-      {/* ===== SECTIONS ===== */}
-      <View style={styles.sections}>
-        {/* ----- Gentle Reminder ----- */}
-        <View
-          style={[
-            styles.sectionCard,
-            { backgroundColor: colors.card, borderColor: colors.glassBorder },
-          ]}
+      {/* ===== CUSTOM HEADER ===== */}
+      {Platform.OS === "ios" ? (
+        <BlurView
+          intensity={80}
+          tint={isDark ? "dark" : "light"}
+          style={styles.headerBlur}
         >
-          <View style={styles.sectionHeaderRow}>
-            <View
-              style={[
-                styles.sectionIcon,
-                { backgroundColor: colors.primaryGlow },
-              ]}
+          <LinearGradient
+            colors={
+              isDark
+                ? ["rgba(15, 23, 42, 0.8)", "rgba(30, 41, 59, 0.9)"]
+                : ["rgba(255, 255, 255, 0.8)", "rgba(249, 250, 251, 0.9)"]
+            }
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.headerContent}>
+            <Pressable
+              onPress={() => router.back()}
+              style={styles.headerBackBtn}
+              hitSlop={8}
             >
-              <Text style={{ fontSize: 20 }}>💝</Text>
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </Pressable>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {feeling ? `Feeling ${feeling.title}` : "Loading..."}
+            </Text>
+            <View style={styles.themeToggleContainer}>
+              <LinearGradient
+                colors={
+                  isDark
+                    ? ["rgba(99, 102, 241, 0.2)", "rgba(59, 130, 246, 0.2)"]
+                    : ["rgba(251, 191, 36, 0.3)", "rgba(245, 158, 11, 0.3)"]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.themeToggleGradient}
+              >
+                <Pressable
+                  onPress={toggleTheme}
+                  style={styles.themeToggleButton}
+                >
+                  <Text style={styles.themeIconLeft}>☀️</Text>
+                  <Text style={styles.themeIconRight}>🌙</Text>
+                  <View
+                    style={[
+                      styles.themeKnob,
+                      {
+                        left: isDark ? 29 : 3,
+                        backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+                        borderColor: isDark
+                          ? "rgba(99, 102, 241, 0.6)"
+                          : "rgba(251, 191, 36, 0.5)",
+                      },
+                    ]}
+                  >
+                    <Text style={{ fontSize: 11 }}>{isDark ? "🌙" : "☀️"}</Text>
+                  </View>
+                </Pressable>
+              </LinearGradient>
             </View>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Gentle Reminder
+          </View>
+        </BlurView>
+      ) : (
+        <LinearGradient
+          colors={
+            isDark
+              ? ["rgba(15, 23, 42, 0.98)", "rgba(30, 41, 59, 0.98)"]
+              : ["rgba(255, 255, 255, 0.98)", "rgba(249, 250, 251, 0.98)"]
+          }
+          style={styles.headerBlur}
+        >
+          <View style={styles.headerContent}>
+            <Pressable
+              onPress={() => router.back()}
+              style={styles.headerBackBtn}
+              hitSlop={8}
+            >
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </Pressable>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {feeling ? `Feeling ${feeling.title}` : "Loading..."}
+            </Text>
+            <View style={styles.themeToggleContainer}>
+              <LinearGradient
+                colors={
+                  isDark
+                    ? ["rgba(99, 102, 241, 0.2)", "rgba(59, 130, 246, 0.2)"]
+                    : ["rgba(251, 191, 36, 0.3)", "rgba(245, 158, 11, 0.3)"]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.themeToggleGradient}
+              >
+                <Pressable
+                  onPress={toggleTheme}
+                  style={styles.themeToggleButton}
+                >
+                  <Text style={styles.themeIconLeft}>☀️</Text>
+                  <Text style={styles.themeIconRight}>🌙</Text>
+                  <View
+                    style={[
+                      styles.themeKnob,
+                      {
+                        left: isDark ? 29 : 3,
+                        backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+                        borderColor: isDark
+                          ? "rgba(99, 102, 241, 0.6)"
+                          : "rgba(251, 191, 36, 0.5)",
+                      },
+                    ]}
+                  >
+                    <Text style={{ fontSize: 11 }}>{isDark ? "🌙" : "☀️"}</Text>
+                  </View>
+                </Pressable>
+              </LinearGradient>
+            </View>
+          </View>
+        </LinearGradient>
+      )}
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ===== HERO HEADER ===== */}
+        <LinearGradient
+          colors={[colors.gradientStart, colors.gradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.hero}
+        >
+          {/* Actions (far right, no back button) */}
+          <View style={styles.heroTopRow}>
+            <View style={{ flex: 1 }} />
+            <View style={styles.heroActions}>
+              <Pressable onPress={handleFavorite} style={styles.heroBtn}>
+                <Ionicons
+                  name={isFav ? "heart" : "heart-outline"}
+                  size={22}
+                  color={isFav ? "#F87171" : "#fff"}
+                />
+              </Pressable>
+              <Pressable onPress={handleShare} style={styles.heroBtn}>
+                <Ionicons name="share-outline" size={22} color="#fff" />
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Emoji & Title */}
+          <View style={styles.heroCenter}>
+            <View style={styles.heroEmojiCircle}>
+              <Text style={{ fontSize: 42 }}>{feeling.emoji}</Text>
+            </View>
+            <Text style={styles.heroTitle}>Feeling {feeling.title}</Text>
+            <Text style={styles.heroPreview}>{feeling.preview}</Text>
+
+            {/* Fav badge */}
+            {isFav && (
+              <View style={styles.favBadge}>
+                <Ionicons name="heart" size={10} color="#F87171" />
+                <Text style={styles.favBadgeText}>Saved</Text>
+              </View>
+            )}
+          </View>
+        </LinearGradient>
+
+        {/* ===== SECTIONS ===== */}
+        <View style={styles.sections}>
+          {/* ----- Gentle Reminder ----- */}
+          <View
+            style={[
+              styles.sectionCard,
+              { backgroundColor: colors.card, borderColor: colors.glassBorder },
+            ]}
+          >
+            <View style={styles.sectionHeaderRow}>
+              <View
+                style={[
+                  styles.sectionIcon,
+                  { backgroundColor: colors.primaryGlow },
+                ]}
+              >
+                <Text style={{ fontSize: 20 }}>💝</Text>
+              </View>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                Gentle Reminder
+              </Text>
+            </View>
+            <Text
+              style={[styles.reminderText, { color: colors.textSecondary }]}
+            >
+              {feeling.reminder}
             </Text>
           </View>
-          <Text style={[styles.reminderText, { color: colors.textSecondary }]}>
-            {feeling.reminder}
-          </Text>
-        </View>
 
-        {/* ----- Qur'anic Comfort ----- */}
-        {verses.length > 0 && (
-          <View
-            style={[
-              styles.sectionCard,
-              { backgroundColor: colors.card, borderColor: colors.glassBorder },
-            ]}
-          >
-            <View style={styles.sectionHeaderRow}>
-              <View
-                style={[
-                  styles.sectionIcon,
-                  { backgroundColor: colors.primaryGlow },
-                ]}
-              >
-                <Text style={{ fontSize: 20 }}>📖</Text>
-              </View>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Qur'anic Comfort
-              </Text>
-            </View>
-
-            {/* Navigation for multiple verses */}
-            {hasMultipleVerses && (
-              <View style={styles.navRow}>
-                <Pressable
-                  onPress={() =>
-                    setVerseIdx((p) => (p > 0 ? p - 1 : verses.length - 1))
-                  }
-                  style={[styles.navBtn, { backgroundColor: colors.primary }]}
-                >
-                  <Ionicons name="chevron-back" size={16} color="#fff" />
-                </Pressable>
-                <Text style={[styles.navCounter, { color: colors.textMuted }]}>
-                  {verseIdx + 1} of {verses.length}
-                </Text>
-                <Pressable
-                  onPress={() =>
-                    setVerseIdx((p) => (p < verses.length - 1 ? p + 1 : 0))
-                  }
-                  style={[styles.navBtn, { backgroundColor: colors.primary }]}
-                >
-                  <Ionicons name="chevron-forward" size={16} color="#fff" />
-                </Pressable>
-              </View>
-            )}
-
-            {currentVerse && (
-              <>
-                {/* Arabic */}
-                {currentVerse.arabic && (
-                  <View
-                    style={[
-                      styles.arabicBox,
-                      {
-                        backgroundColor: colors.glassBg,
-                        borderColor: colors.glassBorder,
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.arabicText, { color: colors.text }]}>
-                      {currentVerse.arabic}
-                    </Text>
-                  </View>
-                )}
-
-                {/* Translation */}
-                <Text
+          {/* ----- Qur'anic Comfort ----- */}
+          {verses.length > 0 && (
+            <View
+              style={[
+                styles.sectionCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.glassBorder,
+                },
+              ]}
+            >
+              <View style={styles.sectionHeaderRow}>
+                <View
                   style={[
-                    styles.verseTranslation,
-                    { color: colors.textSecondary },
-                  ]}
-                >
-                  "{currentVerse.text}"
-                </Text>
-
-                {/* Reference */}
-                <Text style={[styles.reference, { color: colors.primary }]}>
-                  — {currentVerse.reference}
-                </Text>
-
-                {/* Copy */}
-                <Pressable
-                  onPress={() =>
-                    handleCopy(
-                      `${currentVerse.arabic || ""}\n\n${currentVerse.text}\n\n— ${currentVerse.reference}`,
-                      "verse",
-                    )
-                  }
-                  style={[
-                    styles.copyBtn,
+                    styles.sectionIcon,
                     { backgroundColor: colors.primaryGlow },
                   ]}
                 >
-                  <Ionicons
-                    name={
-                      copiedSection === "verse" ? "checkmark" : "copy-outline"
-                    }
-                    size={15}
-                    color={colors.primary}
-                  />
-                  <Text style={[styles.copyBtnText, { color: colors.primary }]}>
-                    {copiedSection === "verse" ? "Copied!" : "Copy Verse"}
-                  </Text>
-                </Pressable>
-              </>
-            )}
-          </View>
-        )}
-
-        {/* ----- Dua For You ----- */}
-        {duas.length > 0 && (
-          <View
-            style={[
-              styles.sectionCard,
-              { backgroundColor: colors.card, borderColor: colors.glassBorder },
-            ]}
-          >
-            <View style={styles.sectionHeaderRow}>
-              <View
-                style={[
-                  styles.sectionIcon,
-                  { backgroundColor: colors.primaryGlow },
-                ]}
-              >
-                <Text style={{ fontSize: 20 }}>🤲</Text>
-              </View>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Dua for You
-              </Text>
-            </View>
-
-            {/* Navigation for multiple duas */}
-            {hasMultipleDuas && (
-              <View style={styles.navRow}>
-                <Pressable
-                  onPress={() =>
-                    setDuaIdx((p) => (p > 0 ? p - 1 : duas.length - 1))
-                  }
-                  style={[styles.navBtn, { backgroundColor: colors.primary }]}
-                >
-                  <Ionicons name="chevron-back" size={16} color="#fff" />
-                </Pressable>
-                <Text style={[styles.navCounter, { color: colors.textMuted }]}>
-                  {duaIdx + 1} of {duas.length}
+                  <Text style={{ fontSize: 20 }}>📖</Text>
+                </View>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  Qur'anic Comfort
                 </Text>
-                <Pressable
-                  onPress={() =>
-                    setDuaIdx((p) => (p < duas.length - 1 ? p + 1 : 0))
-                  }
-                  style={[styles.navBtn, { backgroundColor: colors.primary }]}
-                >
-                  <Ionicons name="chevron-forward" size={16} color="#fff" />
-                </Pressable>
               </View>
-            )}
 
-            {currentDua && (
-              <>
-                {/* Arabic */}
-                {currentDua.arabic && (
-                  <View
-                    style={[
-                      styles.arabicBox,
-                      {
-                        backgroundColor: colors.glassBg,
-                        borderColor: colors.glassBorder,
-                      },
-                    ]}
+              {/* Navigation for multiple verses */}
+              {hasMultipleVerses && (
+                <View style={styles.navRow}>
+                  <Pressable
+                    onPress={() =>
+                      setVerseIdx((p) => (p > 0 ? p - 1 : verses.length - 1))
+                    }
+                    style={[styles.navBtn, { backgroundColor: colors.primary }]}
                   >
-                    <Text style={[styles.arabicText, { color: colors.text }]}>
-                      {currentDua.arabic}
-                    </Text>
-                  </View>
-                )}
+                    <Ionicons name="chevron-back" size={16} color="#fff" />
+                  </Pressable>
+                  <Text
+                    style={[styles.navCounter, { color: colors.textMuted }]}
+                  >
+                    {verseIdx + 1} of {verses.length}
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      setVerseIdx((p) => (p < verses.length - 1 ? p + 1 : 0))
+                    }
+                    style={[styles.navBtn, { backgroundColor: colors.primary }]}
+                  >
+                    <Ionicons name="chevron-forward" size={16} color="#fff" />
+                  </Pressable>
+                </View>
+              )}
 
-                {/* Transliteration */}
-                {currentDua.transliteration && (
-                  <View style={styles.duaSection}>
-                    <Text
-                      style={[styles.duaLabel, { color: colors.textMuted }]}
-                    >
-                      Transliteration
-                    </Text>
-                    <Text
+              {currentVerse && (
+                <>
+                  {/* Arabic */}
+                  {currentVerse.arabic && (
+                    <View
                       style={[
-                        styles.translitText,
-                        { color: colors.textSecondary },
+                        styles.arabicBox,
+                        {
+                          backgroundColor: colors.glassBg,
+                          borderColor: colors.glassBorder,
+                        },
                       ]}
                     >
-                      {currentDua.transliteration}
-                    </Text>
-                  </View>
-                )}
+                      <Text style={[styles.arabicText, { color: colors.text }]}>
+                        {currentVerse.arabic}
+                      </Text>
+                    </View>
+                  )}
 
-                {/* Meaning */}
-                {currentDua.meaning && (
-                  <View style={styles.duaSection}>
-                    <Text
-                      style={[styles.duaLabel, { color: colors.textMuted }]}
-                    >
-                      Meaning
-                    </Text>
-                    <Text style={[styles.meaningText, { color: colors.text }]}>
-                      "{currentDua.meaning}"
-                    </Text>
-                  </View>
-                )}
-
-                {/* Reference */}
-                {currentDua.reference && (
-                  <Text style={[styles.reference, { color: colors.primary }]}>
-                    — {currentDua.reference}
+                  {/* Translation */}
+                  <Text
+                    style={[
+                      styles.verseTranslation,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    "{currentVerse.text}"
                   </Text>
-                )}
 
-                {/* Copy */}
-                <Pressable
-                  onPress={() =>
-                    handleCopy(
-                      `${currentDua.arabic || ""}\n\n${currentDua.transliteration || ""}\n\n"${currentDua.meaning || ""}"\n\n— ${currentDua.reference || ""}`,
-                      "dua",
-                    )
-                  }
+                  {/* Reference */}
+                  <Text style={[styles.reference, { color: colors.primary }]}>
+                    — {currentVerse.reference}
+                  </Text>
+
+                  {/* Copy */}
+                  <Pressable
+                    onPress={() =>
+                      handleCopy(
+                        `${currentVerse.arabic || ""}\n\n${currentVerse.text}\n\n— ${currentVerse.reference}`,
+                        "verse",
+                      )
+                    }
+                    style={[
+                      styles.copyBtn,
+                      { backgroundColor: colors.primaryGlow },
+                    ]}
+                  >
+                    <Ionicons
+                      name={
+                        copiedSection === "verse" ? "checkmark" : "copy-outline"
+                      }
+                      size={15}
+                      color={colors.primary}
+                    />
+                    <Text
+                      style={[styles.copyBtnText, { color: colors.primary }]}
+                    >
+                      {copiedSection === "verse" ? "Copied!" : "Copy Verse"}
+                    </Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+          )}
+
+          {/* ----- Dua For You ----- */}
+          {duas.length > 0 && (
+            <View
+              style={[
+                styles.sectionCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.glassBorder,
+                },
+              ]}
+            >
+              <View style={styles.sectionHeaderRow}>
+                <View
                   style={[
-                    styles.copyBtn,
+                    styles.sectionIcon,
                     { backgroundColor: colors.primaryGlow },
                   ]}
                 >
-                  <Ionicons
-                    name={
-                      copiedSection === "dua" ? "checkmark" : "copy-outline"
-                    }
-                    size={15}
-                    color={colors.primary}
-                  />
-                  <Text style={[styles.copyBtnText, { color: colors.primary }]}>
-                    {copiedSection === "dua" ? "Copied!" : "Copy Dua"}
-                  </Text>
-                </Pressable>
-              </>
-            )}
-          </View>
-        )}
-
-        {/* ----- Small Actions ----- */}
-        {feeling.actions && feeling.actions.length > 0 && (
-          <View
-            style={[
-              styles.sectionCard,
-              { backgroundColor: colors.card, borderColor: colors.glassBorder },
-            ]}
-          >
-            <View style={styles.sectionHeaderRow}>
-              <View
-                style={[
-                  styles.sectionIcon,
-                  { backgroundColor: colors.primaryGlow },
-                ]}
-              >
-                <Text style={{ fontSize: 20 }}>✨</Text>
-              </View>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Small Actions You Can Take
-              </Text>
-            </View>
-
-            {feeling.actions.map((action, idx) => (
-              <View key={idx} style={styles.actionItem}>
-                <LinearGradient
-                  colors={[colors.gradientStart, colors.gradientEnd]}
-                  style={styles.actionNumber}
-                >
-                  <Text style={styles.actionNumberText}>{idx + 1}</Text>
-                </LinearGradient>
-                <Text
-                  style={[styles.actionText, { color: colors.textSecondary }]}
-                >
-                  {action}
+                  <Text style={{ fontSize: 20 }}>🤲</Text>
+                </View>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  Dua for You
                 </Text>
               </View>
-            ))}
-          </View>
-        )}
 
-        {/* ----- Wallpaper Generator ----- */}
-        <WallpaperGenerator feeling={feeling} />
+              {/* Navigation for multiple duas */}
+              {hasMultipleDuas && (
+                <View style={styles.navRow}>
+                  <Pressable
+                    onPress={() =>
+                      setDuaIdx((p) => (p > 0 ? p - 1 : duas.length - 1))
+                    }
+                    style={[styles.navBtn, { backgroundColor: colors.primary }]}
+                  >
+                    <Ionicons name="chevron-back" size={16} color="#fff" />
+                  </Pressable>
+                  <Text
+                    style={[styles.navCounter, { color: colors.textMuted }]}
+                  >
+                    {duaIdx + 1} of {duas.length}
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      setDuaIdx((p) => (p < duas.length - 1 ? p + 1 : 0))
+                    }
+                    style={[styles.navBtn, { backgroundColor: colors.primary }]}
+                  >
+                    <Ionicons name="chevron-forward" size={16} color="#fff" />
+                  </Pressable>
+                </View>
+              )}
 
-        {/* ----- Share Card ----- */}
-        <View
-          style={[
-            styles.shareCard,
-            {
-              backgroundColor: colors.glassBg,
-              borderColor: colors.glassBorder,
-            },
-          ]}
-        >
-          <Text style={[styles.shareText, { color: colors.textSecondary }]}>
-            Know someone who might need this?{"\n"}Share it with them.
-          </Text>
-          <Pressable
-            onPress={handleShare}
-            style={({ pressed }) => [
-              styles.shareBtn,
+              {currentDua && (
+                <>
+                  {/* Arabic */}
+                  {currentDua.arabic && (
+                    <View
+                      style={[
+                        styles.arabicBox,
+                        {
+                          backgroundColor: colors.glassBg,
+                          borderColor: colors.glassBorder,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.arabicText, { color: colors.text }]}>
+                        {currentDua.arabic}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Transliteration */}
+                  {currentDua.transliteration && (
+                    <View style={styles.duaSection}>
+                      <Text
+                        style={[styles.duaLabel, { color: colors.textMuted }]}
+                      >
+                        Transliteration
+                      </Text>
+                      <Text
+                        style={[
+                          styles.translitText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {currentDua.transliteration}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Meaning */}
+                  {currentDua.meaning && (
+                    <View style={styles.duaSection}>
+                      <Text
+                        style={[styles.duaLabel, { color: colors.textMuted }]}
+                      >
+                        Meaning
+                      </Text>
+                      <Text
+                        style={[styles.meaningText, { color: colors.text }]}
+                      >
+                        "{currentDua.meaning}"
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Reference */}
+                  {currentDua.reference && (
+                    <Text style={[styles.reference, { color: colors.primary }]}>
+                      — {currentDua.reference}
+                    </Text>
+                  )}
+
+                  {/* Copy */}
+                  <Pressable
+                    onPress={() =>
+                      handleCopy(
+                        `${currentDua.arabic || ""}\n\n${currentDua.transliteration || ""}\n\n"${currentDua.meaning || ""}"\n\n— ${currentDua.reference || ""}`,
+                        "dua",
+                      )
+                    }
+                    style={[
+                      styles.copyBtn,
+                      { backgroundColor: colors.primaryGlow },
+                    ]}
+                  >
+                    <Ionicons
+                      name={
+                        copiedSection === "dua" ? "checkmark" : "copy-outline"
+                      }
+                      size={15}
+                      color={colors.primary}
+                    />
+                    <Text
+                      style={[styles.copyBtnText, { color: colors.primary }]}
+                    >
+                      {copiedSection === "dua" ? "Copied!" : "Copy Dua"}
+                    </Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+          )}
+
+          {/* ----- Small Actions ----- */}
+          {feeling.actions && feeling.actions.length > 0 && (
+            <View
+              style={[
+                styles.sectionCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.glassBorder,
+                },
+              ]}
+            >
+              <View style={styles.sectionHeaderRow}>
+                <View
+                  style={[
+                    styles.sectionIcon,
+                    { backgroundColor: colors.primaryGlow },
+                  ]}
+                >
+                  <Text style={{ fontSize: 20 }}>✨</Text>
+                </View>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  Small Actions You Can Take
+                </Text>
+              </View>
+
+              {feeling.actions.map((action, idx) => (
+                <View key={idx} style={styles.actionItem}>
+                  <LinearGradient
+                    colors={[colors.gradientStart, colors.gradientEnd]}
+                    style={styles.actionNumber}
+                  >
+                    <Text style={styles.actionNumberText}>{idx + 1}</Text>
+                  </LinearGradient>
+                  <Text
+                    style={[styles.actionText, { color: colors.textSecondary }]}
+                  >
+                    {action}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* ----- Wallpaper Generator ----- */}
+          <WallpaperGenerator feeling={feeling} />
+
+          {/* ----- Share Card ----- */}
+          <View
+            style={[
+              styles.shareCard,
               {
-                backgroundColor: colors.primary,
+                backgroundColor: colors.glassBg,
+                borderColor: colors.glassBorder,
+              },
+            ]}
+          >
+            <Text style={[styles.shareText, { color: colors.textSecondary }]}>
+              Know someone who might need this?{"\n"}Share it with them.
+            </Text>
+            <Pressable
+              onPress={handleShare}
+              style={({ pressed }) => [
+                styles.shareBtn,
+                {
+                  backgroundColor: colors.primary,
+                  transform: [{ scale: pressed ? 0.96 : 1 }],
+                },
+              ]}
+            >
+              <Ionicons name="share-outline" size={18} color="#fff" />
+              <Text style={styles.shareBtnText}>Share This Feeling</Text>
+            </Pressable>
+          </View>
+
+          {/* ----- Explore Button ----- */}
+          <Pressable
+            onPress={() => router.push("/(tabs)")}
+            style={({ pressed }) => [
+              styles.exploreBtn,
+              {
                 transform: [{ scale: pressed ? 0.96 : 1 }],
               },
             ]}
           >
-            <Ionicons name="share-outline" size={18} color="#fff" />
-            <Text style={styles.shareBtnText}>Share This Feeling</Text>
+            <LinearGradient
+              colors={[colors.gradientStart, colors.gradientEnd]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.exploreBtnGradient}
+            >
+              <Ionicons name="grid-outline" size={18} color="#fff" />
+              <Text style={styles.exploreBtnText}>Explore Other Feelings</Text>
+            </LinearGradient>
           </Pressable>
         </View>
 
-        {/* ----- Explore Button ----- */}
-        <Pressable
-          onPress={() => router.push("/(tabs)")}
-          style={({ pressed }) => [
-            styles.exploreBtn,
-            {
-              transform: [{ scale: pressed ? 0.96 : 1 }],
-            },
-          ]}
-        >
-          <LinearGradient
-            colors={[colors.gradientStart, colors.gradientEnd]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.exploreBtnGradient}
-          >
-            <Ionicons name="grid-outline" size={18} color="#fff" />
-            <Text style={styles.exploreBtnText}>Explore Other Feelings</Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
-
-      {/* Bottom spacer */}
-      <View style={{ height: 40 }} />
-    </ScrollView>
+        {/* Bottom spacer */}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
@@ -622,102 +770,200 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   scrollContent: {
-    paddingBottom: 20,
+    padding: 18,
+    paddingBottom: Platform.OS === "ios" ? 110 : 100,
+  },
+
+  // ===== HEADER =====
+  headerBlur: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    paddingTop: Platform.OS === "ios" ? 44 : StatusBar.currentHeight || 0,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  headerBackBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: -0.3,
+    textAlign: "center",
+  },
+  themeToggleContainer: {
+    overflow: "hidden",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  themeToggleGradient: {
+    borderRadius: 20,
+    padding: 1,
+  },
+  themeToggleButton: {
+    position: "relative",
+    backgroundColor: "transparent",
+    borderRadius: 20,
+    width: 56,
+    height: 30,
+  },
+  themeIconLeft: {
+    position: "absolute",
+    left: 7,
+    top: 6,
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  themeIconRight: {
+    position: "absolute",
+    right: 7,
+    top: 6,
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  themeKnob: {
+    position: "absolute",
+    top: 3,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // ===== HERO =====
   hero: {
-    paddingTop:
-      Platform.OS === "ios" ? 56 : (StatusBar.currentHeight || 44) + 10,
-    paddingBottom: 32,
-    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    paddingHorizontal: 22,
     overflow: "hidden",
+    marginTop:
+      Platform.OS === "ios" ? 96 : (StatusBar.currentHeight || 44) + 56,
+    marginBottom: 20,
+    borderRadius: 24,
+    shadowColor: "#10B981",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 12,
   },
   heroDecor1: {
     position: "absolute",
-    right: -40,
-    bottom: -30,
+    right: -50,
+    bottom: -40,
+    opacity: 0.08,
   },
   heroDecor2: {
     position: "absolute",
-    left: 30,
-    top: Platform.OS === "ios" ? 70 : (StatusBar.currentHeight || 44) + 24,
+    left: 20,
+    top: 30,
+    opacity: 0.2,
   },
   heroTopRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   heroBtn: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.15)",
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: "rgba(255,255,255,0.3)",
   },
   heroActions: {
     flexDirection: "row",
-    gap: 10,
+    gap: 12,
   },
   heroCenter: {
     alignItems: "center",
   },
   heroEmojiCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 32,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: "rgba(255,255,255,0.25)",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.3)",
-    marginBottom: 16,
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.4)",
+    marginBottom: 10,
+    shadowColor: "#fff",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
   },
   heroTitle: {
-    fontSize: 28,
-    fontWeight: "900",
+    fontSize: 24,
+    fontWeight: "800",
     color: "#fff",
     letterSpacing: -0.5,
-    marginBottom: 8,
+    marginBottom: 6,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   heroPreview: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "500",
-    color: "rgba(255,255,255,0.85)",
+    color: "rgba(255,255,255,0.9)",
     textAlign: "center",
-    lineHeight: 22,
+    lineHeight: 19,
     paddingHorizontal: 16,
   },
   favBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
-    marginTop: 14,
+    backgroundColor: "rgba(255,255,255,0.25)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.35)",
+    marginTop: 8,
   },
   favBadgeText: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "600",
   },
 
   // ===== SECTIONS =====
   sections: {
-    padding: 18,
-    gap: 14,
-    marginTop: -16,
+    gap: 12,
   },
   sectionCard: {
+    position: "relative",
     borderRadius: 22,
     borderWidth: 1,
     padding: 20,
@@ -726,19 +972,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 4,
+    overflow: "hidden",
   },
   sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 16,
+    gap: 12,
+    marginBottom: 18,
   },
   sectionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#10B981",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
   },
   sectionTitle: {
     fontSize: 18,
@@ -759,31 +1011,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 18,
+    paddingHorizontal: 4,
   },
   navBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#10B981",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
   },
   navCounter: {
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "700",
   },
 
   // Arabic
   arabicBox: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 18,
-    marginBottom: 14,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#10B981",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   arabicText: {
     fontSize: 24,
@@ -808,14 +1061,14 @@ const styles = StyleSheet.create({
 
   // Dua
   duaSection: {
-    marginBottom: 12,
-    gap: 4,
+    marginBottom: 16,
+    gap: 6,
   },
   duaLabel: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 12,
+    fontWeight: "800",
     textTransform: "uppercase",
-    letterSpacing: 0.8,
+    letterSpacing: 1,
   },
   translitText: {
     fontSize: 14,
@@ -833,10 +1086,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.2)",
   },
   copyBtnText: {
     fontSize: 13,
@@ -847,13 +1102,16 @@ const styles = StyleSheet.create({
   actionItem: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
-    marginBottom: 12,
+    gap: 14,
+    marginBottom: 14,
+    padding: 12,
+    borderRadius: 14,
+    backgroundColor: "rgba(16, 185, 129, 0.03)",
   },
   actionNumber: {
-    width: 26,
-    height: 26,
-    borderRadius: 9,
+    width: 32,
+    height: 32,
+    borderRadius: 11,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 1,
@@ -872,10 +1130,15 @@ const styles = StyleSheet.create({
 
   // Share
   shareCard: {
-    borderRadius: 22,
-    borderWidth: 1,
-    padding: 24,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    padding: 28,
     alignItems: "center",
+    shadowColor: "#10B981",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   shareText: {
     fontSize: 14,
@@ -887,15 +1150,10 @@ const styles = StyleSheet.create({
   shareBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 16,
-    shadowColor: "#10B981",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
+    gap: 10,
+    paddingHorizontal: 28,
+    paddingVertical: 16,
+    borderRadius: 18,
   },
   shareBtnText: {
     color: "#fff",
@@ -905,21 +1163,16 @@ const styles = StyleSheet.create({
 
   // Explore
   exploreBtn: {
-    borderRadius: 18,
+    borderRadius: 20,
     overflow: "hidden",
   },
   exploreBtnGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
-    paddingVertical: 16,
+    gap: 12,
+    paddingVertical: 18,
     borderRadius: 18,
-    shadowColor: "#10B981",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
   },
   exploreBtnText: {
     color: "#fff",

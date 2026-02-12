@@ -148,16 +148,34 @@ export default function HomeScreen() {
       style={({ pressed }) => [
         styles.feelingCard,
         {
-          backgroundColor: colors.card,
           borderColor: colors.glassBorder,
           transform: [{ scale: pressed ? 0.96 : 1 }],
           width: CARD_WIDTH,
+          shadowColor: colorScheme === "dark" ? "#6366F1" : "#000",
+          shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
         },
       ]}
     >
-      {/* Large emoji background — matching website's GlassCard decoration */}
+      {/* Gradient background overlay for premium look */}
+      <LinearGradient
+        colors={
+          colorScheme === "dark"
+            ? ["rgba(51, 65, 85, 0.6)", "rgba(30, 41, 59, 0.8)"]
+            : ["rgba(255, 255, 255, 0.95)", "rgba(249, 250, 251, 0.95)"]
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Large emoji background with gradient glow */}
       <View style={styles.emojiBackground}>
-        <Text style={styles.emojiBg}>{item.emoji}</Text>
+        <LinearGradient
+          colors={[colors.gradientStart + "15", colors.gradientEnd + "25"]}
+          style={styles.emojiGlowBg}
+        >
+          <Text style={styles.emojiBg}>{item.emoji}</Text>
+        </LinearGradient>
       </View>
 
       {/* Favorite heart button — matching website's FavoriteButton */}
@@ -167,7 +185,10 @@ export default function HomeScreen() {
           handleToggleFav(item.slug);
         }}
         hitSlop={8}
-        style={styles.heartBtn}
+        style={[
+          styles.heartBtn,
+          { backgroundColor: colors.glassBg, borderColor: colors.glassBorder },
+        ]}
       >
         <Ionicons
           name={favSlugs.includes(item.slug) ? "heart" : "heart-outline"}
@@ -180,7 +201,17 @@ export default function HomeScreen() {
 
       {/* Content */}
       <View style={styles.cardContent}>
-        <Text style={styles.feelingEmoji}>{item.emoji}</Text>
+        {/* Emoji with glow effect */}
+        <View style={styles.emojiContainer}>
+          <View
+            style={[
+              styles.emojiGlow,
+              { backgroundColor: colors.primaryGlow, opacity: 0.3 },
+            ]}
+          />
+          <Text style={styles.feelingEmoji}>{item.emoji}</Text>
+        </View>
+
         <Text style={[styles.feelingTitle, { color: colors.text }]}>
           {item.title}
         </Text>
@@ -191,18 +222,25 @@ export default function HomeScreen() {
           {item.preview}
         </Text>
 
-        {/* "Find comfort →" link like website */}
-        <View style={styles.findComfort}>
-          <Text style={[styles.findComfortText, { color: colors.primary }]}>
-            Find comfort
-          </Text>
-          <Ionicons name="chevron-forward" size={14} color={colors.primary} />
-        </View>
+        {/* Enhanced "Find comfort" button with gradient */}
+        <LinearGradient
+          colors={[colors.gradientStart + "20", colors.gradientEnd + "20"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.findComfortBg}
+        >
+          <View style={styles.findComfort}>
+            <Text style={[styles.findComfortText, { color: colors.primary }]}>
+              Find comfort
+            </Text>
+            <Ionicons name="arrow-forward" size={14} color={colors.primary} />
+          </View>
+        </LinearGradient>
       </View>
 
-      {/* Subtle glow line at bottom */}
+      {/* Premium bottom glow accent */}
       <LinearGradient
-        colors={[colors.gradientStart + "00", colors.gradientStart + "25"]}
+        colors={[colors.gradientStart + "00", colors.gradientStart + "40"]}
         style={styles.cardGlow}
       />
     </Pressable>
@@ -284,57 +322,88 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            {/* ===== Search Box — Glass style ===== */}
-            <View
-              style={[
-                styles.searchBox,
-                {
-                  backgroundColor: colors.glassBg,
-                  borderColor: colors.glassBorder,
-                },
-              ]}
-            >
-              <Ionicons
-                name="search"
-                size={18}
-                color={colors.textMuted}
-                style={{ marginRight: 10 }}
-              />
-              <TextInput
-                style={[styles.searchInput, { color: colors.text }]}
-                placeholder="Search feelings..."
-                placeholderTextColor={colors.textMuted}
-                value={search}
-                onChangeText={setSearch}
-              />
-              {search.length > 0 && (
-                <Pressable onPress={() => setSearch("")} hitSlop={10}>
-                  <Ionicons
-                    name="close-circle"
-                    size={18}
-                    color={colors.textMuted}
+            {/* ===== Search Box — Premium glass style ===== */}
+            <View style={styles.searchWrapper}>
+              <LinearGradient
+                colors={
+                  colorScheme === "dark"
+                    ? ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
+                    : ["rgba(99, 102, 241, 0.05)", "rgba(59, 130, 246, 0.05)"]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.searchGradientBg}
+              >
+                <View
+                  style={[
+                    styles.searchBox,
+                    {
+                      backgroundColor: colors.glassBg,
+                      borderColor: colors.glassBorder,
+                    },
+                  ]}
+                >
+                  <View style={styles.searchIconContainer}>
+                    <Ionicons
+                      name="search"
+                      size={18}
+                      color={colors.primary}
+                      style={{ marginRight: 10 }}
+                    />
+                  </View>
+                  <TextInput
+                    style={[styles.searchInput, { color: colors.text }]}
+                    placeholder="Search feelings..."
+                    placeholderTextColor={colors.textMuted}
+                    value={search}
+                    onChangeText={setSearch}
                   />
-                </Pressable>
-              )}
+                  {search.length > 0 && (
+                    <Pressable
+                      onPress={() => setSearch("")}
+                      hitSlop={10}
+                      style={styles.clearButton}
+                    >
+                      <Ionicons
+                        name="close-circle"
+                        size={18}
+                        color={colors.textMuted}
+                      />
+                    </Pressable>
+                  )}
+                </View>
+              </LinearGradient>
             </View>
 
-            {/* ===== Section Header ===== */}
-            <View
-              style={[
-                styles.sectionHeader,
-                {
-                  backgroundColor: colors.glassBg,
-                  borderColor: colors.glassBorder,
-                },
-              ]}
+            {/* ===== Section Header with gradient accent ===== */}
+            <LinearGradient
+              colors={
+                colorScheme === "dark"
+                  ? ["rgba(99, 102, 241, 0.15)", "rgba(59, 130, 246, 0.15)"]
+                  : ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.sectionHeaderGradient}
             >
-              <Text style={{ fontSize: 24 }}>🎭</Text>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {search
-                  ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
-                  : "All Feelings"}
-              </Text>
-            </View>
+              <View
+                style={[
+                  styles.sectionHeader,
+                  {
+                    backgroundColor: colors.glassBg,
+                    borderColor: colors.glassBorder,
+                  },
+                ]}
+              >
+                <Text style={{ fontSize: 24 }}>🎭</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  {search
+                    ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
+                    : "All Feelings"}
+                </Text>
+                <View style={styles.badgeDot} />
+              </View>
+            </LinearGradient>
           </View>
         }
         ListEmptyComponent={
@@ -410,14 +479,16 @@ const styles = StyleSheet.create({
   // Banner
   dateBanner: {
     borderRadius: 24,
-    padding: 20,
+    padding: 24,
     marginBottom: 24,
     overflow: "hidden",
     shadowColor: "#10B981",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 15,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   bannerMoonBg: {
     position: "absolute",
@@ -484,6 +555,20 @@ const styles = StyleSheet.create({
   },
 
   // Search
+  searchWrapper: {
+    marginBottom: 20,
+    borderRadius: 18,
+    overflow: "hidden",
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  searchGradientBg: {
+    padding: 1.5,
+    borderRadius: 18,
+  },
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
@@ -491,101 +576,150 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: Platform.OS === "ios" ? 14 : 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+  },
+  searchIconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchInput: {
     flex: 1,
     fontSize: 15,
     fontWeight: "500",
   },
+  clearButton: {
+    padding: 4,
+  },
 
   // Section
+  sectionHeaderGradient: {
+    borderRadius: 16,
+    padding: 1.5,
+    marginBottom: 16,
+  },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 17,
     fontWeight: "800",
     letterSpacing: -0.2,
+    flex: 1,
+  },
+  badgeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#10B981",
+    shadowColor: "#10B981",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
 
   // ===== CARDS =====
   feelingCard: {
     borderRadius: 24,
-    borderWidth: 1,
+    borderWidth: 1.5,
     marginBottom: CARD_GAP,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 6,
-    minHeight: 190,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 20,
+    elevation: 8,
+    minHeight: 200,
   },
   emojiBackground: {
     position: "absolute",
-    bottom: -12,
-    right: -12,
-    opacity: 0.06,
+    bottom: -10,
+    right: -10,
+    opacity: 0.15,
+  },
+  emojiGlowBg: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
   heartBtn: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 12,
+    right: 12,
     zIndex: 10,
-    padding: 4,
+    padding: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   emojiBg: {
-    fontSize: 110,
+    fontSize: 80,
   },
   cardContent: {
     padding: 18,
     flex: 1,
     justifyContent: "space-between",
   },
+  emojiContainer: {
+    position: "relative",
+    width: 52,
+    height: 52,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  emojiGlow: {
+    position: "absolute",
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+  },
   feelingEmoji: {
-    fontSize: 38,
-    marginBottom: 10,
+    fontSize: 42,
   },
   feelingTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "800",
-    letterSpacing: -0.2,
-    marginBottom: 4,
+    letterSpacing: -0.3,
+    marginBottom: 6,
   },
   feelingPreview: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "500",
+    marginBottom: 12,
+  },
+  findComfortBg: {
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 4,
   },
   findComfort: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 14,
-    gap: 2,
+    gap: 4,
   },
   findComfortText: {
     fontSize: 13,
     fontWeight: "700",
+    letterSpacing: -0.1,
   },
   cardGlow: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: 3,
+    height: 4,
   },
 
   // ===== EMPTY =====

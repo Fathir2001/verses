@@ -127,12 +127,12 @@ export default function DynamicIslandTabBar({
   // Dynamic Island background - contrasts with theme background
   const islandBackground =
     colorScheme === "dark"
-      ? "rgba(51, 65, 85, 0.95)" // Lighter slate in dark theme for visibility
+      ? "rgba(71, 85, 105, 1)" // Much lighter slate in dark theme for strong visibility
       : "rgba(0, 0, 0, 0.85)"; // Dark background in light theme
 
   const islandBorder =
     colorScheme === "dark"
-      ? "rgba(148, 163, 184, 0.3)" // Lighter border in dark theme
+      ? "rgba(148, 163, 184, 0.5)" // Stronger border in dark theme
       : "rgba(255, 255, 255, 0.1)";
 
   // Icon colors - white/light icons for better visibility
@@ -148,7 +148,7 @@ export default function DynamicIslandTabBar({
 
   const activeIconBg =
     colorScheme === "dark"
-      ? "rgba(99, 102, 241, 0.3)" // Brighter indigo glow
+      ? "rgba(99, 102, 241, 0.4)" // Stronger indigo glow
       : "rgba(99, 102, 241, 0.25)"; // Glow in light theme
 
   return (
@@ -163,9 +163,9 @@ export default function DynamicIslandTabBar({
             // Enhanced shadow based on theme
             shadowColor: colorScheme === "dark" ? "#6366F1" : "#000",
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: colorScheme === "dark" ? 0.4 : 0.3,
-            shadowRadius: 12,
-            elevation: 12,
+            shadowOpacity: colorScheme === "dark" ? 0.6 : 0.3,
+            shadowRadius: 16,
+            elevation: 16,
           },
         ]}
       >
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 48,
     borderRadius: 24,
-    borderWidth: 1,
+    borderWidth: 1.5,
     paddingHorizontal: 8,
     alignItems: "center",
     justifyContent: "space-around",
