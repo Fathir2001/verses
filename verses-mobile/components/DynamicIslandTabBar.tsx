@@ -3,10 +3,19 @@
 
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
+import { getFavorites } from "@/lib/favorites";
+import { haptics } from "@/lib/haptics";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useEffect, useRef } from "react";
-import { Animated, Platform, Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function DynamicIslandTabBar({
   state,
@@ -16,6 +25,25 @@ export default function DynamicIslandTabBar({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
+  // Favorites count for badge
+  const [favCount, setFavCount] = useState(0);
+  const badgeScaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Glow pulse animation for active tab
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  const loadFavCount = useCallback(async () => {
+    try {
+      const slugs = await getFavorites();
+      setFavCount(slugs.length);
+    } catch {}
+  }, []);
+
+  // Reload favorites count when tab changes (e.g., leaving favorites screen)
+  useEffect(() => {
+    loadFavCount();
+  }, [state.index, loadFavCount]);
+
   // Animation values
   const widthAnim = useRef(new Animated.Value(0)).current;
   const iconSizeAnim = useRef(new Animated.Value(0)).current;
@@ -24,7 +52,7 @@ export default function DynamicIslandTabBar({
   const isExpanded = useRef(false);
   const autoCollapseTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Animate to compact state on mount
+  // Animate to compact state on mount + start glow pulse
   useEffect(() => {
     Animated.parallel([
       Animated.spring(widthAnim, {
@@ -41,7 +69,25 @@ export default function DynamicIslandTabBar({
       }),
     ]).start();
 
+    // Continuous gentle glow pulse for active tab
+    const glowLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+      ]),
+    );
+    glowLoop.start();
+
     return () => {
+      glowLoop.stop();
       if (autoCollapseTimer.current) {
         clearTimeout(autoCollapseTimer.current);
       }
@@ -174,6 +220,8 @@ export default function DynamicIslandTabBar({
           const isFocused = state.index === index;
 
           const onPress = () => {
+            // Haptic feedback on tab press
+            haptics.selection();
             // Expand island on any tab press (auto-collapses after 800ms)
             expandIsland();
 
@@ -199,17 +247,39 @@ export default function DynamicIslandTabBar({
             ? iconMap[route.name]
             : iconOutlineMap[route.name];
 
+          const glowOpacity = glowAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.3, 0.7],
+          });
+
+          const glowScale = glowAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 1.35],
+          });
+
           return (
             <Pressable
               key={route.key}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarTestID}
+              testID={options.tabBarButtonTestID}
               onPress={onPress}
               onLongPress={onLongPress}
               style={{ flex: 1, alignItems: "center" }}
             >
+              {/* Glow ring behind active icon */}
+              {isFocused && (
+                <Animated.View
+                  style={[
+                    styles.glowRing,
+                    {
+                      opacity: glowOpacity,
+                      transform: [{ scale: glowScale }],
+                    },
+                  ]}
+                />
+              )}
               <Animated.View
                 style={[
                   styles.iconContainer,
@@ -225,6 +295,14 @@ export default function DynamicIslandTabBar({
                   size={20}
                   color={isFocused ? activeIconColor : inactiveIconColor}
                 />
+                {/* Favorites badge */}
+                {route.name === "favorites" && favCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {favCount > 9 ? "9+" : favCount}
+                    </Text>
+                  </View>
+                )}
               </Animated.View>
             </Pressable>
           );
@@ -237,7 +315,7 @@ export default function DynamicIslandTabBar({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 34 : 50,
+    bottom: Platform.OS === "ios" ? 34 : 24,
     left: 0,
     right: 0,
     alignItems: "center",
@@ -257,6 +335,37 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    transition: "all 0.3s ease",
+  },
+  badge: {
+    position: "absolute",
+    top: -4,
+    right: -6,
+    backgroundColor: "#EF4444",
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: "rgba(0,0,0,0.85)",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 9,
+    fontWeight: "800",
+    lineHeight: 12,
+  },
+  glowRing: {
+    position: "absolute",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(99, 102, 241, 0.3)",
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5,
   },
 });

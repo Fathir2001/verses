@@ -8,11 +8,13 @@
 // - Copy, Share, Favorite actions with glass buttons
 // - Smooth press interactions
 
+import { FeelingDetailSkeleton } from "@/components/SkeletonLoader";
 import { WallpaperGenerator } from "@/components/WallpaperGenerator";
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { getFeelingBySlug } from "@/lib/api";
 import { isFavorite, toggleFavorite } from "@/lib/favorites";
+import { haptics } from "@/lib/haptics";
 import { Feeling } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -64,11 +66,13 @@ export default function FeelingDetailScreen() {
 
   const handleFavorite = async () => {
     if (!slug) return;
+    haptics.medium();
     const newStatus = await toggleFavorite(slug);
     setIsFav(newStatus);
   };
 
   const handleCopy = async (text: string, section: string) => {
+    haptics.success();
     try {
       await Clipboard.setStringAsync(text);
       setCopiedSection(section);
@@ -80,6 +84,7 @@ export default function FeelingDetailScreen() {
 
   const handleShare = async () => {
     if (!feeling) return;
+    haptics.light();
     try {
       await Share.share({
         message: `${feeling.emoji} Feeling ${feeling.title}\n\n${feeling.preview}\n\nFrom Verses App`,
@@ -91,18 +96,7 @@ export default function FeelingDetailScreen() {
 
   // ----- Loading -----
   if (loading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <View
-          style={[styles.loadingIcon, { backgroundColor: colors.primaryGlow }]}
-        >
-          <Text style={{ fontSize: 36 }}>🌙</Text>
-        </View>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Loading...
-        </Text>
-      </View>
-    );
+    return <FeelingDetailSkeleton />;
   }
 
   // ----- Not found -----

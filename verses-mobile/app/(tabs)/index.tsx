@@ -7,10 +7,13 @@
 // - Search bar with glass effect
 // - Section headers with badges
 
+import { HomeScreenSkeleton } from "@/components/SkeletonLoader";
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { formatIslamicDate, getFeelings, getIslamicDate } from "@/lib/api";
 import { getFavorites, toggleFavorite } from "@/lib/favorites";
+import { haptics } from "@/lib/haptics";
+import { getRandomQuote, IslamicQuote } from "@/lib/quotes";
 import { Feeling } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,6 +23,7 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
+  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -42,6 +46,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [favSlugs, setFavSlugs] = useState<string[]>([]);
+  const [pullQuote, setPullQuote] = useState<IslamicQuote | null>(null);
+  const [previewFeeling, setPreviewFeeling] = useState<Feeling | null>(null);
 
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -109,12 +115,15 @@ export default function HomeScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    setPullQuote(getRandomQuote());
+    haptics.light();
     loadData();
     loadFavs();
   }, [loadData, loadFavs]);
 
   const handleToggleFav = useCallback(
     async (slug: string) => {
+      haptics.medium();
       await toggleFavorite(slug);
       await loadFavs();
     },
@@ -122,18 +131,7 @@ export default function HomeScreen() {
   );
 
   if (loading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <View
-          style={[styles.loadingIcon, { backgroundColor: colors.primaryGlow }]}
-        >
-          <Text style={{ fontSize: 32 }}>🌙</Text>
-        </View>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Loading...
-        </Text>
-      </View>
-    );
+    return <HomeScreenSkeleton />;
   }
 
   const renderFeelingCard = ({
@@ -145,6 +143,11 @@ export default function HomeScreen() {
   }) => (
     <Pressable
       onPress={() => router.push(`/feeling/${item.slug}`)}
+      onLongPress={() => {
+        haptics.heavy();
+        setPreviewFeeling(item);
+      }}
+      delayLongPress={400}
       style={({ pressed }) => [
         styles.feelingCard,
         {
@@ -247,200 +250,314 @@ export default function HomeScreen() {
   );
 
   return (
-    <ImageBackground
-      source={require("@/assets/background.jpeg")}
-      style={{ flex: 1 }}
-      resizeMode="cover"
-    >
-      <View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          backgroundColor:
-            colorScheme === "dark"
-              ? "rgba(15, 23, 42, 0.6)"
-              : "rgba(255, 255, 255, 0.4)",
-        }}
-      />
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.slug}
-        renderItem={renderFeelingCard}
-        numColumns={2}
-        contentContainerStyle={[styles.container, { paddingBottom: 100 }]}
-        columnWrapperStyle={styles.row}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-          />
-        }
-        ListHeaderComponent={
-          <View style={styles.headerSection}>
-            {/* ===== Islamic Date Banner — Gradient ===== */}
-            <LinearGradient
-              colors={[colors.gradientStart, colors.gradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.dateBanner}
-            >
-              {/* Decorative moon */}
-              <View style={styles.bannerMoonBg}>
-                <Text style={styles.bannerMoonText}>🌙</Text>
-              </View>
-
-              <View style={styles.dateBannerContent}>
-                <View style={styles.dateIconCircle}>
-                  <Text style={{ fontSize: 28 }}>🌙</Text>
-                </View>
-
-                <View style={styles.dateTextWrap}>
-                  <Text style={styles.islamicDateText}>
-                    {islamicDate || "Loading..."}
-                  </Text>
-                  <Text style={styles.gregorianDateText}>{gregorianDate}</Text>
-                </View>
-
-                <View style={styles.dateStarsWrap}>
-                  <Text style={{ fontSize: 18 }}>✨</Text>
-                  <Text style={{ fontSize: 14 }}>⭐</Text>
-                </View>
-              </View>
-            </LinearGradient>
-
-            {/* ===== Title ===== */}
-            <View style={styles.titleSection}>
-              <Text style={[styles.headerTitle, { color: colors.primary }]}>
-                How are you feeling?
-              </Text>
-              <Text
-                style={[styles.headerSubtitle, { color: colors.textSecondary }]}
-              >
-                Select what resonates with you, and find comfort through Islamic
-                teachings.
-              </Text>
-            </View>
-
-            {/* ===== Search Box — Premium glass style ===== */}
-            <View style={styles.searchWrapper}>
-              <LinearGradient
-                colors={
-                  colorScheme === "dark"
-                    ? ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
-                    : ["rgba(99, 102, 241, 0.05)", "rgba(59, 130, 246, 0.05)"]
-                }
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.searchGradientBg}
-              >
+    <>
+      <ImageBackground
+        source={require("@/assets/background.jpeg")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor:
+              colorScheme === "dark"
+                ? "rgba(15, 23, 42, 0.6)"
+                : "rgba(255, 255, 255, 0.4)",
+          }}
+        />
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.slug}
+          renderItem={renderFeelingCard}
+          numColumns={2}
+          contentContainerStyle={[styles.container, { paddingBottom: 100 }]}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
+          ListHeaderComponent={
+            <View style={styles.headerSection}>
+              {/* ===== Pull-down Quote Banner ===== */}
+              {pullQuote && (
                 <View
                   style={[
-                    styles.searchBox,
+                    styles.quoteBanner,
                     {
                       backgroundColor: colors.glassBg,
                       borderColor: colors.glassBorder,
                     },
                   ]}
                 >
-                  <View style={styles.searchIconContainer}>
-                    <Ionicons
-                      name="search"
-                      size={18}
-                      color={colors.primary}
-                      style={{ marginRight: 10 }}
-                    />
+                  <Text style={[styles.quoteArabic, { color: colors.text }]}>
+                    {pullQuote.arabic}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.quoteTranslation,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    "{pullQuote.text}"
+                  </Text>
+                  <Text style={[styles.quoteSource, { color: colors.primary }]}>
+                    — {pullQuote.source}
+                  </Text>
+                </View>
+              )}
+
+              {/* ===== Islamic Date Banner — Gradient ===== */}
+              <LinearGradient
+                colors={[colors.gradientStart, colors.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.dateBanner}
+              >
+                {/* Decorative moon */}
+                <View style={styles.bannerMoonBg}>
+                  <Text style={styles.bannerMoonText}>🌙</Text>
+                </View>
+
+                <View style={styles.dateBannerContent}>
+                  <View style={styles.dateIconCircle}>
+                    <Text style={{ fontSize: 28 }}>🌙</Text>
                   </View>
-                  <TextInput
-                    style={[styles.searchInput, { color: colors.text }]}
-                    placeholder="Search feelings..."
-                    placeholderTextColor={colors.textMuted}
-                    value={search}
-                    onChangeText={setSearch}
-                  />
-                  {search.length > 0 && (
-                    <Pressable
-                      onPress={() => setSearch("")}
-                      hitSlop={10}
-                      style={styles.clearButton}
-                    >
+
+                  <View style={styles.dateTextWrap}>
+                    <Text style={styles.islamicDateText}>
+                      {islamicDate || "Loading..."}
+                    </Text>
+                    <Text style={styles.gregorianDateText}>
+                      {gregorianDate}
+                    </Text>
+                  </View>
+
+                  <View style={styles.dateStarsWrap}>
+                    <Text style={{ fontSize: 18 }}>✨</Text>
+                    <Text style={{ fontSize: 14 }}>⭐</Text>
+                  </View>
+                </View>
+              </LinearGradient>
+
+              {/* ===== Title ===== */}
+              <View style={styles.titleSection}>
+                <Text style={[styles.headerTitle, { color: colors.primary }]}>
+                  How are you feeling?
+                </Text>
+                <Text
+                  style={[
+                    styles.headerSubtitle,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  Select what resonates with you, and find comfort through
+                  Islamic teachings.
+                </Text>
+              </View>
+
+              {/* ===== Search Box — Premium glass style ===== */}
+              <View style={styles.searchWrapper}>
+                <LinearGradient
+                  colors={
+                    colorScheme === "dark"
+                      ? ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
+                      : ["rgba(99, 102, 241, 0.05)", "rgba(59, 130, 246, 0.05)"]
+                  }
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.searchGradientBg}
+                >
+                  <View
+                    style={[
+                      styles.searchBox,
+                      {
+                        backgroundColor: colors.glassBg,
+                        borderColor: colors.glassBorder,
+                      },
+                    ]}
+                  >
+                    <View style={styles.searchIconContainer}>
                       <Ionicons
-                        name="close-circle"
+                        name="search"
                         size={18}
-                        color={colors.textMuted}
+                        color={colors.primary}
+                        style={{ marginRight: 10 }}
                       />
-                    </Pressable>
-                  )}
+                    </View>
+                    <TextInput
+                      style={[styles.searchInput, { color: colors.text }]}
+                      placeholder="Search feelings..."
+                      placeholderTextColor={colors.textMuted}
+                      value={search}
+                      onChangeText={setSearch}
+                    />
+                    {search.length > 0 && (
+                      <Pressable
+                        onPress={() => setSearch("")}
+                        hitSlop={10}
+                        style={styles.clearButton}
+                      >
+                        <Ionicons
+                          name="close-circle"
+                          size={18}
+                          color={colors.textMuted}
+                        />
+                      </Pressable>
+                    )}
+                  </View>
+                </LinearGradient>
+              </View>
+
+              {/* ===== Section Header with gradient accent ===== */}
+              <LinearGradient
+                colors={
+                  colorScheme === "dark"
+                    ? ["rgba(99, 102, 241, 0.15)", "rgba(59, 130, 246, 0.15)"]
+                    : ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.sectionHeaderGradient}
+              >
+                <View
+                  style={[
+                    styles.sectionHeader,
+                    {
+                      backgroundColor: colors.glassBg,
+                      borderColor: colors.glassBorder,
+                    },
+                  ]}
+                >
+                  <Text style={{ fontSize: 24 }}>🎭</Text>
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                    {search
+                      ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
+                      : "All Feelings"}
+                  </Text>
+                  <View style={styles.badgeDot} />
                 </View>
               </LinearGradient>
             </View>
-
-            {/* ===== Section Header with gradient accent ===== */}
-            <LinearGradient
-              colors={
-                colorScheme === "dark"
-                  ? ["rgba(99, 102, 241, 0.15)", "rgba(59, 130, 246, 0.15)"]
-                  : ["rgba(99, 102, 241, 0.1)", "rgba(59, 130, 246, 0.1)"]
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.sectionHeaderGradient}
-            >
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
               <View
                 style={[
-                  styles.sectionHeader,
-                  {
-                    backgroundColor: colors.glassBg,
-                    borderColor: colors.glassBorder,
-                  },
+                  styles.emptyIcon,
+                  { backgroundColor: colors.primaryGlow },
                 ]}
               >
-                <Text style={{ fontSize: 24 }}>🎭</Text>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  {search
-                    ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
-                    : "All Feelings"}
-                </Text>
-                <View style={styles.badgeDot} />
+                <Ionicons
+                  name="search-outline"
+                  size={36}
+                  color={colors.primary}
+                />
               </View>
-            </LinearGradient>
-          </View>
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <View
-              style={[
-                styles.emptyIcon,
-                { backgroundColor: colors.primaryGlow },
-              ]}
-            >
-              <Ionicons
-                name="search-outline"
-                size={36}
-                color={colors.primary}
-              />
-            </View>
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              No feelings found
-            </Text>
-            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              Try a different search term
-            </Text>
-            <Pressable
-              onPress={() => setSearch("")}
-              style={[
-                styles.emptyButton,
-                { backgroundColor: colors.primaryGlow },
-              ]}
-            >
-              <Text style={[styles.emptyButtonText, { color: colors.primary }]}>
-                Clear search
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                No feelings found
               </Text>
-            </Pressable>
+              <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+                Try a different search term
+              </Text>
+              <Pressable
+                onPress={() => setSearch("")}
+                style={[
+                  styles.emptyButton,
+                  { backgroundColor: colors.primaryGlow },
+                ]}
+              >
+                <Text
+                  style={[styles.emptyButtonText, { color: colors.primary }]}
+                >
+                  Clear search
+                </Text>
+              </Pressable>
+            </View>
+          }
+        />
+      </ImageBackground>
+
+      {/* ===== Long Press Preview Modal ===== */}
+      <Modal
+        visible={!!previewFeeling}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewFeeling(null)}
+      >
+        <Pressable
+          style={styles.previewOverlay}
+          onPress={() => setPreviewFeeling(null)}
+        >
+          <View style={[styles.previewCard, { backgroundColor: colors.card }]}>
+            <Text style={styles.previewEmoji}>{previewFeeling?.emoji}</Text>
+            <Text style={[styles.previewTitle, { color: colors.text }]}>
+              {previewFeeling?.title}
+            </Text>
+            <Text style={[styles.previewText, { color: colors.textSecondary }]}>
+              {previewFeeling?.preview}
+            </Text>
+            <View style={styles.previewActions}>
+              <Pressable
+                onPress={() => {
+                  if (previewFeeling) handleToggleFav(previewFeeling.slug);
+                }}
+                style={[
+                  styles.previewBtn,
+                  { backgroundColor: colors.primaryGlow },
+                ]}
+              >
+                <Ionicons
+                  name={
+                    previewFeeling && favSlugs.includes(previewFeeling.slug)
+                      ? "heart"
+                      : "heart-outline"
+                  }
+                  size={20}
+                  color={
+                    previewFeeling && favSlugs.includes(previewFeeling.slug)
+                      ? "#ef4444"
+                      : colors.primary
+                  }
+                />
+                <Text
+                  style={[styles.previewBtnText, { color: colors.primary }]}
+                >
+                  {previewFeeling && favSlugs.includes(previewFeeling.slug)
+                    ? "Saved"
+                    : "Save"}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setPreviewFeeling(null);
+                  if (previewFeeling)
+                    router.push(`/feeling/${previewFeeling.slug}`);
+                }}
+                style={[
+                  styles.previewBtn,
+                  { backgroundColor: colors.primaryGlow },
+                ]}
+              >
+                <Ionicons
+                  name="arrow-forward"
+                  size={20}
+                  color={colors.primary}
+                />
+                <Text
+                  style={[styles.previewBtnText, { color: colors.primary }]}
+                >
+                  Open
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        }
-      />
-    </ImageBackground>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
 
@@ -474,6 +591,34 @@ const styles = StyleSheet.create({
   // ===== HEADER =====
   headerSection: {
     marginBottom: 8,
+  },
+
+  // Quote banner
+  quoteBanner: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 20,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  quoteArabic: {
+    fontSize: 22,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 10,
+    lineHeight: 36,
+  },
+  quoteTranslation: {
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
+    fontStyle: "italic",
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  quoteSource: {
+    fontSize: 12,
+    fontWeight: "700",
   },
 
   // Banner
@@ -750,6 +895,59 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emptyButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+
+  // ===== PREVIEW MODAL =====
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+  },
+  previewCard: {
+    borderRadius: 28,
+    padding: 32,
+    alignItems: "center",
+    width: "100%",
+    maxWidth: 320,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
+    elevation: 20,
+  },
+  previewEmoji: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  previewTitle: {
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 10,
+    letterSpacing: -0.3,
+  },
+  previewText: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  previewActions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  previewBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+  },
+  previewBtnText: {
     fontSize: 14,
     fontWeight: "700",
   },

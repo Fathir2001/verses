@@ -6,14 +6,44 @@
 //   (like pushing/popping pages). The user can go back by swiping or pressing back.
 // - <Slot> = Renders the current child route (like {children} in Next.js)
 
+import OnboardingScreen, {
+  hasSeenOnboarding,
+} from "@/components/OnboardingScreen";
 import Colors from "@/constants/Colors";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 function RootNavigator() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    hasSeenOnboarding().then((seen) => setShowOnboarding(!seen));
+  }, []);
+
+  // Still checking AsyncStorage
+  if (showOnboarding === null) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (showOnboarding) {
+    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
+  }
 
   return (
     <>

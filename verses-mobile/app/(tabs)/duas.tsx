@@ -7,9 +7,11 @@
 // - Copy & share actions with glassmorphic buttons
 // - Smooth expand/collapse animations
 
+import { DuasScreenSkeleton } from "@/components/SkeletonLoader";
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { getDuas } from "@/lib/api";
+import { haptics } from "@/lib/haptics";
 import { Dua } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -59,6 +61,7 @@ export default function DuasScreen() {
   }, [loadDuas]);
 
   const handleCopy = async (dua: Dua) => {
+    haptics.success();
     const text = `${dua.arabic}\n\n${dua.meaning}\n\n— ${dua.title}`;
     try {
       await Clipboard.setStringAsync(text);
@@ -70,6 +73,7 @@ export default function DuasScreen() {
   };
 
   const handleShare = async (dua: Dua) => {
+    haptics.light();
     try {
       await Share.share({
         message: `${dua.arabic}\n\n${dua.meaning}\n\n— ${dua.title}`,
@@ -80,18 +84,7 @@ export default function DuasScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <View
-          style={[styles.loadingIcon, { backgroundColor: colors.primaryGlow }]}
-        >
-          <Text style={{ fontSize: 32 }}>🤲</Text>
-        </View>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Loading duas...
-        </Text>
-      </View>
-    );
+    return <DuasScreenSkeleton />;
   }
 
   const renderDuaCard = ({ item, index }: { item: Dua; index: number }) => {

@@ -7,10 +7,12 @@
 // - Auto-refresh on screen focus
 // - Gradient header banner
 
+import { FavoritesScreenSkeleton } from "@/components/SkeletonLoader";
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { getFeelings } from "@/lib/api";
 import { getFavorites, toggleFavorite } from "@/lib/favorites";
+import { haptics } from "@/lib/haptics";
 import { Feeling } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -69,6 +71,7 @@ export default function FavoritesScreen() {
   }, [loadFavorites]);
 
   const handleRemove = async (slug: string) => {
+    haptics.medium();
     setRemovingSlug(slug);
     await toggleFavorite(slug);
     // Animate out then remove
@@ -79,18 +82,7 @@ export default function FavoritesScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <View
-          style={[styles.loadingIcon, { backgroundColor: colors.primaryGlow }]}
-        >
-          <Text style={{ fontSize: 32 }}>❤️</Text>
-        </View>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Loading favorites...
-        </Text>
-      </View>
-    );
+    return <FavoritesScreenSkeleton />;
   }
 
   const renderFavCard = ({ item, index }: { item: Feeling; index: number }) => {
