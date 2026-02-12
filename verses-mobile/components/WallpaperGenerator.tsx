@@ -81,15 +81,20 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
   const colorScheme = useTheme().colorScheme;
   const colors = Colors[colorScheme];
 
-  const verseContent =
-    feeling.verses?.[0] ||
-    (feeling.quran
+  // Get verse content - handle both API formats
+  const verseContent = feeling.verses?.[0]
+    ? {
+        arabic: feeling.verses[0].arabicText || feeling.verses[0].arabic || "",
+        text: feeling.verses[0].translationText || feeling.verses[0].text || "",
+        reference: feeling.verses[0].reference,
+      }
+    : feeling.quran
       ? {
-          arabic: feeling.quran.arabic,
-          text: feeling.quran.text,
+          arabic: feeling.quran.arabic || "",
+          text: feeling.quran.text || "",
           reference: feeling.quran.reference,
         }
-      : null);
+      : null;
 
   const duaContent =
     feeling.duas?.[0] ||
@@ -103,6 +108,83 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
       : null);
 
   const currentImage = imageOptions[imageKey];
+
+  // Calculate dynamic font sizes based on content length
+  const getDynamicSizes = () => {
+    const arabic =
+      contentType === "verse" ? verseContent?.arabic : duaContent?.arabic;
+    const mainText =
+      contentType === "verse"
+        ? verseContent?.text
+        : duaContent?.transliteration;
+    const meaning = contentType === "dua" ? duaContent?.meaning : "";
+
+    const arabicLength = (arabic || "").length;
+    const mainTextLength = (mainText || "").length;
+    const meaningLength = (meaning || "").length;
+    const totalLength = arabicLength + mainTextLength + meaningLength;
+
+    // Very aggressive sizing - fill the space!
+    let arabicSize = 58;
+    let arabicLineHeight = 86;
+    let englishSize = 42;
+    let englishLineHeight = 62;
+    let meaningSize = 36;
+    let meaningLineHeight = 54;
+    let emojiSize = 90;
+    let titleSize = 52;
+
+    if (totalLength > 600) {
+      arabicSize = 32;
+      arabicLineHeight = 48;
+      englishSize = 24;
+      englishLineHeight = 36;
+      meaningSize = 22;
+      meaningLineHeight = 33;
+      emojiSize = 60;
+      titleSize = 36;
+    } else if (totalLength > 450) {
+      arabicSize = 38;
+      arabicLineHeight = 56;
+      englishSize = 28;
+      englishLineHeight = 42;
+      meaningSize = 26;
+      meaningLineHeight = 39;
+      emojiSize = 68;
+      titleSize = 40;
+    } else if (totalLength > 300) {
+      arabicSize = 44;
+      arabicLineHeight = 66;
+      englishSize = 34;
+      englishLineHeight = 50;
+      meaningSize = 30;
+      meaningLineHeight = 45;
+      emojiSize = 76;
+      titleSize = 44;
+    } else if (totalLength > 150) {
+      arabicSize = 52;
+      arabicLineHeight = 78;
+      englishSize = 38;
+      englishLineHeight = 56;
+      meaningSize = 34;
+      meaningLineHeight = 50;
+      emojiSize = 84;
+      titleSize = 48;
+    }
+
+    return {
+      emoji: emojiSize * CAPT_SCALE,
+      title: titleSize * CAPT_SCALE,
+      arabic: arabicSize * CAPT_SCALE,
+      arabicLine: arabicLineHeight * CAPT_SCALE,
+      english: englishSize * CAPT_SCALE,
+      englishLine: englishLineHeight * CAPT_SCALE,
+      meaning: meaningSize * CAPT_SCALE,
+      meaningLine: meaningLineHeight * CAPT_SCALE,
+    };
+  };
+
+  const dynamicSizes = getDynamicSizes();
 
   const handleSaveWallpaper = useCallback(async () => {
     if (!viewShotRef.current?.capture) return;
@@ -349,20 +431,34 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
               </View>
             </View>
 
-            {/* Glass panel */}
+            {/* Glass panel - content spreads to fill all space */}
             <View style={styles.captPanel}>
-              {/* Emoji */}
-              <Text style={{ fontSize: 80 * CAPT_SCALE, textAlign: "center" }}>
-                {feeling.emoji}
-              </Text>
+              {/* Top section: Emoji + Title */}
+              <View style={{ alignItems: "center" as const }}>
+                <Text
+                  style={{ fontSize: dynamicSizes.emoji, textAlign: "center" }}
+                >
+                  {feeling.emoji}
+                </Text>
+                <Text
+                  style={[styles.captTitle, { fontSize: dynamicSizes.title }]}
+                >
+                  I Am Feeling {feeling.title}
+                </Text>
+              </View>
 
-              {/* Title */}
-              <Text style={styles.captTitle}>I Am Feeling {feeling.title}</Text>
-
-              {/* Arabic */}
+              {/* Middle section: Arabic */}
               {((contentType === "verse" && verseContent?.arabic) ||
                 (contentType === "dua" && duaContent?.arabic)) && (
-                <Text style={styles.captArabic}>
+                <Text
+                  style={[
+                    styles.captArabic,
+                    {
+                      fontSize: dynamicSizes.arabic,
+                      lineHeight: dynamicSizes.arabicLine,
+                    },
+                  ]}
+                >
                   {contentType === "verse"
                     ? verseContent?.arabic
                     : duaContent?.arabic}
@@ -370,7 +466,15 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
               )}
 
               {/* English / Transliteration */}
-              <Text style={styles.captEnglish}>
+              <Text
+                style={[
+                  styles.captEnglish,
+                  {
+                    fontSize: dynamicSizes.english,
+                    lineHeight: dynamicSizes.englishLine,
+                  },
+                ]}
+              >
                 "
                 {contentType === "verse"
                   ? verseContent?.text || ""
@@ -380,11 +484,28 @@ export function WallpaperGenerator({ feeling }: WallpaperGeneratorProps) {
 
               {/* Meaning (dua only) */}
               {contentType === "dua" && duaContent?.meaning && (
-                <Text style={styles.captMeaning}>"{duaContent.meaning}"</Text>
+                <Text
+                  style={[
+                    styles.captMeaning,
+                    {
+                      fontSize: dynamicSizes.meaning,
+                      lineHeight: dynamicSizes.meaningLine,
+                    },
+                  ]}
+                >
+                  "{duaContent.meaning}"
+                </Text>
               )}
 
               {/* Reference */}
-              <Text style={styles.captRef}>
+              <Text
+                style={[
+                  styles.captRef,
+                  {
+                    fontSize: dynamicSizes.english * 0.9,
+                  },
+                ]}
+              >
                 —{" "}
                 {contentType === "verse"
                   ? verseContent?.reference || ""
@@ -613,13 +734,15 @@ const styles = StyleSheet.create({
 
   // Capture styles (scaled to device width, ViewShot upscales to 1080x1920)
   captLogo: {
-    alignItems: "center" as const,
-    paddingTop: 50 * CAPT_SCALE,
+    position: "absolute" as const,
+    top: 35 * CAPT_SCALE,
+    alignSelf: "center" as const,
+    zIndex: 10,
   },
   captLogoGlow: {
-    width: 140 * CAPT_SCALE,
-    height: 140 * CAPT_SCALE,
-    borderRadius: 70 * CAPT_SCALE,
+    width: 130 * CAPT_SCALE,
+    height: 130 * CAPT_SCALE,
+    borderRadius: 65 * CAPT_SCALE,
     backgroundColor: "rgba(255,255,255,0.9)",
     justifyContent: "center" as const,
     alignItems: "center" as const,
@@ -631,57 +754,44 @@ const styles = StyleSheet.create({
   },
   captPanel: {
     position: "absolute" as const,
-    top: "22%" as any,
-    left: 24 * CAPT_SCALE,
-    right: 24 * CAPT_SCALE,
-    bottom: "18%" as any,
+    top: 200 * CAPT_SCALE,
+    left: 30 * CAPT_SCALE,
+    right: 30 * CAPT_SCALE,
+    bottom: 70 * CAPT_SCALE,
     backgroundColor: "rgba(15, 23, 42, 0.42)",
-    borderRadius: 20 * CAPT_SCALE,
+    borderRadius: 26 * CAPT_SCALE,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
-    padding: 20 * CAPT_SCALE,
-    justifyContent: "center" as const,
+    paddingHorizontal: 35 * CAPT_SCALE,
+    paddingVertical: 25 * CAPT_SCALE,
+    justifyContent: "space-evenly" as const,
     alignItems: "center" as const,
   },
   captTitle: {
     color: "#f8fafc",
-    fontSize: 22 * CAPT_SCALE,
     fontWeight: "800" as const,
     textAlign: "center" as const,
-    marginTop: 8 * CAPT_SCALE,
-    marginBottom: 12 * CAPT_SCALE,
   },
   captArabic: {
     color: "#f8fafc",
-    fontSize: 20 * CAPT_SCALE,
     fontWeight: "700" as const,
     textAlign: "center" as const,
-    lineHeight: 30 * CAPT_SCALE,
-    marginBottom: 12 * CAPT_SCALE,
   },
   captEnglish: {
     color: "#f8fafc",
-    fontSize: 15 * CAPT_SCALE,
     fontStyle: "italic" as const,
     fontWeight: "600" as const,
     textAlign: "center" as const,
-    lineHeight: 22 * CAPT_SCALE,
-    marginBottom: 8 * CAPT_SCALE,
   },
   captMeaning: {
     color: "#f8fafc",
-    fontSize: 13 * CAPT_SCALE,
     fontWeight: "600" as const,
     textAlign: "center" as const,
-    lineHeight: 20 * CAPT_SCALE,
-    marginBottom: 8 * CAPT_SCALE,
   },
   captRef: {
     color: "#f8fafc",
-    fontSize: 14 * CAPT_SCALE,
     fontWeight: "800" as const,
     textAlign: "center" as const,
-    marginTop: 6 * CAPT_SCALE,
   },
   captBrand: {
     position: "absolute" as const,
@@ -696,7 +806,7 @@ const styles = StyleSheet.create({
   },
   captBrandText: {
     color: "#f8fafc",
-    fontSize: 14 * CAPT_SCALE,
+    fontSize: 18 * CAPT_SCALE,
     fontWeight: "800" as const,
   },
 

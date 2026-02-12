@@ -2,8 +2,13 @@
 
 export interface QuranVerse {
   _id?: string;
-  arabic: string;
-  text: string;
+  suraNumber?: number;
+  verseNumber?: number;
+  arabicText?: string; // From verses array
+  translationText?: string; // From verses array
+  arabic?: string; // From quran object (backward compatibility)
+  text?: string; // From quran object (backward compatibility)
+  transliteration?: string;
   reference: string;
 }
 

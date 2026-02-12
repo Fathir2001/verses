@@ -136,11 +136,23 @@ export default function FeelingDetailScreen() {
   }
 
   // ----- Data -----
+  // Normalize verses to use consistent field names (handle both API formats)
   const verses = feeling.verses?.length
-    ? feeling.verses
+    ? feeling.verses.map((v) => ({
+        ...v,
+        arabic: v.arabicText || v.arabic || "",
+        text: v.translationText || v.text || "",
+      }))
     : feeling.quran
-      ? [feeling.quran]
+      ? [
+          {
+            ...feeling.quran,
+            arabic: feeling.quran.arabic || "",
+            text: feeling.quran.text || "",
+          },
+        ]
       : [];
+
   const duas = feeling.duas?.length
     ? feeling.duas
     : feeling.dua
