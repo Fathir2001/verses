@@ -8,7 +8,7 @@ import { Dua, Feeling, IslamicDate } from "@/types";
 // - For iOS simulator: http://localhost:5000/api
 // - For physical device on same WiFi: http://YOUR_PC_IP:5000/api
 // - For production: https://your-backend-url.com/api
-const API_BASE_URL = "http://192.168.1.9:5000/api";
+const API_BASE_URL = "http://192.168.1.15:5000/api";
 
 // Helper to make API calls
 async function fetchApi<T>(endpoint: string): Promise<T | null> {

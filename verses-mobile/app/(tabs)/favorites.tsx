@@ -19,6 +19,7 @@ import { useCallback, useState } from "react";
 import {
   FlatList,
   ImageBackground,
+  Platform,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -296,6 +297,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 18,
+    paddingBottom: Platform.OS === "ios" ? 110 : 100, // Space for Dynamic Island tab bar
   },
 
   // ===== HEADER =====

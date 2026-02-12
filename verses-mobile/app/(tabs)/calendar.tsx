@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useState } from "react";
 import {
   ImageBackground,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -375,6 +376,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 18,
+    paddingBottom: Platform.OS === "ios" ? 110 : 100, // Space for Dynamic Island tab bar
   },
 
   // ===== HERO =====
