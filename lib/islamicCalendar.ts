@@ -1,5 +1,5 @@
 // Islamic calendar utilities
-// Note: This is a simplified implementation. For production use, consider using libraries like hijri-date
+// Uses Aladhan API for accurate Islamic dates with fallback to algorithmic conversion
 
 interface IslamicDate {
   day: number;
@@ -31,10 +31,11 @@ const ISLAMIC_MONTHS = [
   "Dhul Hijjah",
 ];
 
-// Approximate conversion from Gregorian to Hijri
-// This is a simplified algorithm - for exact dates, use a proper library
-export function toIslamicDate(gregorianDate: Date): IslamicDate {
-  // Julian Day Number calculation
+// Cache for API responses to avoid excessive API calls
+let cachedDate: { gregorian: string; islamic: IslamicDate } | null = null;
+
+// Fallback: Approximate conversion from Gregorian to Hijri using Julian Day Number
+function toIslamicDateFallback(gregorianDate: Date): IslamicDate {
   const y = gregorianDate.getFullYear();
   const m = gregorianDate.getMonth() + 1;
   const d = gregorianDate.getDate();
@@ -72,6 +73,86 @@ export function toIslamicDate(gregorianDate: Date): IslamicDate {
     monthName: ISLAMIC_MONTHS[month - 1] || "Unknown",
     year,
   };
+}
+
+// Convert Gregorian date to Islamic date using Aladhan API
+export async function toIslamicDate(gregorianDate: Date): Promise<IslamicDate> {
+  const dateString = `${String(gregorianDate.getDate()).padStart(2, "0")}-${String(gregorianDate.getMonth() + 1).padStart(2, "0")}-${gregorianDate.getFullYear()}`;
+
+  // Check cache
+  if (cachedDate && cachedDate.gregorian === dateString) {
+    return cachedDate.islamic;
+  }
+
+  try {
+    // Fetch from Aladhan API
+    const response = await fetch(
+      `https://api.aladhan.com/v1/gToH/${dateString}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("API request failed");
+    }
+
+    const data = await response.json();
+
+    if (data.code === 200 && data.data?.hijri) {
+      const hijri = data.data.hijri;
+
+      // Apply -1 day adjustment to match ACJU (Sri Lanka) calendar
+      // Different organizations use different moon sighting methods
+      let adjustedDay = parseInt(hijri.day) - 1;
+      let adjustedMonth = parseInt(hijri.month.number);
+      let adjustedYear = parseInt(hijri.year);
+      let monthName = hijri.month.en;
+
+      // Handle day underflow (going to previous month)
+      if (adjustedDay < 1) {
+        adjustedMonth--;
+        if (adjustedMonth < 1) {
+          adjustedMonth = 12;
+          adjustedYear--;
+        }
+        // Islamic months are typically 29 or 30 days
+        adjustedDay = 29; // Simplified, most months have 29-30 days
+        monthName = ISLAMIC_MONTHS[adjustedMonth - 1];
+      }
+
+      const islamicDate: IslamicDate = {
+        day: adjustedDay,
+        month: adjustedMonth,
+        monthName: monthName,
+        year: adjustedYear,
+      };
+
+      // Cache the result
+      cachedDate = { gregorian: dateString, islamic: islamicDate };
+
+      return islamicDate;
+    }
+
+    throw new Error("Invalid API response");
+  } catch (error) {
+    console.warn(
+      "Failed to fetch Islamic date from API, using fallback:",
+      error,
+    );
+    // Fallback to algorithmic conversion
+    return toIslamicDateFallback(gregorianDate);
+  }
+}
+
+// Synchronous version for backwards compatibility (uses cached value or fallback)
+export function toIslamicDateSync(gregorianDate: Date): IslamicDate {
+  const dateString = `${String(gregorianDate.getDate()).padStart(2, "0")}-${String(gregorianDate.getMonth() + 1).padStart(2, "0")}-${gregorianDate.getFullYear()}`;
+
+  // Return cached value if available
+  if (cachedDate && cachedDate.gregorian === dateString) {
+    return cachedDate.islamic;
+  }
+
+  // Otherwise use fallback
+  return toIslamicDateFallback(gregorianDate);
 }
 
 // Check if today is Friday (Jummah)
@@ -208,9 +289,9 @@ export function getFridayBlessing(): SpecialOccasion {
 }
 
 // Get current occasion (combines Islamic date occasions with Friday)
-export function getCurrentOccasion(): SpecialOccasion | null {
+export async function getCurrentOccasion(): Promise<SpecialOccasion | null> {
   const now = new Date();
-  const islamicDate = toIslamicDate(now);
+  const islamicDate = await toIslamicDate(now);
 
   // Check for special Islamic occasions first
   const specialOccasion = getSpecialOccasion(islamicDate);
