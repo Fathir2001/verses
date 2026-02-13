@@ -3,19 +3,13 @@
 
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
-import { getFavorites } from "@/lib/favorites";
+import { getFavorites, onFavoritesChange } from "@/lib/favorites";
 import { haptics } from "@/lib/haptics";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DynamicIslandTabBar({
   state,
@@ -24,6 +18,7 @@ export default function DynamicIslandTabBar({
 }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   // Favorites count for badge
   const [favCount, setFavCount] = useState(0);
@@ -39,10 +34,18 @@ export default function DynamicIslandTabBar({
     } catch {}
   }, []);
 
-  // Reload favorites count when tab changes (e.g., leaving favorites screen)
+  // Reload favorites count when tab changes
   useEffect(() => {
     loadFavCount();
   }, [state.index, loadFavCount]);
+
+  // Subscribe to real-time favorites changes from ANY screen
+  useEffect(() => {
+    const unsubscribe = onFavoritesChange((count) => {
+      setFavCount(count);
+    });
+    return unsubscribe;
+  }, []);
 
   // Animation values
   const widthAnim = useRef(new Animated.Value(0)).current;
@@ -198,7 +201,9 @@ export default function DynamicIslandTabBar({
       : "rgba(99, 102, 241, 0.25)"; // Glow in light theme
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { bottom: Math.max(insets.bottom, 10) + 10 }]}
+    >
       <Animated.View
         style={[
           styles.tabBar,
@@ -315,7 +320,7 @@ export default function DynamicIslandTabBar({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 34 : 24,
+    // bottom is set dynamically via style prop using safe area insets
     left: 0,
     right: 0,
     alignItems: "center",

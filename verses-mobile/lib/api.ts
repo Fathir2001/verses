@@ -10,6 +10,15 @@ import { Dua, Feeling, IslamicDate } from "@/types";
 // - For production: https://your-backend-url.com/api
 const API_BASE_URL = "https://verses-backend-dev2.onrender.com/api";
 
+/**
+ * Wake-up ping — call once on app launch so the Render free-tier
+ * instance starts spinning up while the user sees the splash/skeleton.
+ * The response is intentionally discarded.
+ */
+export function wakeUpBackend() {
+  fetch(`${API_BASE_URL}/feelings`, { method: "HEAD" }).catch(() => {});
+}
+
 // Helper to make API calls
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   try {

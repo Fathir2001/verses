@@ -6,6 +6,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const FAVORITES_KEY = "verses_favorites";
 
+// ---------- Listener system ----------
+// Allows the tab bar badge (and anything else) to react instantly
+// when a favorite is toggled from ANY screen.
+type FavoritesListener = (count: number) => void;
+const listeners = new Set<FavoritesListener>();
+
+/** Subscribe to favorites count changes. Returns an unsubscribe function. */
+export function onFavoritesChange(listener: FavoritesListener): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function notifyListeners(favorites: string[]) {
+  listeners.forEach((fn) => fn(favorites.length));
+}
+
 // Get all favorite slugs
 export async function getFavorites(): Promise<string[]> {
   try {
@@ -30,6 +48,7 @@ export async function toggleFavorite(slug: string): Promise<boolean> {
   }
 
   await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  notifyListeners(favorites); // Notify all listeners immediately
   return index === -1; // returns true if added, false if removed
 }
 

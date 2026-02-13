@@ -11,6 +11,7 @@ import OnboardingScreen, {
 } from "@/components/OnboardingScreen";
 import Colors from "@/constants/Colors";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { wakeUpBackend } from "@/lib/api";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ function RootNavigator() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
+    wakeUpBackend(); // Ping backend immediately so Render starts spinning up
     hasSeenOnboarding().then((seen) => setShowOnboarding(!seen));
   }, []);
 

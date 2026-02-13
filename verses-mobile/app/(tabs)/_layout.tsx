@@ -66,6 +66,8 @@ export default function TabLayout() {
         tabBarStyle: {
           display: "none", // Hide default tab bar
         },
+        // Smooth crossfade between tabs
+        animation: "fade",
         // Enhanced header styling with blur and gradient
         headerTransparent: Platform.OS === "ios",
         headerBackground: () =>

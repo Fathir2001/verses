@@ -33,6 +33,11 @@ import {
   Text,
   View,
 } from "react-native";
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  SlideInUp,
+} from "react-native-reanimated";
 
 export default function FeelingDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -301,51 +306,69 @@ export default function FeelingDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* ===== HERO HEADER ===== */}
-        <LinearGradient
-          colors={[colors.gradientStart, colors.gradientEnd]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.hero}
+        <Animated.View
+          entering={SlideInUp.duration(500).springify().damping(18)}
         >
-          {/* Actions (far right, no back button) */}
-          <View style={styles.heroTopRow}>
-            <View style={{ flex: 1 }} />
-            <View style={styles.heroActions}>
-              <Pressable onPress={handleFavorite} style={styles.heroBtn}>
-                <Ionicons
-                  name={isFav ? "heart" : "heart-outline"}
-                  size={22}
-                  color={isFav ? "#F87171" : "#fff"}
-                />
-              </Pressable>
-              <Pressable onPress={handleShare} style={styles.heroBtn}>
-                <Ionicons name="share-outline" size={22} color="#fff" />
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Emoji & Title */}
-          <View style={styles.heroCenter}>
-            <View style={styles.heroEmojiCircle}>
-              <Text style={{ fontSize: 42 }}>{feeling.emoji}</Text>
-            </View>
-            <Text style={styles.heroTitle}>Feeling {feeling.title}</Text>
-            <Text style={styles.heroPreview}>{feeling.preview}</Text>
-
-            {/* Fav badge */}
-            {isFav && (
-              <View style={styles.favBadge}>
-                <Ionicons name="heart" size={10} color="#F87171" />
-                <Text style={styles.favBadgeText}>Saved</Text>
+          <LinearGradient
+            colors={[colors.gradientStart, colors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.hero}
+          >
+            {/* Actions (far right, no back button) */}
+            <View style={styles.heroTopRow}>
+              <View style={{ flex: 1 }} />
+              <View style={styles.heroActions}>
+                <Pressable onPress={handleFavorite} style={styles.heroBtn}>
+                  <Ionicons
+                    name={isFav ? "heart" : "heart-outline"}
+                    size={22}
+                    color={isFav ? "#F87171" : "#fff"}
+                  />
+                </Pressable>
+                <Pressable onPress={handleShare} style={styles.heroBtn}>
+                  <Ionicons name="share-outline" size={22} color="#fff" />
+                </Pressable>
               </View>
-            )}
-          </View>
-        </LinearGradient>
+            </View>
+
+            {/* Emoji & Title */}
+            <View style={styles.heroCenter}>
+              <Animated.View
+                entering={FadeInUp.delay(200).springify().damping(14)}
+                style={styles.heroEmojiCircle}
+              >
+                <Text style={{ fontSize: 42 }}>{feeling.emoji}</Text>
+              </Animated.View>
+              <Animated.Text
+                entering={FadeInUp.delay(300).springify().damping(14)}
+                style={styles.heroTitle}
+              >
+                Feeling {feeling.title}
+              </Animated.Text>
+              <Animated.Text
+                entering={FadeInUp.delay(400).duration(400)}
+                style={styles.heroPreview}
+              >
+                {feeling.preview}
+              </Animated.Text>
+
+              {/* Fav badge */}
+              {isFav && (
+                <View style={styles.favBadge}>
+                  <Ionicons name="heart" size={10} color="#F87171" />
+                  <Text style={styles.favBadgeText}>Saved</Text>
+                </View>
+              )}
+            </View>
+          </LinearGradient>
+        </Animated.View>
 
         {/* ===== SECTIONS ===== */}
         <View style={styles.sections}>
           {/* ----- Gentle Reminder ----- */}
-          <View
+          <Animated.View
+            entering={FadeInDown.delay(300).duration(500)}
             style={[
               styles.sectionCard,
               { backgroundColor: colors.card, borderColor: colors.glassBorder },
@@ -369,11 +392,12 @@ export default function FeelingDetailScreen() {
             >
               {feeling.reminder}
             </Text>
-          </View>
+          </Animated.View>
 
           {/* ----- Qur'anic Comfort ----- */}
           {verses.length > 0 && (
-            <View
+            <Animated.View
+              entering={FadeInDown.delay(450).duration(500)}
               style={[
                 styles.sectionCard,
                 {
@@ -485,12 +509,13 @@ export default function FeelingDetailScreen() {
                   </Pressable>
                 </>
               )}
-            </View>
+            </Animated.View>
           )}
 
           {/* ----- Dua For You ----- */}
           {duas.length > 0 && (
-            <View
+            <Animated.View
+              entering={FadeInDown.delay(600).duration(500)}
               style={[
                 styles.sectionCard,
                 {
@@ -629,12 +654,13 @@ export default function FeelingDetailScreen() {
                   </Pressable>
                 </>
               )}
-            </View>
+            </Animated.View>
           )}
 
           {/* ----- Small Actions ----- */}
           {feeling.actions && feeling.actions.length > 0 && (
-            <View
+            <Animated.View
+              entering={FadeInDown.delay(750).duration(500)}
               style={[
                 styles.sectionCard,
                 {
@@ -672,7 +698,7 @@ export default function FeelingDetailScreen() {
                   </Text>
                 </View>
               ))}
-            </View>
+            </Animated.View>
           )}
 
           {/* ----- Wallpaper Generator ----- */}
