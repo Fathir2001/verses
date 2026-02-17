@@ -57,6 +57,10 @@ export default function DuasScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+
+    // Clear cache to force fresh data
+    getDuas.clearCache?.();
+
     loadDuas();
   }, [loadDuas]);
 

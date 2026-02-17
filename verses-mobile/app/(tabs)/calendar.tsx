@@ -113,6 +113,10 @@ export default function CalendarScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+
+    // Clear cache to force fresh data
+    getIslamicDate.clearCache?.();
+
     loadDate();
   }, [loadDate]);
 

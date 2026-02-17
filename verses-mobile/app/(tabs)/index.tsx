@@ -90,7 +90,7 @@ export default function HomeScreen() {
     loadFavs();
   }, [loadData, loadFavs]);
 
-  // Reload favorites when tab regains focus
+  // Reload favorites when tab regains focus (but don't reload all feelings)
   useFocusEffect(
     useCallback(() => {
       loadFavs();
@@ -117,6 +117,11 @@ export default function HomeScreen() {
     setRefreshing(true);
     setPullQuote(getRandomQuote());
     haptics.light();
+
+    // Clear cache to force fresh data on pull-to-refresh
+    getFeelings.clearCache?.();
+    getIslamicDate.clearCache?.();
+
     loadData();
     loadFavs();
   }, [loadData, loadFavs]);

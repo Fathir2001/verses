@@ -45,7 +45,9 @@ export default function FavoritesScreen() {
         setFavorites([]);
         return;
       }
-      const allFeelings = await getFeelings();
+
+      // Use cached feelings data to avoid unnecessary API call
+      const allFeelings = await getFeelings(); // This is now cached!
       const favFeelings = allFeelings.filter((f: Feeling) =>
         favSlugs.includes(f.slug),
       );
@@ -67,6 +69,10 @@ export default function FavoritesScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+
+    // Clear cache to force fresh data
+    getFeelings.clearCache?.();
+
     loadFavorites();
   }, [loadFavorites]);
 

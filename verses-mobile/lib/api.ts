@@ -2,6 +2,7 @@
 // This talks to your same backend server
 
 import { Dua, Feeling, IslamicDate } from "@/types";
+import { cache } from "./cache";
 
 // IMPORTANT: Change this to your backend URL
 // - For Android emulator: http://10.0.2.2:5000/api
@@ -39,22 +40,63 @@ async function fetchApi<T>(endpoint: string): Promise<T | null> {
 // PUBLIC API ENDPOINTS (no auth needed)
 // ==========================================
 
-// Get all feelings
+// Get all feelings (with caching)
 export async function getFeelings(): Promise<Feeling[]> {
+  const cacheKey = "feelings";
+  const cached = cache.get<Feeling[]>(cacheKey, 3 * 60 * 1000); // 3 minutes TTL
+  if (cached) {
+    console.log("[Cache] Using cached feelings");
+    return cached;
+  }
+
   const data = await fetchApi<Feeling[]>("/feelings");
-  return data || [];
+  const result = data || [];
+  cache.set(cacheKey, result);
+  return result;
 }
+// Add clearCache method to getFeelings
+getFeelings.clearCache = () => cache.clear("feelings");
 
-// Get a single feeling by slug
+// Get a single feeling by slug (with caching)
 export async function getFeelingBySlug(slug: string): Promise<Feeling | null> {
-  return fetchApi<Feeling>(`/feelings/${slug}`);
-}
+  const cacheKey = `feeling:${slug}`;
+  const cached = cache.get<Feeling>(cacheKey, 5 * 60 * 1000); // 5 minutes TTL
+  if (cached) {
+    console.log(`[Cache] Using cached feeling: ${slug}`);
+    return cached;
+  }
 
-// Get all duas
-export async function getDuas(): Promise<Dua[]> {
-  const data = await fetchApi<Dua[]>("/duas");
-  return data || [];
+  const data = await fetchApi<Feeling>(`/feelings/${slug}`);
+  if (data) {
+    cache.set(cacheKey, data);
+  }
+  return data;
 }
+// Add clearCache method
+getFeelingBySlug.clearCache = (slug?: string) => {
+  if (slug) {
+    cache.clear(`feeling:${slug}`);
+  } else {
+    cache.clearPattern(/^feeling:/);
+  }
+};
+
+// Get all duas (with caching)
+export async function getDuas(): Promise<Dua[]> {
+  const cacheKey = "duas";
+  const cached = cache.get<Dua[]>(cacheKey, 5 * 60 * 1000); // 5 minutes TTL
+  if (cached) {
+    console.log("[Cache] Using cached duas");
+    return cached;
+  }
+
+  const data = await fetchApi<Dua[]>("/duas");
+  const result = data || [];
+  cache.set(cacheKey, result);
+  return result;
+}
+// Add clearCache method
+getDuas.clearCache = () => cache.clear("duas");
 
 // ==========================================
 // ISLAMIC DATE (Aladhan API)
@@ -82,6 +124,14 @@ export async function getIslamicDate(
     date.getMonth() + 1,
   ).padStart(2, "0")}-${date.getFullYear()}`;
 
+  // Cache key based on the date
+  const cacheKey = `islamic-date:${dateString}`;
+  const cached = cache.get<IslamicDate>(cacheKey, 60 * 60 * 1000); // 1 hour TTL
+  if (cached) {
+    console.log(`[Cache] Using cached Islamic date for ${dateString}`);
+    return cached;
+  }
+
   try {
     const response = await fetch(
       `https://api.aladhan.com/v1/gToH/${dateString}`,
@@ -107,12 +157,16 @@ export async function getIslamicDate(
         monthName = ISLAMIC_MONTHS[adjustedMonth - 1];
       }
 
-      return {
+      const result = {
         day: adjustedDay,
         month: adjustedMonth,
         monthName,
         year: adjustedYear,
       };
+
+      // Cache the result
+      cache.set(cacheKey, result);
+      return result;
     }
     throw new Error("Invalid API response");
   } catch {
@@ -120,6 +174,8 @@ export async function getIslamicDate(
     return fallbackIslamicDate(date);
   }
 }
+// Add clearCache method
+getIslamicDate.clearCache = () => cache.clearPattern(/^islamic-date:/);
 
 function fallbackIslamicDate(date: Date): IslamicDate {
   const y = date.getFullYear();
