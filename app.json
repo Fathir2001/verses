@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "f4ecff6d-0a0f-47bc-90ff-5a418a9ee6f5"
+      }
+    },
+    "android": {
+      "package": "com.fathir2001.think_different"
+    }
+  }
+}
