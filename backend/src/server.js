@@ -25,7 +25,7 @@ const startServer = async () => {
     await connectDB();
 
     // Start Express server
-    const server = app.listen(env.PORT, () => {
+    const server = app.listen(env.PORT, "0.0.0.0", () => {
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
@@ -33,7 +33,8 @@ const startServer = async () => {
 ║                                                            ║
 ║   Environment: ${env.NODE_ENV.padEnd(42)}║
 ║   Port:        ${String(env.PORT).padEnd(42)}║
-║   URL:         http://localhost:${env.PORT}${" ".repeat(Math.max(0, 25 - String(env.PORT).length))}║
+║   Local:       http://localhost:${env.PORT}${" ".repeat(Math.max(0, 25 - String(env.PORT).length))}║
+║   Network:     http://192.168.1.15:${env.PORT}${" ".repeat(Math.max(0, 20 - String(env.PORT).length))}║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
       `);
