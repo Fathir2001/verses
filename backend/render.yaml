@@ -7,7 +7,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    branch: deploy
+    branch: deploy-backend
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
