@@ -319,7 +319,7 @@ export default function FeelingDetailClient({
                 >
                   <span
                     className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30
-                                 flex items-center justify-center text-sm font-bold 
+                                 flex items-center justify-center text-sm font-bold
                                  text-white group-hover:scale-110 transition-transform duration-300"
                   >
                     {index + 1}
