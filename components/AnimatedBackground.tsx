@@ -24,7 +24,8 @@ export function AnimatedBackground() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/background.jpeg')" }}
         />
-        <div className="absolute inset-0 bg-white/40 dark:bg-slate-900/50" />
+        <div className="absolute inset-0 bg-slate-50/65 dark:bg-slate-950/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/35 via-slate-50/10 to-slate-50/70 dark:from-slate-950/45 dark:via-transparent dark:to-slate-950/80" />
       </div>
     );
   }
@@ -37,7 +38,8 @@ export function AnimatedBackground() {
         style={{ backgroundImage: "url('/background.jpeg')" }}
       />
       {/* Semi-transparent overlay */}
-      <div className="absolute inset-0 bg-white/40 dark:bg-slate-900/50" />
+      <div className="absolute inset-0 bg-slate-50/65 dark:bg-slate-950/65" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-50/35 via-slate-50/10 to-slate-50/70 dark:from-slate-950/45 dark:via-transparent dark:to-slate-950/80" />
 
       {/* CSS-animated blobs — no JS animation overhead */}
       <div
@@ -59,13 +61,6 @@ export function AnimatedBackground() {
       />
 
       {/* Subtle pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-30 dark:opacity-20"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-          backgroundSize: "40px 40px",
-        }}
-      />
     </div>
   );
 }

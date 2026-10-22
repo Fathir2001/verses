@@ -36,15 +36,12 @@ export default function QuotesPage() {
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
+      <div className="site-shell mx-auto my-5 max-w-5xl px-4 py-7 sm:my-8 sm:px-8 sm:py-10">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in-up">
-          <span className="text-5xl sm:text-6xl block mb-4 animate-gentle-pulse">
-            💬
-          </span>
+          <p className="section-eyebrow mb-3">Words to carry with you</p>
           <h1
-            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 
-                       dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-3"
+            className="mb-3 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl"
           >
             Inspirational Quotes
           </h1>
@@ -55,29 +52,27 @@ export default function QuotesPage() {
 
         {/* Quote of the Day */}
         <div className="mb-10 animate-fade-in-up animate-delay-100">
-          <GlassCard glow className="p-6 sm:p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none">
-              <span className="text-[8rem]">✨</span>
-            </div>
+          <GlassCard glow className="relative overflow-hidden border-amber-200/60 p-6 dark:border-amber-200/20 sm:p-10">
+            <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full bg-amber-300/10 blur-3xl" />
 
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🌟</span>
-              <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+              <span className="text-amber-600 dark:text-amber-300" aria-hidden="true">✦</span>
+              <span className="section-eyebrow">
                 Quote of the Day
               </span>
             </div>
 
-            <blockquote className="border-l-4 border-emerald-500/50 pl-4 py-2">
+            <blockquote className="relative py-2">
               <p
-                className="text-xl sm:text-2xl text-right leading-loose font-arabic text-slate-800 dark:text-white mb-4"
+                className="mb-6 text-right font-arabic text-2xl leading-loose text-slate-900 dark:text-white sm:text-3xl"
                 dir="rtl"
               >
                 {dailyQuote.arabic}
               </p>
-              <p className="text-lg sm:text-xl italic text-slate-700 dark:text-slate-200 mb-3">
+              <p className="mb-5 max-w-3xl text-lg leading-relaxed text-slate-800 dark:text-slate-100 sm:text-xl">
                 &ldquo;{dailyQuote.text}&rdquo;
               </p>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-300/40 pt-4 dark:border-white/10">
                 <cite className="text-sm text-emerald-600 dark:text-emerald-400 not-italic font-medium flex items-center gap-2">
                   <span className={dailyQuote.type === "quran" ? "📖" : "📿"}>
                     {dailyQuote.type === "quran" ? "📖" : "📿"}
@@ -106,7 +101,7 @@ export default function QuotesPage() {
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all
               ${
                 !selectedCategory
-                  ? "bg-emerald-500 text-white shadow-md"
+                  ? "bg-emerald-700 text-white shadow-md dark:bg-emerald-500 dark:text-slate-950"
                   : "bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
               }`}
           >
@@ -123,12 +118,12 @@ export default function QuotesPage() {
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5
                 ${
                   selectedCategory === category.id
-                    ? "bg-emerald-500 text-white shadow-md"
+                    ? "bg-emerald-700 text-white shadow-md dark:bg-emerald-500 dark:text-slate-950"
                     : "bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                 }`}
             >
               <span>{category.emoji}</span>
-              <span className="hidden sm:inline">{category.name}</span>
+              <span>{category.name}</span>
             </button>
           ))}
         </div>

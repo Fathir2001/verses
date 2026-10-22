@@ -71,7 +71,7 @@ export function SearchBox({
                    placeholder-slate-400 dark:placeholder-slate-500
                    focus:outline-none
                    transition-colors duration-200"
-        aria-label="Search feelings"
+        aria-label={placeholder}
       />
 
       {value && (

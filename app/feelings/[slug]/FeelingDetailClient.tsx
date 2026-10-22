@@ -126,7 +126,7 @@ export default function FeelingDetailClient({
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-2xl px-4 py-6 sm:py-8">
+      <div className="site-shell mx-auto my-5 max-w-3xl px-4 py-7 sm:my-8 sm:px-9 sm:py-10">
         {/* Back Button */}
         <div className="mb-6 animate-fade-in-up">
           <Link
@@ -158,24 +158,25 @@ export default function FeelingDetailClient({
         </div>
 
         {/* Header with Premium Gradient */}
-        <div className="relative text-center mb-8 animate-fade-in-up">
+        <div className="relative text-center mb-9 animate-fade-in-up">
           {/* Gradient Background Glow */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-500/5 dark:via-teal-500/5 dark:to-cyan-500/5 blur-3xl rounded-3xl" />
 
           {/* Emoji Container with Glow */}
-          <div className="relative inline-block mb-6">
+          <div className="relative inline-block mb-5">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 via-teal-400/30 to-cyan-400/30 blur-2xl animate-pulse" />
-            <div className="relative bg-gradient-to-br from-white/80 to-white/40 dark:from-slate-800/80 dark:to-slate-800/40 backdrop-blur-xl rounded-3xl p-8 shadow-2xl shadow-emerald-500/20 dark:shadow-emerald-500/10 border border-white/60 dark:border-slate-700/60">
+            <div className="relative rounded-3xl border border-white/70 bg-white/60 p-5 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-white/10">
               <span className="text-6xl sm:text-7xl block animate-gentle-pulse drop-shadow-2xl">
                 {feeling.emoji}
               </span>
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-400 dark:via-teal-400 dark:to-cyan-400 bg-clip-text text-transparent mb-3">
+          <p className="section-eyebrow mb-2">A space for what you feel</p>
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
             Feeling {feeling.title}
           </h1>
-          <p className="text-slate-700 dark:text-slate-300 mb-6 font-semibold text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-slate-700 dark:text-slate-200 mb-6 text-lg max-w-xl mx-auto leading-relaxed">
             {feeling.preview}
           </p>
           <FavoriteButton slug={feeling.slug} size="md" showLabel />
@@ -193,7 +194,7 @@ export default function FeelingDetailClient({
             {currentVerse ? (
               <>
                 {/* Navigation header for multiple verses */}
-                {verses.length > 0 && (
+                {hasMultipleVerses && (
                   <div className="flex items-center justify-between mb-4">
                     <NavButton
                       direction="prev"
@@ -247,7 +248,7 @@ export default function FeelingDetailClient({
             {currentDua ? (
               <>
                 {/* Navigation header for multiple duas */}
-                {duas.length > 0 && (
+                {hasMultipleDuas && (
                   <div className="flex items-center justify-between mb-4">
                     <NavButton
                       direction="prev"

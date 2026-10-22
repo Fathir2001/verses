@@ -83,6 +83,14 @@
 
 @layer components {
 
+    .site-shell {
+        @apply rounded-[2rem] border border-white/60 bg-white/35 shadow-[0_24px_80px_-36px_rgba(15,23,42,0.4)] backdrop-blur-md dark:border-white/10 dark:bg-slate-950/35;
+    }
+
+    .section-eyebrow {
+        @apply text-xs font-bold uppercase tracking-[0.22em] text-emerald-700 dark:text-emerald-300;
+    }
+
     /* Glass card base */
     .glass {
         @apply bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-glass dark:shadow-glass-dark;

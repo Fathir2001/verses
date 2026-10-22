@@ -21,29 +21,28 @@ export default function FeelingsPage() {
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
+      <div className="site-shell mx-auto my-5 max-w-5xl px-4 py-7 sm:my-8 sm:px-8 sm:py-10">
         {/* Islamic Date Banner */}
-        <div className="mb-6">
+        <div className="mb-5">
           <IslamicDateBanner />
         </div>
 
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-in-up">
+        <div className="text-center mb-7 animate-fade-in-up">
+          <p className="section-eyebrow mb-3">A moment for your heart</p>
           <h1
-            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 
-                         dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-3
-                         drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] dark:drop-shadow-none"
+            className="mb-3 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl"
           >
             How are you feeling?
           </h1>
-          <p className="font-semibold text-slate-800 dark:text-slate-200 max-w-lg mx-auto text-glow">
+          <p className="mx-auto max-w-lg text-base leading-relaxed text-slate-700 dark:text-slate-200">
             Select what resonates with you, and find comfort through Islamic
             teachings.
           </p>
         </div>
 
         {/* Search */}
-        <div className="max-w-md mx-auto mb-8">
+        <div className="max-w-md mx-auto mb-9">
           <SearchBox
             value={searchQuery}
             onChange={setSearchQuery}
@@ -60,14 +59,13 @@ export default function FeelingsPage() {
 
         {/* Section title */}
         {!searchQuery && (
-          <h2
-            className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2
-                       drop-shadow-[0_2px_4px_rgba(255,255,255,0.9)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]
-                       bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-xl px-4 py-2 w-fit
-                       animate-fade-in-up animate-delay-300"
-          >
-            <span className="text-2xl sm:text-3xl">🎭</span> All Feelings
-          </h2>
+          <div className="mb-5 flex items-end justify-between gap-3 animate-fade-in-up animate-delay-300">
+            <div>
+              <p className="section-eyebrow mb-1">Explore</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">All feelings</h2>
+            </div>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{allFeelings.length} paths to comfort</span>
+          </div>
         )}
 
         {/* Feelings Grid */}
@@ -89,7 +87,7 @@ export default function FeelingsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {filteredFeelings.map((feeling, index) => (
               <FeelingCard key={feeling.slug} feeling={feeling} index={index} />
             ))}
