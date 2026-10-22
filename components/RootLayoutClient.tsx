@@ -1,7 +1,9 @@
 "use client";
 
-import { AnimatedBackground, Navbar, ThemeProvider } from "@/components";
-import { FavoritesProvider } from "@/context";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { Navbar } from "@/components/Navbar";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 import { usePathname } from "next/navigation";
 
 export function RootLayoutClient({ children }: { children: React.ReactNode }) {
@@ -30,6 +32,8 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
                   src="/enhanced_image.png"
                   alt="Think Different Logo"
                   className="w-6 h-6 object-contain"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-400 text-glow">
                   © 2026 Think_Different

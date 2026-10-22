@@ -1,7 +1,6 @@
 "use client";
 
 import type { Feeling } from "@/types/feeling";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "./GlassCard";
 
@@ -44,11 +43,7 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
+    <div className="animate-fade-in-up animate-delay-200">
       <GlassCard glow className="p-6 sm:p-8 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 opacity-5 pointer-events-none">
@@ -60,13 +55,7 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <motion.span
-              className="text-xl"
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 4 }}
-            >
-              ✨
-            </motion.span>
+            <span className="text-xl animate-twinkle">✨</span>
             <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
               Feeling of the Day
             </span>
@@ -79,13 +68,9 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
         {/* Content */}
         <Link href={`/feelings/${dailyFeeling.slug}`} className="block group">
           <div className="flex items-start gap-4 sm:gap-6">
-            <motion.span
-              className="text-5xl sm:text-6xl flex-shrink-0"
-              whileHover={{ scale: 1.15, rotate: 10 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <span className="text-5xl sm:text-6xl flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
               {dailyFeeling.emoji}
-            </motion.span>
+            </span>
 
             <div className="flex-grow min-w-0">
               <h3
@@ -141,6 +126,6 @@ export function FeelingOfTheDay({ feelings }: FeelingOfTheDayProps) {
           </Link>
         </div>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }

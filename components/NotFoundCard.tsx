@@ -1,25 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "./GlassCard";
 
 export function NotFoundCard() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-md mx-auto"
-    >
+    <div className="max-w-md mx-auto animate-fade-in-up">
       <GlassCard className="p-8 text-center">
-        <motion.span
-          className="text-6xl block mb-4"
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-        >
-          🤔
-        </motion.span>
+        <span className="text-6xl block mb-4 animate-moon-wobble">🤔</span>
 
         <h2 className="text-2xl font-semibold text-slate-800 dark:text-white mb-3">
           Feeling Not Found
@@ -31,14 +19,13 @@ export function NotFoundCard() {
         </p>
 
         <Link href="/feelings">
-          <motion.span
+          <span
             className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl
                        bg-gradient-to-r from-emerald-500 to-teal-500
                        text-white font-medium shadow-lg shadow-emerald-500/25
                        hover:shadow-xl hover:shadow-emerald-500/30
-                       transition-shadow duration-300"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+                       transition-all duration-300
+                       hover:scale-[1.02] active:scale-[0.98]"
           >
             <svg
               className="w-5 h-5"
@@ -54,9 +41,9 @@ export function NotFoundCard() {
               />
             </svg>
             Explore Feelings
-          </motion.span>
+          </span>
         </Link>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }

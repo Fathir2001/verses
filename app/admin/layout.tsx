@@ -1,7 +1,6 @@
 "use client";
 
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
-import { motion } from "framer-motion";
 
 export default function AdminLayout({
   children,
@@ -11,45 +10,14 @@ export default function AdminLayout({
   return (
     <AdminAuthProvider>
       <div className="min-h-screen relative overflow-hidden">
-        {/* Animated gradient background */}
+        {/* Static gradient background — no JS animation overhead */}
         <div className="fixed inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900" />
 
-          {/* Animated orbs */}
-          <motion.div
-            className="absolute top-0 left-0 w-[600px] h-[600px] bg-emerald-500/20 rounded-full blur-[120px]"
-            animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-teal-500/15 rounded-full blur-[100px]"
-            animate={{
-              x: [0, -80, 0],
-              y: [0, -60, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[80px]"
-            animate={{
-              x: [-200, -150, -200],
-              y: [-200, -250, -200],
-            }}
-            transition={{
-              duration: 18,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 4,
-            }}
-          />
+          {/* CSS-animated orbs (same visuals, zero JS cost) */}
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-emerald-500/20 rounded-full blur-[120px] animate-[drift_20s_ease-in-out_infinite]" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-teal-500/15 rounded-full blur-[100px] animate-[drift-reverse_25s_ease-in-out_2s_infinite]" />
+          <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[80px] animate-[drift_18s_ease-in-out_4s_infinite] -translate-x-1/2 -translate-y-1/2" />
 
           {/* Grid pattern overlay */}
           <div

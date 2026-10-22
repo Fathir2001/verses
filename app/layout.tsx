@@ -19,9 +19,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://think-different-td.netlify.app"),
   title: {
-    template: "%s | I Am Feeling",
-    default: "I Am Feeling - Islamic Comfort & Guidance",
+    template: "%s | Think Different",
+    default: "Think Different - Islamic Comfort & Guidance",
   },
   description:
     "Find comfort and spiritual guidance through Islamic teachings when you need it most. Quranic verses, duas, and gentle reminders for every emotion.",
@@ -35,24 +36,33 @@ export const metadata: Metadata = {
     "mental health",
     "Muslim",
   ],
-  authors: [{ name: "I Am Feeling" }],
+  authors: [{ name: "Think Different" }],
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: "/enhanced_image.png",
+    shortcut: "/enhanced_image.png",
+    apple: "/enhanced_image.png",
   },
   openGraph: {
-    title: "I Am Feeling - Islamic Comfort & Guidance",
+    title: "Think Different - Islamic Comfort & Guidance",
     description:
       "Find comfort and spiritual guidance through Islamic teachings when you need it most.",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/enhanced_image.png",
+        width: 512,
+        height: 512,
+        alt: "Think Different - Islamic Comfort & Guidance",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "I Am Feeling - Islamic Comfort & Guidance",
+    title: "Think Different - Islamic Comfort & Guidance",
     description:
       "Find comfort and spiritual guidance through Islamic teachings when you need it most.",
+    images: ["/enhanced_image.png"],
   },
 };
 

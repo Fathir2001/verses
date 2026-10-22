@@ -1,65 +1,39 @@
 "use client";
 
-import { FeelingCard, GlassCard, PageTransition } from "@/components";
-import { useFavorites } from "@/context";
+import { FeelingCard } from "@/components/FeelingCard";
+import { GlassCard } from "@/components/GlassCard";
+import { PageTransition } from "@/components/PageTransition";
+import { useFavorites } from "@/context/FavoritesContext";
 import { getAllFeelings } from "@/lib/feelings";
-import type { Feeling } from "@/types/feeling";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+
+// Pre-compute outside component — this is a synchronous JSON read
+const allFeelings = getAllFeelings();
 
 export default function FavoritesPage() {
   const { favorites } = useFavorites();
-  const [allFeelings, setAllFeelings] = useState<Feeling[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Get all feelings data
-    const feelings = getAllFeelings();
-    setAllFeelings(feelings);
-    setIsLoading(false);
-  }, []);
-
-  const favoriteFeelings = allFeelings.filter((feeling) =>
-    favorites.includes(feeling.slug),
+  const favoriteFeelings = useMemo(
+    () => allFeelings.filter((feeling) => favorites.includes(feeling.slug)),
+    [favorites],
   );
-
-  if (isLoading) {
-    return (
-      <PageTransition>
-        <div className="mx-auto max-w-6xl px-4 py-8">
-          <div className="flex items-center justify-center min-h-[50vh]">
-            <div className="animate-pulse text-slate-400">Loading...</div>
-          </div>
-        </div>
-      </PageTransition>
-    );
-  }
 
   return (
     <PageTransition>
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <motion.span
-            className="text-5xl sm:text-6xl block mb-4"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          >
+        <div className="text-center mb-12 animate-fade-in-up">
+          <span className="text-5xl sm:text-6xl block mb-4 animate-gentle-pulse">
             💖
-          </motion.span>
+          </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-4">
             Your Saved Favorites
           </h1>
           <p className="text-slate-600 dark:text-slate-300 max-w-md mx-auto">
             Feelings you&apos;ve saved to revisit when you need comfort.
           </p>
-        </motion.div>
+        </div>
 
         {/* Content */}
         {favoriteFeelings.length > 0 ? (
@@ -69,20 +43,9 @@ export default function FavoritesPage() {
             ))}
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <div className="animate-fade-in-up animate-delay-200">
             <GlassCard className="p-8 text-center max-w-md mx-auto">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
-                className="text-6xl mb-4"
-              >
-                🤍
-              </motion.div>
+              <div className="text-6xl mb-4">🤍</div>
               <h2 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
                 No Favorites Yet
               </h2>
@@ -115,16 +78,11 @@ export default function FavoritesPage() {
                 Explore Feelings
               </Link>
             </GlassCard>
-          </motion.div>
+          </div>
         )}
 
         {/* Back link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center mt-12"
-        >
+        <div className="text-center mt-12 animate-fade-in-up animate-delay-300">
           <Link
             href="/feelings"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
@@ -147,7 +105,7 @@ export default function FavoritesPage() {
             </svg>
             Back to All Feelings
           </Link>
-        </motion.div>
+        </div>
       </div>
     </PageTransition>
   );

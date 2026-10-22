@@ -1,10 +1,13 @@
 "use client";
 
-import { CopyButton, GlassCard, PageTransition, SearchBox } from "@/components";
+import { CopyButton } from "@/components/CopyButton";
+import { GlassCard } from "@/components/GlassCard";
+import { PageTransition } from "@/components/PageTransition";
+import { SearchBox } from "@/components/SearchBox";
 import { getAllCategories, getDailyQuote, searchQuotes } from "@/lib/quotes";
 import type { Quote } from "@/types/quote";
 import { AnimatePresence, motion } from "framer-motion";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 // Pre-compute static data outside component to avoid re-computation
 const categories = getAllCategories();
@@ -35,19 +38,10 @@ export default function QuotesPage() {
     <PageTransition>
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-8"
-        >
-          <motion.span
-            className="text-5xl sm:text-6xl block mb-4"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          >
+        <div className="text-center mb-8 animate-fade-in-up">
+          <span className="text-5xl sm:text-6xl block mb-4 animate-gentle-pulse">
             💬
-          </motion.span>
+          </span>
           <h1
             className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 
                        dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-3"
@@ -57,15 +51,10 @@ export default function QuotesPage() {
           <p className="text-slate-600 dark:text-slate-300 max-w-lg mx-auto">
             Hadith and Quranic wisdom to inspire and guide your soul.
           </p>
-        </motion.div>
+        </div>
 
         {/* Quote of the Day */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-10"
-        >
+        <div className="mb-10 animate-fade-in-up animate-delay-100">
           <GlassCard glow className="p-6 sm:p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none">
               <span className="text-[8rem]">✨</span>
@@ -99,7 +88,7 @@ export default function QuotesPage() {
               </div>
             </blockquote>
           </GlassCard>
-        </motion.div>
+        </div>
 
         {/* Search */}
         <div className="max-w-md mx-auto mb-6">
@@ -111,12 +100,7 @@ export default function QuotesPage() {
         </div>
 
         {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-2 mb-8"
-        >
+        <div className="flex flex-wrap justify-center gap-2 mb-8 animate-fade-in-up animate-delay-200">
           <button
             onClick={() => setSelectedCategory(null)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all
@@ -147,7 +131,7 @@ export default function QuotesPage() {
               <span className="hidden sm:inline">{category.name}</span>
             </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Results count */}
         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">
@@ -155,10 +139,7 @@ export default function QuotesPage() {
         </p>
 
         {/* Quotes Grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
-          layout
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <AnimatePresence mode="popLayout">
             {filteredQuotes.map((quote, index) => (
               <QuoteCard
@@ -169,14 +150,10 @@ export default function QuotesPage() {
               />
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
         {filteredQuotes.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
+          <div className="text-center py-12 animate-fade-in-up">
             <span className="text-5xl mb-4 block">🔍</span>
             <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">
               No quotes found
@@ -184,7 +161,7 @@ export default function QuotesPage() {
             <p className="text-slate-500 dark:text-slate-400">
               Try a different search term or category.
             </p>
-          </motion.div>
+          </div>
         )}
       </div>
     </PageTransition>
@@ -197,18 +174,20 @@ interface QuoteCardProps {
   formatQuoteText: (quote: Quote) => string;
 }
 
-const QuoteCard = forwardRef<HTMLDivElement, QuoteCardProps>(function QuoteCard(
-  { quote, index, formatQuoteText },
-  ref,
-) {
+const QuoteCard = memo(function QuoteCard({
+  quote,
+  index,
+  formatQuoteText,
+}: QuoteCardProps) {
+  const delay = Math.min(index * 0.05, 0.3);
+
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      layout
+      transition={{ duration: 0.3, delay }}
     >
       <GlassCard hover className="p-5 h-full">
         <div className="flex flex-col h-full">
