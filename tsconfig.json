@@ -34,7 +34,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
-  ],
-  "extends": "expo/tsconfig.base"
+    "node_modules",
+    "verses-mobile"
+  ]
 }
